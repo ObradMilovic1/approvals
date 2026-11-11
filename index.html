@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<title>Approvals</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0B0F0D;--mint:#00E187;--mint-d:#00C877;--line:#E3E8E5;--soft:#F1F4F2;--muted:#4F5753;--body:#2A302D;--chip:#E6FCF2;--chip-t:#00663D;--red:#B42318}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:Geist,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#fff;
+    background-image:linear-gradient(var(--soft) 1px,transparent 1px),linear-gradient(90deg,var(--soft) 1px,transparent 1px);background-size:48px 48px;background-attachment:fixed}
+  .wrap{max-width:480px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px;min-height:100%}
+  button{font-family:inherit;color:inherit}
+  .hdr{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 12px}
+  .brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;letter-spacing:-.2px}
+  .brand .dot{color:var(--mint-d)}
+  .iconbtn{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+  .iconbtn .pip{position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:var(--mint);border:2px solid #fff}
+  .spin svg{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+  .tabs{display:flex;background:var(--soft);border-radius:999px;padding:4px;gap:4px;margin-top:-4px}
+  .tab{flex:1;height:44px;border:none;border-radius:999px;background:transparent;color:var(--body);font-size:14px;font-weight:600;cursor:pointer}
+  .tab[aria-selected=true]{background:var(--ink);color:#fff;font-weight:700}
+  .tab .n{display:inline-block;min-width:20px;height:20px;line-height:20px;border-radius:999px;background:var(--mint);color:var(--ink);font-size:12px;font-weight:700;margin-left:6px;padding:0 6px}
+  .hero{display:flex;flex-direction:column;gap:6px;padding:0 4px}
+  .eyebrow{font-size:14px;color:var(--muted)}
+  h1{margin:0;font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+  .lead{font-size:18px;font-weight:600;line-height:1.35}
+  .hl{background:var(--mint);border-radius:6px;padding:0 6px}
+  .stats{display:flex;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 20px rgba(11,15,13,.06)}
+  .stat{flex:1;padding:12px 8px;text-align:center;border-right:1px solid var(--line)}.stat:last-child{border-right:none}
+  .stat .k{font-size:11px;color:var(--muted)}.stat .v{font-size:20px;font-weight:700}
+  .list{display:flex;flex-direction:column;gap:12px}
+  .card{display:flex;flex-direction:column;gap:8px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;cursor:pointer;width:100%}
+  .card:first-child{border-color:var(--ink)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .chip{font-size:12px;font-weight:600;background:var(--chip);color:var(--chip-t);border-radius:999px;padding:4px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%}
+  .chip.new{background:var(--ink);color:#fff}
+  .time{font-size:12px;color:var(--muted)}
+  .subj{font-size:17px;font-weight:700}
+  .from{font-size:13px;color:var(--muted);word-break:break-all}
+  .prev{font-size:14px;line-height:1.4;color:var(--body);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .empty{background:#fff;border:1px dashed var(--line);border-radius:18px;padding:28px 18px;text-align:center;color:var(--muted);font-size:15px;line-height:1.45}
+  .empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+  .notice{background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px;font-size:13px;line-height:1.4}
+  .notice b{color:var(--mint)}
+  /* review */
+  .top{display:flex;align-items:center;gap:12px}
+  .rt{font-size:28px;font-weight:800;letter-spacing:-.8px;margin:0;line-height:1.1;word-break:break-word}
+  details{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:#F7F9F8}
+  summary{font-size:13px;font-weight:600;cursor:pointer}
+  details .orig{font-size:14px;color:var(--body);margin-top:8px;line-height:1.45;white-space:pre-wrap;max-height:40vh;overflow:auto}
+  .lbl{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700}
+  .lbl span{font-weight:500;color:var(--muted)}
+  .ph{font-size:12px;font-weight:600;background:var(--mint);border-radius:6px;padding:2px 8px}
+  textarea{width:100%;min-height:46vh;resize:vertical;font-family:inherit;font-size:16px;line-height:1.5;color:var(--ink);border:1.5px solid var(--ink);border-radius:16px;padding:14px;background:#fff}
+  .hint{font-size:12px;color:var(--muted)}
+  .actions{display:flex;gap:10px;position:sticky;bottom:calc(12px + env(safe-area-inset-bottom))}
+  .btn{height:54px;border-radius:999px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn.rej{flex:1;border:1.5px solid var(--ink);background:#fff}
+  .btn.ok{flex:2;border:none;background:var(--mint)}
+  .btn:disabled{opacity:.5}
+  /* sheet + toast + lock */
+  .sheet{position:fixed;inset:0;background:rgba(11,15,13,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+  .sheet .box{background:#fff;width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+  .sheet h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.5px}
+  .sheet p{margin:0;color:var(--body);font-size:15px;line-height:1.45}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom));background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px;font-size:14px;font-weight:600;z-index:30;display:flex;gap:8px;align-items:center;max-width:92vw}
+  .toast i{width:10px;height:10px;border-radius:50%;background:var(--mint);display:inline-block}
+  .lock{display:flex;flex-direction:column;gap:16px;margin-top:8vh}
+  .lock input{height:58px;border:1.5px solid var(--ink);border-radius:16px;font-size:24px;letter-spacing:8px;text-align:center;font-family:inherit}
+  .err{color:var(--red);font-size:14px;min-height:20px}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ===== Configuration =====
+   ENDPOINT_ENC is the private link to the Power Automate flow, encrypted with the app passcode.
+   Nothing private lives in this file: without the passcode it cannot be decrypted. */
+const CONFIG = {
+  ENDPOINT_ENC: { salt: "/lZ+5dD8it1b2hXTaQwzew==", iv: "QC4ANzfjObqctPYS", data: "MCYRuqdIRnUXvwDKFTAR2eOmMQjcmfN8MEO1JIJ0RyGQTV6ktp2QvAmi7hEoggvvIRFdgQezQRanvVQ8E9J1lvB9iZLDiNOkstvIRfyMiKJDvDYmy3yRVkh6KvmqN8IX0lVGy8NXfj/OttC4AeH8/wiWL6Cr5eICLdV/8d5a3j43M4rgcBmnqWcwoQZvB06H63sIOJiYbrN8IJLc7Ajuf9RfBM/rIEvAPJKCszqDOFfhexVwoAnB3accQkLkpLT2ZXq9VbQVwLe4qwoBd7m4y1dTfeTkkLXUjKbHjbOkpQ3BUOTCx0L+b3hIxXTthmgJKVb+C3G2ztZGOGbiNs56FeD/HTZF4Hz7o1HThDAbt4PIrSQw9KDbA1FDYGOl1PVSigt6g8/xMCQk0zpx1WQ+JjJ5t/9TarrU" }, // private flow link, encrypted with the app passcode
+  BUSINESSES: [
+    { id: 'Easy Books', label: 'Easy Books', firm: 'Easy Books for Better Business' },
+    { id: 'Sydney Bookkeeping', label: 'Sydney Bookkeeping', firm: 'Sydney Bookkeeping & Advisory', connected: false }
+  ]
+};
+
+const LOGO = '<svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"><rect x="0" y="11" width="5" height="9" rx="1.5" fill="#0B0F0D"/><rect x="8" y="6" width="5" height="14" rx="1.5" fill="#0B0F0D"/><rect x="16" y="0" width="5" height="20" rx="1.5" fill="#00E187"/></svg>';
+const I = {
+  refresh: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+  back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  send: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>'
+};
+
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} }
+};
+
+const state = {
+  biz: store.get('biz') || 'Easy Books',
+  items: [], loading: false, open: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
+  endpoint: store.get('endpoint')
+};
+
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = (s) => document.querySelector(s);
+
+/* ---------- crypto: unlock the private flow link with the passcode ---------- */
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+async function decryptEndpoint(pass) {
+  const { salt, iv, data } = CONFIG.ENDPOINT_ENC;
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(salt), iterations: 200000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(iv) }, key, b64(data));
+  return new TextDecoder().decode(plain);
+}
+
+/* ---------- API (Power Automate flow) ---------- */
+const DEMO = [
+  { id: 'demo1', business: 'Easy Books', client: 'New client', from: 'obradmilovic@hotmail.com', subject: 'BAS question', receivedAt: new Date().toISOString(), clientEmail: 'Hi Brad, can you check my BAS for this quarter before I lodge it?', draft: 'Hi,\n\nThanks for getting in touch. Happy to review your BAS before you lodge it.\n\nCould you send through your [quarter] figures, or give us a call on [phone number]? We\'ll get back to you within one business day.\n\nKind regards,\nBrad', status: 'Waiting' },
+  { id: 'demo2', business: 'Easy Books', client: 'Jo Goodwin', from: 'jo@example.com', subject: 'Quad filters paid by Jo', receivedAt: new Date(Date.now() - 3600e3).toISOString(), clientEmail: 'Hi, I paid the quad filters personally — can that go through the business?', draft: 'Hi Jo,\n\nThanks for letting us know. Yes, we can record that as a reimbursement to you. Could you send the receipt through and we\'ll post it this week?\n\nKind regards,\nBrad', status: 'Waiting' }
+];
+
+async function api(payload) {
+  if (state.demo) {
+    await new Promise((r) => setTimeout(r, 400));
+    if (payload.action === 'list') return { items: DEMO };
+    const it = DEMO.find((d) => d.id === payload.id);
+    if (it) { it.status = payload.action === 'approve' ? 'Sent' : 'Rejected'; it.actionedAt = new Date().toISOString(); }
+    return { ok: true };
+  }
+  const res = await fetch(state.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  if (!res.ok) throw new Error('The approvals service answered ' + res.status);
+  return res.json();
+}
+
+async function load(quiet) {
+  state.loading = true; if (!quiet) render();
+  try {
+    const r = await api({ action: 'list' });
+    state.items = (r.items || []).map(normalise);
+    state.error = '';
+  } catch (e) {
+    state.error = 'Couldn\'t reach your inbox. Check your connection and tap refresh.';
+  }
+  state.loading = false; render();
+}
+
+function normalise(x) {
+  return {
+    id: x.id || x.MessageId, business: x.business || x.Business || 'Easy Books',
+    client: (x.client || x.ClientName || '').replace(/^_?New Clients\/.*/i, 'New client') || 'Client',
+    from: x.from || x.FromEmail || '', subject: x.subject || x.Subject || '(no subject)',
+    receivedAt: x.receivedAt || x.ReceivedAt || '', clientEmail: x.clientEmail || x.ClientEmail || '',
+    draft: x.draft || x.Draft || '', status: x.status || x.Status || 'Waiting', actionedAt: x.actionedAt || x.ActionedAt || ''
+  };
+}
+
+/* ---------- helpers ---------- */
+function when(iso) {
+  const d = new Date(iso); if (isNaN(d)) return '';
+  const today = new Date(); const same = d.toDateString() === today.toDateString();
+  return same ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString([], { day: 'numeric', month: 'short' });
+}
+const isToday = (iso) => { const d = new Date(iso); return !isNaN(d) && d.toDateString() === new Date().toDateString(); };
+const waiting = (biz) => state.items.filter((i) => i.business === biz && i.status === 'Waiting');
+const bizCfg = () => CONFIG.BUSINESSES.find((b) => b.id === state.biz) || CONFIG.BUSINESSES[0];
+
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = '<i></i>' + esc(msg);
+  document.body.appendChild(t); setTimeout(() => t.remove(), 3200);
+}
+
+/* ---------- views ---------- */
+function header(rightBtn) {
+  return `<header class="hdr"><div class="brand">${LOGO}<div>${esc(bizCfg().firm)}<span class="dot">.</span></div></div>${rightBtn}</header>`;
+}
+
+function viewLock() {
+  return `<div class="lock">
+    <div class="brand" style="justify-content:center;font-size:16px">${LOGO}<div>Approvals<span class="dot" style="color:#00C877">.</span></div></div>
+    <h1 style="text-align:center;font-size:36px">Enter passcode</h1>
+    <p style="text-align:center;color:var(--muted);margin:0">You only need to do this once on this phone.</p>
+    <input id="pass" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" maxlength="20" placeholder="xxxx-xxxx-xxxx" style="letter-spacing:2px;font-size:22px">
+    <div class="err" id="err"></div>
+    <button class="btn ok" id="unlock">Unlock</button>
+  </div>`;
+}
+
+function viewList() {
+  const biz = bizCfg();
+  const tabs = CONFIG.BUSINESSES.map((b) => {
+    const n = waiting(b.id).length;
+    return `<button class="tab" role="tab" data-biz="${esc(b.id)}" aria-selected="${b.id === state.biz}">${esc(b.label)}${n ? `<span class="n">${n}</span>` : ''}</button>`;
+  }).join('');
+  const w = waiting(state.biz);
+  const sent = state.items.filter((i) => i.business === state.biz && i.status === 'Sent' && isToday(i.actionedAt)).length;
+  const rej = state.items.filter((i) => i.business === state.biz && i.status === 'Rejected' && isToday(i.actionedAt)).length;
+  const refresh = `<button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button>`;
+
+  let body;
+  if (biz.connected === false) {
+    body = `<div class="empty"><b>Not connected yet</b>${esc(biz.firm)}'s inbox isn't linked. Once it is, client emails and Claude's drafts will appear here, the same as Easy Books.</div>`;
+  } else if (state.error) {
+    body = `<div class="empty"><b>Can't load right now</b>${esc(state.error)}</div>`;
+  } else if (!w.length) {
+    body = `<div class="empty"><b>All clear</b>${state.loading ? 'Checking your inbox…' : 'No drafts waiting. New client emails will appear here with Claude\'s reply ready to approve.'}</div>`;
+  } else {
+    body = '<div class="list">' + w.map((it) => `
+      <button class="card" data-id="${esc(it.id)}">
+        <div class="row"><span class="chip ${it.client === 'New client' ? 'new' : ''}">${esc(it.client)}</span><span class="time">${esc(when(it.receivedAt))}</span></div>
+        <div class="subj">${esc(it.subject)}</div>
+        <div class="from">${esc(it.from)}</div>
+        <div class="prev">“${esc(it.draft.replace(/\s+/g, ' ').trim())}”</div>
+      </button>`).join('') + '</div>';
+  }
+
+  return `${header(refresh)}
+    <div class="tabs" role="tablist" aria-label="Business">${tabs}</div>
+    ${state.demo ? '<div class="notice"><b>Preview.</b> Showing sample emails. Your real inbox appears once the private link is switched on.</div>' : ''}
+    <div class="hero"><div class="eyebrow">[ Today ]</div><h1>APPROVALS</h1>
+      <div class="lead">${w.length ? `Claude has drafted ${w.length === 1 ? 'a reply' : w.length + ' replies'}, <span class="hl">ready for you</span>` : 'Nothing waiting, <span class="hl">you\'re all caught up</span>'}</div></div>
+    <div class="stats"><div class="stat"><div class="k">Waiting</div><div class="v">${w.length}</div></div><div class="stat"><div class="k">Sent today</div><div class="v">${sent}</div></div><div class="stat"><div class="k">Rejected today</div><div class="v">${rej}</div></div></div>
+    ${body}`;
+}
+
+function viewReview(it) {
+  const ph = (it.draft.match(/\[[^\]]+\]/g) || []).length;
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Reply to client · ${esc(it.business)} ]</div></div>
+    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div></div>
+    <details><summary>Client's email</summary><div class="orig">${esc(it.clientEmail || '(empty)')}</div></details>
+    <div class="lbl"><div>Claude's draft <span>· tap to edit</span></div>${ph ? `<span class="ph">${ph} placeholder${ph > 1 ? 's' : ''}</span>` : ''}</div>
+    <textarea id="draft">${esc(it.draft)}</textarea>
+    <div class="hint">Fill in anything in [square brackets] before sending. Sends from Brad@easybooksaccounting.com — sign off in the draft.</div>
+    <div class="actions"><button class="btn rej" id="reject">Reject</button><button class="btn ok" id="approve">Approve &amp; send ${I.send}</button></div>`;
+}
+
+function confirmSheet(title, text, okLabel, onOk) {
+  const s = document.createElement('div'); s.className = 'sheet';
+  s.innerHTML = `<div class="box"><h2>${esc(title)}</h2><p>${esc(text)}</p><div class="actions" style="position:static"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-ok>${esc(okLabel)}</button></div></div>`;
+  s.addEventListener('click', (e) => { if (e.target === s || e.target.closest('[data-x]')) s.remove(); });
+  s.querySelector('[data-ok]').addEventListener('click', async (e) => { e.target.disabled = true; await onOk(); s.remove(); });
+  document.body.appendChild(s);
+}
+
+/* ---------- render + events ---------- */
+function render() {
+  const app = $('#app');
+  if (!state.demo && !state.endpoint) { app.innerHTML = viewLock(); bindLock(); return; }
+  const it = state.open && state.items.find((i) => i.id === state.open);
+  app.innerHTML = it ? viewReview(it) : viewList();
+  it ? bindReview(it) : bindList();
+}
+
+function bindLock() {
+  const go = async () => {
+    const p = $('#pass').value.trim().toLowerCase(); if (!p) return;
+    $('#err').textContent = 'Checking…';
+    try { state.endpoint = await decryptEndpoint(p); store.set('endpoint', state.endpoint); load(); }
+    catch { $('#err').textContent = 'That passcode isn\'t right. Try again.'; }
+  };
+  $('#unlock').onclick = go; $('#pass').onkeydown = (e) => { if (e.key === 'Enter') go(); };
+  $('#pass').focus();
+}
+
+function bindList() {
+  document.querySelectorAll('.tab').forEach((t) => t.onclick = () => { state.biz = t.dataset.biz; store.set('biz', state.biz); render(); });
+  document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); });
+  $('#refresh').onclick = () => load();
+}
+
+function bindReview(it) {
+  $('#back').onclick = () => { state.open = null; render(); };
+  $('#approve').onclick = () => {
+    const draft = $('#draft').value;
+    if (/\[[^\]]+\]/.test(draft)) {
+      confirmSheet('Placeholders still in the draft', 'There\'s still text in [square brackets]. Send it anyway?', 'Send anyway', () => send(it, draft));
+    } else {
+      confirmSheet('Send this reply?', `It goes to ${it.from} from Brad@easybooksaccounting.com.`, 'Send', () => send(it, draft));
+    }
+  };
+  $('#reject').onclick = () => confirmSheet('Reject this draft?', 'Nothing is sent to the client. The email stays in your inbox for you to handle.', 'Reject', async () => {
+    try { await api({ action: 'reject', id: it.id, business: it.business }); it.status = 'Rejected'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Draft rejected — nothing was sent'); }
+    catch { toast('Couldn\'t reject — try again'); }
+  });
+}
+
+async function send(it, draft) {
+  try {
+    await api({ action: 'approve', id: it.id, business: it.business, draft });
+    it.status = 'Sent'; it.actionedAt = new Date().toISOString(); it.draft = draft;
+    state.open = null; render(); toast('Reply sent to ' + it.from);
+  } catch { toast('Couldn\'t send — nothing went out. Try again.'); }
+}
+
+/* ---------- start ---------- */
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && (state.demo || state.endpoint)) load(true); });
+setInterval(() => { if (!document.hidden && !state.open && (state.demo || state.endpoint)) load(true); }, 60000);
+if (state.demo || state.endpoint) load(); else render();
+</script>
+</body>
+</html>
