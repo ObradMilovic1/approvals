@@ -213,7 +213,7 @@ const DEMO = [
 const DEMO_LEADS = [
   { LeadId: 'L1', Name: 'Sam (BuilderCo)', Phone: '0412555777', Email: 'sam@builderco.com.au', Source: 'Email', Stage: 'Contacted', Notes: 'Wants catch-up bookkeeping from January', Business: 'Easy Books', Updated: new Date(Date.now() - 2 * 864e5).toISOString() },
   { LeadId: 'L2', Name: 'Mia Chen', Phone: '0400111222', Email: 'mia@chencafe.com.au', Source: 'Calendly', Stage: 'Meeting booked', Notes: 'Meeting Thu 10:30am', Business: 'Easy Books', Updated: new Date().toISOString() },
-  { LeadId: 'L3', Name: 'Northside Plumbing', Phone: '0298765432', Email: '', Source: 'Call', Stage: 'Quote sent', Notes: 'Quoted $450/month BAS + payroll', Business: 'Easy Books', Updated: new Date(Date.now() - 5 * 864e5).toISOString() }];
+  { LeadId: 'L3', Name: 'Northside Plumbing', Phone: '0298765432', Email: '', Source: 'Call', Stage: 'Quote sent', Notes: 'Quoted $450/month BAS + payroll', Business: 'Sydney Bookkeeping', Updated: new Date(Date.now() - 5 * 864e5).toISOString() }];
 
 async function api(payload) {
   if (state.demo) {
@@ -288,6 +288,7 @@ const prettyNum = (n) => { n = ausNum(n); return /^04\d{8}$/.test(n) ? n.replace
 const names = () => { try { return JSON.parse(store.get('names') || '{}'); } catch { return {}; } };
 const otherParty = (c) => ausNum(c.dir === 'outbound' ? c.to : c.from);
 const missedToday = () => state.calls.filter((c) => c.dir !== 'outbound' && !c.answered && isToday(c.at));
+const CALLS_BIZ = 'Sydney Bookkeeping';
 const STAGES = ['New lead', 'Contacted', 'Meeting booked', 'Quote sent', 'Won', 'Lost'];
 const OPEN = ['New lead', 'Contacted', 'Meeting booked', 'Quote sent'];
 const bizLeads = () => state.leads.filter((l) => (l.Business || 'Easy Books') === state.biz);
@@ -296,7 +297,7 @@ const leadByEmail = (e) => e && state.leads.find((l) => l.Email && l.Email.toLow
 const daysAgo = (iso) => { const d = new Date(iso); if (isNaN(d)) return ''; const n = Math.floor((Date.now() - d) / 864e5); return n <= 0 ? 'today' : n === 1 ? '1 day' : n + ' days'; };
 function suggestions() {
   const out = [], seen = new Set(), dismissed = lsList('nolead'), nm = names();
-  state.calls.filter((c) => c.dir !== 'outbound').forEach((c) => { const n = ausNum(c.from); if (!n || seen.has(n) || dismissed.includes(n) || leadByPhone(n)) return; seen.add(n); if (state.calls.filter((x) => otherParty(x) === n).length > 1 && nm[n]) return; out.push({ key: n, kind: 'Call', title: nm[n] || prettyNum(n), sub: (c.answered ? 'Called ' : 'Missed call ') + when(c.at), lead: { Name: nm[n] || '', Phone: n, Email: '', Source: 'Call' } }); });
+  if (state.biz === CALLS_BIZ) state.calls.filter((c) => c.dir !== 'outbound').forEach((c) => { const n = ausNum(c.from); if (!n || seen.has(n) || dismissed.includes(n) || leadByPhone(n)) return; seen.add(n); if (state.calls.filter((x) => otherParty(x) === n).length > 1 && nm[n]) return; out.push({ key: n, kind: 'Call', title: nm[n] || prettyNum(n), sub: (c.answered ? 'Called ' : 'Missed call ') + when(c.at), lead: { Name: nm[n] || '', Phone: n, Email: '', Source: 'Call', Business: CALLS_BIZ } }); });
   state.items.filter((i) => i.client === 'New client' && i.business === state.biz).forEach((i) => { const e = i.from.toLowerCase(); if (seen.has(e) || dismissed.includes(e) || leadByEmail(e)) return; seen.add(e); out.push({ key: e, kind: 'Email', title: e, sub: i.subject, lead: { Name: '', Phone: '', Email: e, Source: 'Email', Notes: i.subject } }); });
   return out.slice(0, 8);
 }
@@ -385,6 +386,7 @@ function viewPipeline() {
     </div>`;
   const sug = suggestions();
   return `${header(`<button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}</button>`)}
+    <div class="tabs" role="tablist" aria-label="Business">${CONFIG.BUSINESSES.map((b) => `<button class="tab" role="tab" data-pbiz="${esc(b.id)}" aria-selected="${b.id === state.biz}">${esc(b.label)}</button>`).join('')}</div>
     <div class="hero"><div class="eyebrow">[ Sales pipeline ]</div><h1>PIPELINE</h1><div class="lead">${count('Open')} open lead${count('Open') === 1 ? '' : 's'}, <span class="hl">${count('Won')} won</span></div></div>
     ${sug.length ? `<div class="sec">New clients spotted <span>calls &amp; emails</span></div><div class="list">${sug.map((g, i) => `<div class="sug"><div class="who">${esc(g.title)}<small>${esc(g.kind)} · ${esc(g.sub)}</small></div><button data-sug="${i}">Add lead</button><button data-nosug="${esc(g.key)}" style="background:none;color:var(--muted);padding:0 4px">✕</button></div>`).join('')}</div>` : ''}
     <div class="stages">${tabs}</div>
@@ -422,6 +424,7 @@ function leadSheet(lead, isNew) {
 function bindPipeline() {
   $('#refresh').onclick = () => load();
   document.querySelectorAll('[data-stage]').forEach((b) => b.onclick = () => { state.stage = b.dataset.stage; render(); });
+  document.querySelectorAll('[data-pbiz]').forEach((b) => b.onclick = () => { state.biz = b.dataset.pbiz; store.set('biz', state.biz); render(); });
   document.querySelectorAll('[data-move]').forEach((b) => b.onclick = () => leadSheet(state.leads.find((l) => l.LeadId === b.dataset.move), false));
   const sug = suggestions();
   document.querySelectorAll('[data-sug]').forEach((b) => b.onclick = () => leadSheet(sug[+b.dataset.sug].lead, true));
@@ -449,7 +452,7 @@ function viewCalls() {
   else if (!state.calls.length) body = '<div class="empty"><b>No calls yet</b>Calls to and from 02 3814 5525 will show here.</div>';
   else body = `${missed.length ? `<div class="sec">Missed <span>${missed.length}</span></div><div class="list">${missed.slice(0, 10).map(row).join('')}</div>` : ''}
     <div class="sec">All calls <span>latest ${state.calls.length}</span></div><div class="list">${state.calls.map(row).join('')}</div>`;
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Calls · 02 3814 5525 ]</div></div>
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Calls · Sydney Bookkeeping · 02 3814 5525 ]</div></div>
     <div class="hero"><h1>CALLS</h1><div class="lead">Who rang, <span class="hl">call them back</span></div></div>
     ${body}
     <div class="hint">Tap the green button to call from your phone. Use the Crazytel CrazyPhone app as your dialler so the call goes out on your business number.</div>`;
@@ -457,7 +460,7 @@ function viewCalls() {
 
 function bindCalls() {
   $('#back').onclick = () => { state.view = null; render(); };
-  document.querySelectorAll('[data-tolead]').forEach((b) => b.onclick = () => leadSheet({ Name: names()[b.dataset.tolead] || '', Phone: b.dataset.tolead, Source: 'Call' }, true));
+  document.querySelectorAll('[data-tolead]').forEach((b) => b.onclick = () => leadSheet({ Name: names()[b.dataset.tolead] || '', Phone: b.dataset.tolead, Source: 'Call', Business: CALLS_BIZ }, true));
   document.querySelectorAll('[data-name]').forEach((b) => b.onclick = () => {
     const n = b.dataset.name, nm = names();
     const v = prompt('Name for ' + prettyNum(n), nm[n] || '');
@@ -583,7 +586,7 @@ function renderNav(show) {
   if (!show) { if (n) n.remove(); return; }
   if (!n) { n = document.createElement('nav'); n.id = 'nav'; n.className = 'nav'; document.body.appendChild(n); }
   const cur = state.files ? 'files' : (state.view || 'home');
-  const nIn = inboxOpen().filter((m) => !m.read).length, nMiss = missedToday().length, nW = waiting(state.biz).length, nSug = suggestions().length;
+  const nIn = inboxOpen().filter((m) => !m.read).length, nMiss = missedToday().length, nW = waiting(state.biz).length, nSug = (() => { const b = state.biz; let t = 0; for (const x of CONFIG.BUSINESSES) { state.biz = x.id; t += suggestions().length; } state.biz = b; return t; })();
   const tab = (k, label, icon, badge, red) => `<button data-nav="${k}" aria-current="${cur === k}"><span class="ic">${icon}</span>${label}${badge ? `<span class="dot ${red ? 'red' : ''}">${badge}</span>` : ''}</button>`;
   n.innerHTML = `<div class="in">${tab('home', 'Approvals', I.check, nW)}${tab('inbox', 'Inbox', I.mail, nIn)}${tab('calls', 'Calls', I.phone, nMiss, true)}${tab('pipeline', 'Pipeline', I.board, nSug)}${tab('files', 'Files', I.cloud, 0)}</div>`;
   n.querySelectorAll('[data-nav]').forEach((b) => b.onclick = () => {
