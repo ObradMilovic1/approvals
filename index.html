@@ -77,6 +77,18 @@
   .lock input{height:58px;border:1.5px solid var(--ink);border-radius:16px;font-size:24px;letter-spacing:8px;text-align:center;font-family:inherit}
   .err{color:var(--red);font-size:14px;min-height:20px}
   .hidden{display:none!important}
+  .hbtns{display:flex;gap:8px}
+  .sec{font-size:13px;font-weight:700;margin:6px 4px -4px;display:flex;justify-content:space-between;align-items:center}
+  .sec span{font-weight:500;color:var(--muted)}
+  .card.fyi{background:#F7F9F8;cursor:pointer}
+  .card.fyi:first-child{border-color:var(--line)}
+  .fyitag{font-size:11px;font-weight:700;background:var(--ink);color:var(--mint);border-radius:6px;padding:2px 8px}
+  .btn.fyi{flex:1;border:1.5px solid var(--ink);background:#fff}
+  .actions.two{position:static}
+  .links{display:flex;flex-direction:column;gap:10px}
+  .link{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:600}
+  .link small{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
+  .folder{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;margin-top:8px}
 </style>
 </head>
 <body>
@@ -91,13 +103,21 @@ const CONFIG = {
   BUSINESSES: [
     { id: 'Easy Books', label: 'Easy Books', firm: 'Easy Books for Better Business' },
     { id: 'Sydney Bookkeeping', label: 'Sydney Bookkeeping', firm: 'Sydney Bookkeeping & Advisory', connected: false }
-  ]
+  ],
+  // Easy Books OneDrive (client emails are filed under Clients/<client>/Emails)
+  ONEDRIVE: 'https://easybooksaccounting-my.sharepoint.com',
+  ONEDRIVE_PATH: '/personal/brad_easybooksaccounting_com/Documents'
 };
+const odLink = (sub) => CONFIG.ONEDRIVE + '/personal/brad_easybooksaccounting_com/_layouts/15/onedrive.aspx?id=' + encodeURIComponent(CONFIG.ONEDRIVE_PATH + (sub ? '/' + sub : ''));
+
 
 const LOGO = '<svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"><rect x="0" y="11" width="5" height="9" rx="1.5" fill="#0B0F0D"/><rect x="8" y="6" width="5" height="14" rx="1.5" fill="#0B0F0D"/><rect x="16" y="0" width="5" height="20" rx="1.5" fill="#00E187"/></svg>';
 const I = {
   refresh: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
   back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.5 3.3 3.3 0 0 0 6 19z"/></svg>',
+  folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
   send: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>'
 };
 
@@ -108,7 +128,7 @@ const store = {
 
 const state = {
   biz: store.get('biz') || 'Easy Books',
-  items: [], loading: false, open: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
+  items: [], loading: false, open: null, files: false, error: '', demo: !CONFIG.ENDPOINT_ENC,
   endpoint: store.get('endpoint')
 };
 
@@ -136,7 +156,7 @@ async function api(payload) {
     await new Promise((r) => setTimeout(r, 400));
     if (payload.action === 'list') return { items: DEMO };
     const it = DEMO.find((d) => d.id === payload.id);
-    if (it) { it.status = payload.action === 'approve' ? 'Sent' : 'Rejected'; it.actionedAt = new Date().toISOString(); }
+    if (it) { it.status = payload.action === 'approve' ? 'Sent' : (payload.status || 'Rejected'); it.actionedAt = new Date().toISOString(); }
     return { ok: true };
   }
   const res = await fetch(state.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -156,13 +176,20 @@ async function load(quiet) {
   state.loading = false; render();
 }
 
+// The Outlook signature (added automatically when a reply is sent) already says "Kind regards, Brad",
+// so strip a sign-off from the end of Claude's draft to avoid it appearing twice.
+function stripSignoff(t) {
+  return String(t || '').replace(/\s*\n\s*(kind regards|warm regards|best regards|regards|many thanks|thanks|thank you|cheers|best)[,!.]?\s*(\n\s*brad( milovic)?\.?)?\s*$/i, '').replace(/\s+$/, '');
+}
+
 function normalise(x) {
-  return {
+  const folder = x.client || x.ClientName || '';
+  return { folder,
     id: x.id || x.MessageId, business: x.business || x.Business || 'Easy Books',
     client: (x.client || x.ClientName || '').replace(/^_?New Clients\/.*/i, 'New client') || 'Client',
     from: x.from || x.FromEmail || '', subject: x.subject || x.Subject || '(no subject)',
     receivedAt: x.receivedAt || x.ReceivedAt || '', clientEmail: x.clientEmail || x.ClientEmail || '',
-    draft: x.draft || x.Draft || '', status: x.status || x.Status || 'Waiting', actionedAt: x.actionedAt || x.ActionedAt || ''
+    draft: stripSignoff(x.draft || x.Draft || ''), status: x.status || x.Status || 'Waiting', actionedAt: x.actionedAt || x.ActionedAt || ''
   };
 }
 
@@ -174,6 +201,7 @@ function when(iso) {
 }
 const isToday = (iso) => { const d = new Date(iso); return !isNaN(d) && d.toDateString() === new Date().toDateString(); };
 const waiting = (biz) => state.items.filter((i) => i.business === biz && i.status === 'Waiting');
+const fyiToday = (biz) => state.items.filter((i) => i.business === biz && i.status === 'FYI' && isToday(i.actionedAt || i.receivedAt));
 const bizCfg = () => CONFIG.BUSINESSES.find((b) => b.id === state.biz) || CONFIG.BUSINESSES[0];
 
 function toast(msg) {
@@ -205,8 +233,8 @@ function viewList() {
   }).join('');
   const w = waiting(state.biz);
   const sent = state.items.filter((i) => i.business === state.biz && i.status === 'Sent' && isToday(i.actionedAt)).length;
-  const rej = state.items.filter((i) => i.business === state.biz && i.status === 'Rejected' && isToday(i.actionedAt)).length;
-  const refresh = `<button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button>`;
+  const fyi = fyiToday(state.biz);
+  const refresh = `<div class="hbtns"><button class="iconbtn" id="files" aria-label="OneDrive files">${I.cloud}</button><button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button></div>`;
 
   let body;
   if (biz.connected === false) {
@@ -224,25 +252,56 @@ function viewList() {
         <div class="prev">“${esc(it.draft.replace(/\s+/g, ' ').trim())}”</div>
       </button>`).join('') + '</div>';
   }
+  if (biz.connected !== false && fyi.length) {
+    body += `<div class="sec">FYI today <span>no reply needed</span></div><div class="list">` + fyi.map((it) => `
+      <button class="card fyi" data-id="${esc(it.id)}">
+        <div class="row"><span class="chip">${esc(it.client)}</span><span class="fyitag">FYI</span></div>
+        <div class="subj">${esc(it.subject)}</div>
+        <div class="from">${esc(it.from)} · ${esc(when(it.receivedAt))}</div>
+      </button>`).join('') + '</div>';
+  }
 
   return `${header(refresh)}
     <div class="tabs" role="tablist" aria-label="Business">${tabs}</div>
     ${state.demo ? '<div class="notice"><b>Preview.</b> Showing sample emails. Your real inbox appears once the private link is switched on.</div>' : ''}
     <div class="hero"><div class="eyebrow">[ Today ]</div><h1>APPROVALS</h1>
       <div class="lead">${w.length ? `Claude has drafted ${w.length === 1 ? 'a reply' : w.length + ' replies'}, <span class="hl">ready for you</span>` : 'Nothing waiting, <span class="hl">you\'re all caught up</span>'}</div></div>
-    <div class="stats"><div class="stat"><div class="k">Waiting</div><div class="v">${w.length}</div></div><div class="stat"><div class="k">Sent today</div><div class="v">${sent}</div></div><div class="stat"><div class="k">Rejected today</div><div class="v">${rej}</div></div></div>
+    <div class="stats"><div class="stat"><div class="k">Waiting</div><div class="v">${w.length}</div></div><div class="stat"><div class="k">Sent today</div><div class="v">${sent}</div></div><div class="stat"><div class="k">FYI today</div><div class="v">${fyi.length}</div></div></div>
     ${body}`;
+}
+
+function viewFiles() {
+  const clients = [...new Map(state.items.filter((i) => i.business === state.biz && i.folder && i.status === 'Waiting').map((i) => [i.folder, i])).values()];
+  const row = (href, title, sub) => `<a class="link" href="${esc(href)}" target="_blank" rel="noopener"><div>${esc(title)}<small>${esc(sub)}</small></div>${I.arrow}</a>`;
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ OneDrive · Easy Books ]</div></div>
+    <div class="hero"><h1>FILES</h1><div class="lead">Your OneDrive, <span class="hl">one tap away</span></div></div>
+    <div class="links">
+      ${row(odLink('Clients'), 'All clients', 'Every client folder and filed email')}
+      ${row(odLink('Clients/_New Clients'), 'New clients', 'Emails from people not on your client list')}
+      ${row(odLink(''), 'My OneDrive', 'Everything in your OneDrive')}
+    </div>
+    ${clients.length ? `<div class="sec">Clients waiting on you <span>${clients.length}</span></div><div class="links">${clients.map((i) => row(odLink('Clients/' + i.folder), i.client === 'New client' ? i.from : i.client, 'Client folder')).join('')}</div>` : ''}
+    <div class="hint">Opens in the OneDrive app if it's installed, otherwise in your browser.</div>`;
 }
 
 function viewReview(it) {
   const ph = (it.draft.match(/\[[^\]]+\]/g) || []).length;
   return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Reply to client · ${esc(it.business)} ]</div></div>
-    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div></div>
+    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div>${it.folder ? `<a class="folder" href="${esc(odLink('Clients/' + it.folder))}" target="_blank" rel="noopener">${I.folder} Client folder</a>` : ''}</div>
     <details><summary>Client's email</summary><div class="orig">${esc(it.clientEmail || '(empty)')}</div></details>
     <div class="lbl"><div>Claude's draft <span>· tap to edit</span></div>${ph ? `<span class="ph">${ph} placeholder${ph > 1 ? 's' : ''}</span>` : ''}</div>
     <textarea id="draft">${esc(it.draft)}</textarea>
-    <div class="hint">Fill in anything in [square brackets] before sending. Sends from Brad@easybooksaccounting.com — sign off in the draft.</div>
-    <div class="actions"><button class="btn rej" id="reject">Reject</button><button class="btn ok" id="approve">Approve &amp; send ${I.send}</button></div>`;
+    <div class="hint">Fill in anything in [square brackets] before sending. Sends from Brad@easybooksaccounting.com with your signature added automatically.</div>
+    <div class="actions"><button class="btn ok" id="approve" style="flex:1">Approve &amp; send ${I.send}</button></div>
+    <div class="actions two"><button class="btn fyi" id="fyi">FYI · no reply</button><button class="btn rej" id="reject">Reject</button></div>`;
+}
+
+function viewFyi(it) {
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ FYI · ${esc(it.business)} ]</div></div>
+    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div>${it.folder ? `<a class="folder" href="${esc(odLink('Clients/' + it.folder))}" target="_blank" rel="noopener">${I.folder} Client folder</a>` : ''}</div>
+    <div class="lbl"><div>Client's email <span>· filed as FYI, no reply sent</span></div></div>
+    <div class="orig" style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;white-space:pre-wrap;line-height:1.5">${esc(it.clientEmail || '(empty)')}</div>
+    <div class="actions"><button class="btn ok" id="reopen" style="flex:1">Reply after all</button></div>`;
 }
 
 function confirmSheet(title, text, okLabel, onOk) {
@@ -258,6 +317,8 @@ function render() {
   const app = $('#app');
   if (!state.demo && !state.endpoint) { app.innerHTML = viewLock(); bindLock(); return; }
   const it = state.open && state.items.find((i) => i.id === state.open);
+  if (state.files && !it) { app.innerHTML = viewFiles(); $('#back').onclick = () => { state.files = false; render(); }; return; }
+  if (it && it.status === 'FYI') { app.innerHTML = viewFyi(it); $('#back').onclick = () => { state.open = null; render(); }; $('#reopen').onclick = () => { it.status = 'Waiting'; render(); }; return; }
   app.innerHTML = it ? viewReview(it) : viewList();
   it ? bindReview(it) : bindList();
 }
@@ -277,6 +338,7 @@ function bindList() {
   document.querySelectorAll('.tab').forEach((t) => t.onclick = () => { state.biz = t.dataset.biz; store.set('biz', state.biz); render(); });
   document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); });
   $('#refresh').onclick = () => load();
+  $('#files').onclick = () => { state.files = true; render(); scrollTo(0, 0); };
 }
 
 function bindReview(it) {
@@ -288,6 +350,10 @@ function bindReview(it) {
     } else {
       confirmSheet('Send this reply?', `It goes to ${it.from} from Brad@easybooksaccounting.com.`, 'Send', () => send(it, draft));
     }
+  };
+  $('#fyi').onclick = async () => {
+    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); it.status = 'FYI'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Filed as FYI — no reply sent'); }
+    catch { toast('Couldn\'t file it — try again'); }
   };
   $('#reject').onclick = () => confirmSheet('Reject this draft?', 'Nothing is sent to the client. The email stays in your inbox for you to handle.', 'Reject', async () => {
     try { await api({ action: 'reject', id: it.id, business: it.business }); it.status = 'Rejected'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Draft rejected — nothing was sent'); }
@@ -306,7 +372,7 @@ async function send(it, draft) {
 /* ---------- start ---------- */
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 document.addEventListener('visibilitychange', () => { if (!document.hidden && (state.demo || state.endpoint)) load(true); });
-setInterval(() => { if (!document.hidden && !state.open && (state.demo || state.endpoint)) load(true); }, 60000);
+setInterval(() => { if (!document.hidden && !state.open && !state.files && (state.demo || state.endpoint)) load(true); }, 60000);
 if (state.demo || state.endpoint) load(); else render();
 </script>
 </body>
