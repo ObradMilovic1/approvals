@@ -305,6 +305,22 @@
   .brief span{color:var(--acc-d)}
   .bout{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;font-size:15px;line-height:1.55;max-height:55vh;overflow:auto}
   .bout p{margin:0 0 8px}.bout ul{margin:0;padding-left:18px}.bout li{margin:4px 0}.bout h4{margin:8px 0 4px}
+  .ibtns .donebtn{flex:1;background:var(--acc-t);border-color:transparent;color:var(--acc-d)}
+  .ibtns .donebtn svg{width:16px;height:16px}.ibtns .donebtn svg *{stroke:currentColor;stroke-width:2.6}
+  .ibtns .btn[data-imore]{flex:none;width:44px;padding:0}
+  .icard{touch-action:pan-y;transition:transform .18s ease}
+  .prog{display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;box-shadow:var(--sh);font-size:14px}
+  .prog b{font-weight:700}
+  .pbar{height:8px;background:var(--soft);border-radius:999px;overflow:hidden}
+  .pbar i{display:block;height:100%;background:var(--acc);border-radius:999px;transition:width .5s cubic-bezier(.2,.9,.3,1)}
+  .donebox{padding:0;border:none;background:none}
+  .donebox summary{font-size:14px;font-weight:600;padding:6px 2px;list-style:none;display:flex;justify-content:space-between}
+  .donebox summary::-webkit-details-marker{display:none}
+  .donebox summary span{color:var(--muted);font-weight:500}
+  .donebox .list{margin-top:8px}
+  .doneitem .subj{color:var(--muted);font-weight:500;text-decoration:line-through;text-decoration-color:var(--line)}
+  .doneitem .ibtns .btn{flex:none;height:34px;font-size:13px}
+  .clip{font-size:13px}
 </style>
 </head>
 <body>
@@ -394,7 +410,10 @@ async function api(payload) {
     if (payload.action === 'list') return { items: DEMO, leads: DEMO_LEADS, inbox: [
       { id: 'in1', from: 'ato@notifications.ato.gov.au', subject: 'New message in your ATO online services', at: new Date().toISOString(), preview: 'You have a new message about a client account. Log in to view it.', read: false },
       { id: 'in2', from: 'sam@builderco.com.au', subject: 'Quote for Q2 bookkeeping', at: new Date(Date.now() - 5400e3).toISOString(), preview: 'Hi Brad, can you send through a quote for catching up our books from January?', read: false },
-      { id: 'in3', from: 'newsletter@xero.com', subject: 'What\'s new in Xero this month', at: new Date(Date.now() - 86400e3).toISOString(), preview: 'New bank reconciliation features and more.', read: true }], callsStatus: 'Succeeded', calls: [
+      { id: 'in3', from: 'newsletter@xero.com', subject: 'What\'s new in Xero this month', at: new Date(Date.now() - 86400e3).toISOString(), preview: 'New bank reconciliation features and more.', read: true }], inboxSyd: [
+      { id: 'sy1', from: 'accounts@northsideplumbing.com.au', subject: 'Payroll for this fortnight', at: new Date(Date.now() - 7200e3).toISOString(), preview: 'Hi Zeljka, two new starters this fortnight. Timesheets attached.', read: false, attach: true },
+      { id: 'sy2', from: 'hello@greenleafcafe.com.au', subject: 'Can we book a call?', at: new Date(Date.now() - 30 * 3600e3).toISOString(), preview: 'Hi, looking for a bookkeeper for our cafe, can we chat this week?', read: false },
+      { id: 'sy3', from: 'info@ato.gov.au', subject: 'BAS lodgement confirmation', at: new Date(Date.now() - 3 * 3600e3).toISOString(), preview: 'Your activity statement has been lodged.', read: true }], callsStatus: 'Succeeded', calls: [
       { id: 'c1', direction: 'inbound', source_number: '61412555123', destination_number: '61238145525', started_at: new Date(Date.now() - 1200e3).toISOString(), answered_at: null, duration_seconds: 0, status_name: 'Missed' },
       { id: 'c2', direction: 'inbound', source_number: '61298765432', destination_number: '61238145525', started_at: new Date(Date.now() - 7200e3).toISOString(), answered_at: new Date().toISOString(), duration_seconds: 312, status_name: 'Completed' },
       { id: 'c3', direction: 'outbound', source_number: '61238145525', destination_number: '61298765432', started_at: new Date(Date.now() - 90000e3).toISOString(), answered_at: new Date().toISOString(), duration_seconds: 95, status_name: 'Completed' }] };
@@ -423,7 +442,9 @@ async function load(quiet) {
     state.calls = (r.calls || []).map((c) => ({ id: c.id || c.call_uuid, dir: c.direction || '', from: String(c.source_number || ''), to: String(c.destination_number || ''), at: c.started_at || c.created_at || '', answered: !!c.answered_at && (c.duration_seconds || 0) > 0, secs: c.duration_seconds || 0, status: c.status_name || c.status || '' }));
     state.callsStatus = r.callsStatus || '';
     state.leads = (r.leads || []).filter((l) => l && l.LeadId).map((l) => ({ LeadId: l.LeadId, Name: l.Name || '', Phone: String(l.Phone || ''), Email: l.Email || '', Source: l.Source || '', Stage: l.Stage || 'New lead', Notes: l.Notes || '', Business: l.Business || 'Easy Books', Created: l.Created || '', Updated: l.Updated || '' }));
-    state.inbox = (r.inbox || []).map((m) => ({ id: m.id, from: m.from || '', subject: m.subject || '(no subject)', at: m.at || '', preview: m.preview || '', read: !!m.read, attach: !!m.attach }));
+    const mapMail = (biz) => (m) => ({ id: m.id, biz, from: m.from || '', subject: m.subject || '(no subject)', at: m.at || '', preview: m.preview || '', read: !!m.read, attach: !!m.attach });
+    const localRead = new Map(state.inbox.filter((m) => state.pending.has('r:' + m.id)).map((m) => [m.id, m.read]));
+    state.inbox = [...(r.inbox || []).map(mapMail('Easy Books')), ...(r.inboxSyd || []).map(mapMail('Sydney Bookkeeping'))].map((m) => localRead.has(m.id) ? { ...m, read: localRead.get(m.id) } : m);
     state.error = '';
   } catch (e) {
     state.error = 'Couldn\'t reach your inbox. Check your connection and tap refresh.';
@@ -460,8 +481,20 @@ const lsList = (k) => { try { return JSON.parse(store.get(k) || '[]'); } catch {
 const lsAdd = (k, id) => { const l = lsList(k); if (!l.includes(id)) { l.push(id); store.set(k, JSON.stringify(l.slice(-300))); } };
 const lsDel = (k, id) => store.set(k, JSON.stringify(lsList(k).filter((x) => x !== id)));
 const inApprovals = (m) => state.items.find((i) => i.from.toLowerCase() === m.from.toLowerCase() && i.subject === m.subject);
-const inboxOpen = () => { const h = lsList('handled'), l = lsList('later'); return state.inbox.filter((m) => !h.includes(m.id) && !l.includes(m.id)); };
-const inboxLater = () => { const l = lsList('later'); return state.inbox.filter((m) => l.includes(m.id)); };
+// Brad's rule: unread = still to do, read = done.
+const mailOf = (biz) => state.inbox.filter((m) => !biz || m.biz === biz);
+const inboxOpen = (biz) => { const h = lsList('handled'), l = lsList('later'); return mailOf(biz).filter((m) => !m.read && !h.includes(m.id) && !l.includes(m.id)); };
+const inboxLater = (biz) => { const l = lsList('later'); return mailOf(biz).filter((m) => !m.read && l.includes(m.id)); };
+const inboxDone = (biz) => mailOf(biz).filter((m) => m.read);
+function markRead(m, read, quiet) {
+  if (!m) return;
+  m.read = read; buzz(); state.pending.add('r:' + m.id);
+  if (read) lsDel('later', m.id);
+  render();
+  const commit = async () => { state.pending.delete('r:' + m.id); try { await api({ action: 'read', id: m.id, business: m.biz, read: read ? 'true' : 'false' }); } catch { m.read = !read; render(); toast('Couldn\'t update Outlook. Try again.'); } };
+  if (quiet) return commit();
+  undoToast(read ? 'Done, marked as read' : 'Back on your to-do list', 4000, commit, () => { state.pending.delete('r:' + m.id); m.read = !read; render(); });
+}
 const ausNum = (n) => { n = String(n || '').replace(/[^0-9+]/g, ''); if (/^\+?61\d{9}$/.test(n)) n = '0' + n.replace(/^\+?61/, ''); return n; };
 const prettyNum = (n) => { n = ausNum(n); return /^04\d{8}$/.test(n) ? n.replace(/^(\d{4})(\d{3})(\d{3})$/, '$1 $2 $3') : /^0\d{9}$/.test(n) ? n.replace(/^(\d{2})(\d{4})(\d{4})$/, '$1 $2 $3') : n; };
 const names = () => { try { return JSON.parse(store.get('names') || '{}'); } catch { return {}; } };
@@ -616,13 +649,13 @@ function briefSheet() {
 // "Also needs you": everything else waiting across the app, in one place.
 function focusRows() {
   const rows = [];
-  const miss = missedToday(), unread = inboxOpen().filter((m) => !m.read);
+  const miss = missedToday(), unread = inboxOpen(state.biz);
   const od = state.xero ? state.xero.list.filter((c) => c.overdue > 0) : [];
   const sugN = suggestions().length;
   const other = CONFIG.BUSINESSES.filter((b) => b.id !== state.biz).map((b) => [b, waiting(b.id).length]).filter((x) => x[1]);
   other.forEach(([b, n]) => rows.push(`<button data-sw="${esc(b.id)}"><span class="fi">${I.check}</span><span class="ft">${esc(b.label)} approvals<small>Switch to ${esc(b.label)}</small></span><span class="fn">${n}</span></button>`));
   if (miss.length) rows.push(`<button data-go="calls"><span class="fi">${I.phone}</span><span class="ft">Missed calls today<small>Latest from ${esc(miss[0].from.replace(/^61/, '0'))}</small></span><span class="fn red">${miss.length}</span></button>`);
-  if (unread.length) rows.push(`<button data-go="inbox"><span class="fi">${I.mail}</span><span class="ft">Unread emails<small>${esc(unread[0].subject)}</small></span><span class="fn">${unread.length}</span></button>`);
+  if (unread.length) rows.push(`<button data-go="inbox"><span class="fi">${I.mail}</span><span class="ft">Emails to do<small>${esc(unread[0].subject)}</small></span><span class="fn">${unread.length}</span></button>`);
   if (sugN) rows.push(`<button data-go="pipeline"><span class="fi">${I.board}</span><span class="ft">Possible new clients<small>From calls and emails</small></span><span class="fn">${sugN}</span></button>`);
   if (od.length) rows.push(`<button data-go="clients"><span class="fi">${I.xero}</span><span class="ft">Clients with overdue invoices<small>${esc(od.map((c) => c.name).join(', '))}</small></span><span class="fn red">${od.length}</span></button>`);
   return rows.length ? `<div class="sec">Also needs you</div><div class="focus">${rows.join('')}</div>` : '';
@@ -724,37 +757,61 @@ function bindCalls() {
 }
 
 function viewInbox() {
-  const card = (m, later) => {
+  const biz = state.biz, cfg = bizCfg(), isEB = biz === 'Easy Books';
+  const todo = inboxOpen(biz), later = inboxLater(biz), done = inboxDone(biz);
+  const today = mailOf(biz).filter((m) => isToday(m.at)), todayDone = today.filter((m) => m.read).length;
+  const card = (m, isLater) => {
     const ap = inApprovals(m);
-    return `<div class="icard ${m.read ? '' : 'unread'}">
-      <div class="row"><span class="chip">${esc(m.from)}</span><span class="time">${esc(when(m.at))}</span></div>
-      <div class="subj">${esc(m.subject)}</div>
+    const age = ageTag({ receivedAt: m.at });
+    return `<div class="icard unread" data-mid="${esc(m.id)}">
+      <div class="row"><span class="chip">${esc(m.from)}</span><span class="time">${age || esc(when(m.at))}</span></div>
+      <div class="subj">${esc(m.subject)}${m.attach ? ' <span class="clip" aria-label="Has attachment">📎</span>' : ''}</div>
       <div class="mail">${esc(m.preview)}</div>
-      ${ap ? `<div class="ibtns"><button class="btn ok" data-goto="${esc(ap.id)}">Open Claude's draft</button></div>`
-        : `<div class="ibtns"><button class="btn ok" data-draft="${esc(m.id)}">Draft reply</button>${later ? `<button class="btn rej" data-done="${esc(m.id)}">Done</button>` : `<button class="btn rej" data-later="${esc(m.id)}">Later</button>`}<button class="btn fyi" data-bill="${esc(m.id)}" aria-label="Send to Xero bills">Bill</button></div>`}
+      <div class="ibtns"><button class="btn donebtn" data-read="${esc(m.id)}">${I.check}Done</button>${ap ? `<button class="btn ok" data-goto="${esc(ap.id)}">Open Claude's draft</button>`
+        : isEB ? `<button class="btn ok" data-draft="${esc(m.id)}">Draft reply</button><button class="btn" data-imore="${esc(m.id)}" aria-label="More options">${I.more}</button>` : ''}</div>
     </div>`;
   };
-  const open = inboxOpen(), later = inboxLater();
-  return `<div class="hero"><h1>Inbox</h1><div class="lead"><b>${open.length ? open.length + ' to decide on' : 'All clear'}</b> at Brad@easybooksaccounting.com</div></div>
-    ${open.length ? `<div class="list">${open.map((m) => card(m, false)).join('')}</div>` : '<div class="empty"><b>Inbox clear</b>New emails show here for you to reply to, save for later or send to Xero.</div>'}
-    ${later.length ? `<div class="sec">Saved for later <span>flagged in Outlook</span></div><div class="list">${later.map((m) => card(m, true)).join('')}</div>` : ''}
-    <div class="hint">Draft reply: a draft appears in Approvals in about a minute. Later: flags the email in Outlook. Bill: forwards it to a client's Xero bills.</div>`;
+  const pct = today.length ? Math.round(todayDone / today.length * 100) : 100;
+  return `${header(refreshBtn('irefresh'), false)}
+    <div class="hero"><div class="brk">[ ${isEB ? 'Brad' : 'Zeljka'}'s inbox ]</div><h1>Inbox</h1>
+      <div class="lead" style="margin-top:8px">${todo.length ? `<mark>${todo.length} to do</mark> every unread email is a task` : 'Nothing unread. Every email is done.'}</div></div>
+    ${today.length ? `<div class="prog"><div class="row"><span>Today's emails done</span><b>${todayDone} of ${today.length}</b></div><div class="pbar"><i style="width:${pct}%"></i></div></div>` : ''}
+    ${todo.length ? `<div class="list">${todo.map((m) => card(m, false)).join('')}</div>` : `<div class="zero ${state.celebrateInbox ? 'party' : ''}">${state.celebrateInbox ? confetti() : ''}<div class="ring"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><b>Inbox done</b><p>Every email is read. New ones land here as tasks.</p></div>`}
+    ${later.length ? `<div class="sec">Later <span>flagged, still unread</span></div><div class="list">${later.map((m) => card(m, true)).join('')}</div>` : ''}
+    ${done.length ? `<details class="donebox"><summary>Done <span>${done.length} read</span></summary><div class="list">${done.slice(0, 15).map((m) => `<div class="icard doneitem"><div class="row"><span class="chip">${esc(m.from)}</span><span class="time">${esc(when(m.at))}</span></div><div class="subj">${esc(m.subject)}</div><div class="ibtns"><button class="btn" data-unread="${esc(m.id)}">Mark as to do</button></div></div>`).join('')}</div></details>` : ''}
+    <div class="hint">Done marks the email as read in Outlook. Approving or filing a reply in Approvals marks it read too. Swipe a card left to mark it done.${isEB ? ' Draft reply sends it to Claude and the draft appears in Approvals in about a minute.' : ''}</div>`;
 }
+const confetti = () => Array.from({ length: 22 }, (_, i) => { const a = (i / 22) * Math.PI * 2, d = 90 + (i % 4) * 30; return `<i class="bit" style="--x:${Math.round(Math.cos(a) * d * 1.6)}px;--y:${Math.round(Math.sin(a) * d)}px;--r:${(i * 47) % 360}deg;background:${i % 3 ? 'var(--acc)' : 'var(--ink)'};animation-delay:${(i % 5) * 20}ms"></i>`; }).join('');
 
 function bindInbox() {
+  const find = (id) => state.inbox.find((x) => x.id === id);
+  const done = (m) => { const wasLast = inboxOpen(m.biz).length === 1 && !m.read; state.celebrateInbox = wasLast; markRead(m, true); state.celebrateInbox = false; };
+  $('#irefresh').onclick = () => load();
+  document.querySelectorAll('[data-read]').forEach((b) => b.onclick = () => done(find(b.dataset.read)));
+  document.querySelectorAll('[data-unread]').forEach((b) => b.onclick = () => markRead(find(b.dataset.unread), false));
+  document.querySelectorAll('.list>.icard.unread').forEach((c) => swipeable(c, () => done(find(c.dataset.mid))));
   document.querySelectorAll('[data-draft]').forEach((b) => b.onclick = async () => {
     b.disabled = true;
     try { await api({ action: 'draft', id: b.dataset.draft }); lsAdd('handled', b.dataset.draft); lsDel('later', b.dataset.draft); render(); toast('Sent to Claude, the draft will appear in Approvals shortly'); setTimeout(() => load(true), 75000); }
     catch { b.disabled = false; toast('Couldn\'t send to Claude, try again'); }
   });
-  document.querySelectorAll('[data-later]').forEach((b) => b.onclick = async () => {
-    b.disabled = true;
-    try { await api({ action: 'later', id: b.dataset.later }); lsAdd('later', b.dataset.later); render(); toast('Saved for later and flagged in Outlook'); }
-    catch { b.disabled = false; toast('Couldn\'t save it, try again'); }
+  document.querySelectorAll('[data-imore]').forEach((b) => b.onclick = () => {
+    const m = find(b.dataset.imore); if (!m) return;
+    const isLater = lsList('later').includes(m.id);
+    const s2 = document.createElement('div'); s2.className = 'sheet';
+    s2.innerHTML = `<div class="box"><h2>${esc(m.subject)}</h2><div class="menu">
+      ${isLater ? '' : '<button data-a="later">Later<small>Flags it in Outlook and moves it off today\'s list. It stays unread.</small></button>'}
+      <button data-a="bill">Send to Xero bills<small>Forwards it to a client\'s Xero as a draft bill, then marks it done.</small></button></div>
+      <button class="btn" data-x>Cancel</button></div>`;
+    s2.addEventListener('click', async (e) => {
+      if (e.target === s2 || e.target.closest('[data-x]')) return s2.remove();
+      const a = e.target.closest('[data-a]'); if (!a) return; s2.remove();
+      if (a.dataset.a === 'later') { try { await api({ action: 'later', id: m.id }); lsAdd('later', m.id); render(); toast('Saved for later and flagged in Outlook'); } catch { toast('Couldn\'t save it, try again'); } }
+      if (a.dataset.a === 'bill') billsSheet(m, () => { lsAdd('handled', m.id); markRead(m, true, true); });
+    });
+    document.body.appendChild(s2);
   });
-  document.querySelectorAll('[data-done]').forEach((b) => b.onclick = () => { lsDel('later', b.dataset.done); lsAdd('handled', b.dataset.done); render(); toast('Marked done'); });
   document.querySelectorAll('[data-goto]').forEach((b) => b.onclick = () => { state.view = null; state.open = b.dataset.goto; render(); scrollTo(0, 0); });
-  document.querySelectorAll('[data-bill]').forEach((b) => b.onclick = () => { const m = state.inbox.find((x) => x.id === b.dataset.bill); if (m) billsSheet(m, () => { lsAdd('handled', m.id); lsDel('later', m.id); render(); }); });
 }
 
 function viewHistory() {
@@ -1005,7 +1062,7 @@ function renderNav(show) {
   if (!show) { if (n) n.remove(); const f = document.getElementById('fab'); if (f) f.remove(); return; }
   if (!n) { n = document.createElement('nav'); n.id = 'nav'; n.className = 'nav'; document.body.appendChild(n); }
   const cur = state.view || 'home';
-  const nIn = inboxOpen().filter((m) => !m.read).length, nMiss = missedToday().length, nW = waiting(state.biz).length, nSug = (() => { const b = state.biz; let t = 0; for (const x of CONFIG.BUSINESSES) { state.biz = x.id; t += suggestions().length; } state.biz = b; return t; })();
+  const nIn = inboxOpen().length, nMiss = missedToday().length, nW = waiting(state.biz).length, nSug = (() => { const b = state.biz; let t = 0; for (const x of CONFIG.BUSINESSES) { state.biz = x.id; t += suggestions().length; } state.biz = b; return t; })();
   const tab = (k, label, icon, badge, red) => `<button data-nav="${k}" aria-current="${cur === k}"><span class="ic">${icon}</span>${label}${badge ? `<span class="dot ${red ? 'red' : ''}">${badge}</span>` : ''}</button>`;
   n.innerHTML = `<div class="in">${tab('home', 'Approvals', I.check, nW)}${tab('inbox', 'Inbox', I.mail, nIn)}${tab('calls', 'Calls', I.phone, nMiss, true)}${tab('pipeline', 'Pipeline', I.board, nSug)}${tab('clients', 'Xero', I.xero, (state.xero ? state.xero.list.filter((c) => c.overdue > 0).length : 0), true)}</div>`;
   let fab = document.getElementById('fab');
@@ -1071,7 +1128,7 @@ function bindList() {
 }
 
 // Swipe a card left to file it as FYI (with undo).
-function swipeable(c) {
+function swipeable(c, onSwipe) {
   let x0 = null, y0 = 0, dx = 0, lock = null;
   c.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; lock = null; c.style.transition = 'none'; }, { passive: true });
   c.addEventListener('touchmove', (e) => {
@@ -1086,8 +1143,8 @@ function swipeable(c) {
     c.style.transition = '';
     if (lock === 'x' && dx < -110) {
       c.dataset.swiped = '1'; c.style.transform = 'translateX(-110%)';
-      const it = state.items.find((i) => i.id === c.dataset.id);
-      setTimeout(() => it && fyiWithUndo(it, false), 160);
+      if (onSwipe) setTimeout(onSwipe, 160);
+      else { const it = state.items.find((i) => i.id === c.dataset.id); setTimeout(() => it && fyiWithUndo(it, false), 160); }
     } else { c.style.transform = ''; if (lock === 'x' && dx < -8) { c.dataset.swiped = '1'; setTimeout(() => delete c.dataset.swiped, 50); } }
     x0 = null;
   });
@@ -1151,7 +1208,7 @@ function send(it, draft) {
   const nx = nextWaiting(it); state.open = nx ? nx.id : null; if (!nx) state.celebrate = true; state.pending.add(it.id); render(); scrollTo(0, 0);
   undoToast('Sending to ' + it.from, 6000, async () => {
     state.pending.delete(it.id);
-    try { await api({ action: 'approve', id: it.id, business: it.business, draft }); it.status = 'Sent'; render(); }
+    try { await api({ action: 'approve', id: it.id, business: it.business, draft }); it.status = 'Sent'; const m = state.inbox.find((x) => x.id === it.id); if (m) m.read = true; render(); }
     catch { it.status = 'Waiting'; render(); toast('Couldn\'t send the reply to ' + it.from + '. Nothing went out, it\'s back in Approvals.'); }
   }, () => { state.pending.delete(it.id); state.celebrate = false; it.status = 'Waiting'; state.open = it.id; render(); scrollTo(0, 0); });
 }
@@ -1163,14 +1220,14 @@ function fyiWithUndo(it, advance) {
   state.pending.add(it.id); render();
   undoToast('Filed as FYI, no reply sent', 5000, async () => {
     state.pending.delete(it.id);
-    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); }
+    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); const m = state.inbox.find((x) => x.id === it.id); if (m) { m.read = true; render(); } }
     catch { it.status = 'Waiting'; render(); toast('Couldn\'t file it. It\'s back in Approvals.'); }
   }, () => { state.pending.delete(it.id); state.celebrate = false; it.status = 'Waiting'; render(); });
 }
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '17';
+const APP_VERSION = '18';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
