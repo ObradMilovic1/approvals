@@ -77,6 +77,11 @@
   .lock input{height:58px;border:1.5px solid var(--ink);border-radius:16px;font-size:24px;letter-spacing:8px;text-align:center;font-family:inherit}
   .err{color:var(--red);font-size:14px;min-height:20px}
   .hidden{display:none!important}
+  .ibtns{display:flex;gap:8px;margin-top:4px}
+  .ibtns .btn{height:44px;font-size:14px;flex:1}
+  .mail{font-size:14px;line-height:1.4;color:var(--body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .unread .subj::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mint);margin-right:8px;vertical-align:middle}
+  .inapp{font-size:11px;font-weight:700;background:var(--mint);border-radius:6px;padding:2px 8px}
   button.stat{background:none;border:none;border-right:1px solid var(--line);cursor:pointer;font-family:inherit}
   button.stat:last-child{border-right:none}
   button.stat .k::after{content:' ›';color:var(--muted)}
@@ -124,6 +129,7 @@ const LOGO = '<svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"
 const I = {
   refresh: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
   back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  mail: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
   cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.5 3.3 3.3 0 0 0 6 19z"/></svg>',
   folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
   arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
@@ -137,7 +143,7 @@ const store = {
 
 const state = {
   biz: store.get('biz') || 'Easy Books',
-  items: [], loading: false, open: null, files: false, hist: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
+  items: [], inbox: [], loading: false, open: null, files: false, hist: null, view: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
   endpoint: store.get('endpoint')
 };
 
@@ -163,7 +169,11 @@ const DEMO = [
 async function api(payload) {
   if (state.demo) {
     await new Promise((r) => setTimeout(r, 400));
-    if (payload.action === 'list') return { items: DEMO };
+    if (payload.action === 'list') return { items: DEMO, inbox: [
+      { id: 'in1', from: 'ato@notifications.ato.gov.au', subject: 'New message in your ATO online services', at: new Date().toISOString(), preview: 'You have a new message about a client account. Log in to view it.', read: false },
+      { id: 'in2', from: 'sam@builderco.com.au', subject: 'Quote for Q2 bookkeeping', at: new Date(Date.now() - 5400e3).toISOString(), preview: 'Hi Brad, can you send through a quote for catching up our books from January?', read: false },
+      { id: 'in3', from: 'newsletter@xero.com', subject: 'What\'s new in Xero this month', at: new Date(Date.now() - 86400e3).toISOString(), preview: 'New bank reconciliation features and more.', read: true }] };
+    if (payload.action === 'draft' || payload.action === 'later') return { ok: true };
     const it = DEMO.find((d) => d.id === payload.id);
     if (it) { it.status = payload.action === 'approve' ? 'Sent' : (payload.status || 'Rejected'); it.actionedAt = new Date().toISOString(); }
     return { ok: true };
@@ -178,6 +188,7 @@ async function load(quiet) {
   try {
     const r = await api({ action: 'list' });
     state.items = (r.items || []).map(normalise);
+    state.inbox = (r.inbox || []).map((m) => ({ id: m.id, from: m.from || '', subject: m.subject || '(no subject)', at: m.at || '', preview: m.preview || '', read: !!m.read, attach: !!m.attach }));
     state.error = '';
   } catch (e) {
     state.error = 'Couldn\'t reach your inbox. Check your connection and tap refresh.';
@@ -210,6 +221,12 @@ function when(iso) {
 }
 const isToday = (iso) => { const d = new Date(iso); return !isNaN(d) && d.toDateString() === new Date().toDateString(); };
 const waiting = (biz) => state.items.filter((i) => i.business === biz && i.status === 'Waiting');
+const lsList = (k) => { try { return JSON.parse(store.get(k) || '[]'); } catch { return []; } };
+const lsAdd = (k, id) => { const l = lsList(k); if (!l.includes(id)) { l.push(id); store.set(k, JSON.stringify(l.slice(-300))); } };
+const lsDel = (k, id) => store.set(k, JSON.stringify(lsList(k).filter((x) => x !== id)));
+const inApprovals = (m) => state.items.find((i) => i.from.toLowerCase() === m.from.toLowerCase() && i.subject === m.subject);
+const inboxOpen = () => { const h = lsList('handled'), l = lsList('later'); return state.inbox.filter((m) => !h.includes(m.id) && !l.includes(m.id)); };
+const inboxLater = () => { const l = lsList('later'); return state.inbox.filter((m) => l.includes(m.id)); };
 const fyiToday = (biz) => state.items.filter((i) => i.business === biz && i.status === 'FYI' && isToday(i.actionedAt || i.receivedAt));
 const bizCfg = () => CONFIG.BUSINESSES.find((b) => b.id === state.biz) || CONFIG.BUSINESSES[0];
 
@@ -243,7 +260,8 @@ function viewList() {
   const w = waiting(state.biz);
   const sent = state.items.filter((i) => i.business === state.biz && i.status === 'Sent' && isToday(i.actionedAt)).length;
   const fyi = fyiToday(state.biz);
-  const refresh = `<div class="hbtns"><button class="iconbtn" id="files" aria-label="OneDrive files">${I.cloud}</button><button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button></div>`;
+  const nIn = inboxOpen().filter((m) => !m.read).length;
+  const refresh = `<div class="hbtns"><button class="iconbtn" id="inbox" aria-label="Inbox">${I.mail}${nIn && biz.connected !== false ? '<span class="pip"></span>' : ''}</button><button class="iconbtn" id="files" aria-label="OneDrive files">${I.cloud}</button><button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button></div>`;
 
   let body;
   if (biz.connected === false) {
@@ -277,6 +295,41 @@ function viewList() {
       <div class="lead">${w.length ? `Claude has drafted ${w.length === 1 ? 'a reply' : w.length + ' replies'}, <span class="hl">ready for you</span>` : 'Nothing waiting, <span class="hl">you\'re all caught up</span>'}</div></div>
     <div class="stats"><button class="stat" data-hist="Waiting"><div class="k">Waiting</div><div class="v">${w.length}</div></button><button class="stat" data-hist="Sent"><div class="k">Sent today</div><div class="v">${sent}</div></button><button class="stat" data-hist="FYI"><div class="k">FYI today</div><div class="v">${fyi.length}</div></button></div>
     ${body}`;
+}
+
+function viewInbox() {
+  const card = (m, later) => {
+    const ap = inApprovals(m);
+    return `<div class="card ${m.read ? '' : 'unread'}" style="cursor:default">
+      <div class="row"><span class="chip" style="max-width:62%">${esc(m.from)}</span><span class="time">${esc(when(m.at))}</span></div>
+      <div class="subj">${esc(m.subject)}</div>
+      <div class="mail">${esc(m.preview)}</div>
+      ${ap ? `<div class="ibtns"><span class="inapp">Already in approvals</span></div><div class="ibtns"><button class="btn ok" data-goto="${esc(ap.id)}">Open draft</button></div>`
+        : `<div class="ibtns"><button class="btn ok" data-draft="${esc(m.id)}">Reply with Claude</button>${later ? `<button class="btn rej" data-done="${esc(m.id)}">Done</button>` : `<button class="btn rej" data-later="${esc(m.id)}">Later</button>`}</div>`}
+    </div>`;
+  };
+  const open = inboxOpen(), later = inboxLater();
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Inbox · Easy Books ]</div></div>
+    <div class="hero"><h1>INBOX</h1><div class="lead">Every email that comes in, <span class="hl">you choose</span></div></div>
+    ${open.length ? `<div class="sec">To decide <span>${open.length}</span></div><div class="list">${open.map((m) => card(m, false)).join('')}</div>` : '<div class="empty"><b>Inbox clear</b>Nothing new to decide on.</div>'}
+    ${later.length ? `<div class="sec">Later <span>flagged in Outlook</span></div><div class="list">${later.map((m) => card(m, true)).join('')}</div>` : ''}
+    <div class="hint">“Reply with Claude” moves the email into AI Drafts. Claude's reply shows up in Approvals in about a minute. “Later” flags it in Outlook.</div>`;
+}
+
+function bindInbox() {
+  $('#back').onclick = () => { state.view = null; render(); };
+  document.querySelectorAll('[data-draft]').forEach((b) => b.onclick = async () => {
+    b.disabled = true;
+    try { await api({ action: 'draft', id: b.dataset.draft }); lsAdd('handled', b.dataset.draft); lsDel('later', b.dataset.draft); render(); toast('Sent to Claude, the draft will appear in Approvals shortly'); setTimeout(() => load(true), 75000); }
+    catch { b.disabled = false; toast('Couldn\'t send to Claude, try again'); }
+  });
+  document.querySelectorAll('[data-later]').forEach((b) => b.onclick = async () => {
+    b.disabled = true;
+    try { await api({ action: 'later', id: b.dataset.later }); lsAdd('later', b.dataset.later); render(); toast('Saved for later and flagged in Outlook'); }
+    catch { b.disabled = false; toast('Couldn\'t save it, try again'); }
+  });
+  document.querySelectorAll('[data-done]').forEach((b) => b.onclick = () => { lsDel('later', b.dataset.done); lsAdd('handled', b.dataset.done); render(); toast('Marked done'); });
+  document.querySelectorAll('[data-goto]').forEach((b) => b.onclick = () => { state.view = null; state.open = b.dataset.goto; render(); scrollTo(0, 0); });
 }
 
 function viewHistory() {
@@ -360,6 +413,7 @@ function render() {
   if (!state.demo && !state.endpoint) { app.innerHTML = viewLock(); bindLock(); return; }
   const it = state.open && state.items.find((i) => i.id === state.open);
   const back = () => { state.open = null; render(); };
+  if (state.view === 'inbox' && !it) { app.innerHTML = viewInbox(); bindInbox(); return; }
   if (it && (it.status === 'Sent' || it.status === 'Rejected')) { app.innerHTML = viewDone(it); $('#back').onclick = back; const r = $('#reopen'); if (r) r.onclick = () => { it.status = 'Waiting'; render(); }; return; }
   if (state.hist && !it) { app.innerHTML = viewHistory(); $('#back').onclick = () => { state.hist = null; render(); };
     document.querySelectorAll('.hchip').forEach((c) => c.onclick = () => { state.hist = c.dataset.f; render(); });
@@ -386,6 +440,7 @@ function bindList() {
   document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); });
   $('#refresh').onclick = () => load();
   $('#files').onclick = () => { state.files = true; render(); scrollTo(0, 0); };
+  $('#inbox').onclick = () => { state.view = 'inbox'; render(); scrollTo(0, 0); };
   document.querySelectorAll('[data-hist]').forEach((b) => b.onclick = () => { state.hist = b.dataset.hist; render(); scrollTo(0, 0); });
 }
 
@@ -420,7 +475,7 @@ async function send(it, draft) {
 /* ---------- start ---------- */
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 document.addEventListener('visibilitychange', () => { if (!document.hidden && (state.demo || state.endpoint)) load(true); });
-setInterval(() => { if (!document.hidden && !state.open && !state.files && !state.hist && (state.demo || state.endpoint)) load(true); }, 60000);
+setInterval(() => { if (!document.hidden && !state.open && !state.files && !state.hist && state.view !== 'inbox' && (state.demo || state.endpoint)) load(true); }, 60000);
 if (state.demo || state.endpoint) load(); else render();
 </script>
 </body>
