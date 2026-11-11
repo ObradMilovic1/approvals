@@ -3,34 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F3F5F4">
+<meta name="theme-color" content="#FFFFFF">
 <title>Approvals</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{--paper:#F3F5F4;--card:#FFFFFF;--ink:#1E2A26;--body:#33403B;--muted:#5E6B66;--line:#DFE5E2;--soft:#ECF0EE;
-    --acc:#00B86B;--acc-d:#0B6E49;--acc-t:#E2F6EC;--on-acc:#06281A;--red:#C4382D;--red-t:#FBEAE8;--amber:#9A5B00;--amber-t:#FFF1D9;
-    --r:14px;--sh:0 1px 2px rgba(30,42,38,.06),0 4px 14px rgba(30,42,38,.05)}
-  body[data-biz="Sydney Bookkeeping"]{--acc:#2F5BD3;--acc-d:#1F3E99;--acc-t:#E7EDFC;--on-acc:#FFFFFF}
+  :root{--paper:#FFFFFF;--card:#FFFFFF;--ink:#0B0F0D;--body:#2A322E;--muted:#5A635F;--line:#E1E7E3;--soft:#F4F7F5;
+    --acc:#00E187;--acc-d:#08804F;--acc-t:#DDFBEE;--on-acc:#0B0F0D;--red:#C4382D;--red-t:#FBEAE8;--amber:#9A5B00;--amber-t:#FFF1D9;
+    --r:16px;--sh:0 1px 2px rgba(11,15,13,.04),0 10px 30px rgba(11,15,13,.06)}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;min-height:100%}
-  body{font-family:"Instrument Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--paper);font-size:16px;line-height:1.45;font-variant-numeric:tabular-nums}
-  .wrap{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;min-height:100%}
+  body{font-family:Geist,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--paper) radial-gradient(60% 260px at 50% 0,rgba(0,225,135,.10),transparent 70%) no-repeat;background-attachment:fixed;font-size:16px;line-height:1.45;font-variant-numeric:tabular-nums}
+  .wrap{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(170px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;min-height:100%}
   button{font-family:inherit;color:inherit}
   :focus-visible{outline:2px solid var(--acc-d);outline-offset:2px}
   a{color:inherit}
   /* header + business switch */
   .hdr{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .bizsw{display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;min-width:0}
+  .bizsw{display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;min-width:0;box-shadow:var(--sh)}
   .bizsw button{border:none;background:none;height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap}
   .bizsw button .sw{width:8px;height:8px;border-radius:50%;flex:none}
-  .bizsw button[aria-pressed=true]{background:var(--acc);color:var(--on-acc)}
-  .bizsw button[aria-pressed=true] .sw{display:none}
+  .bizsw button[aria-pressed=true]{background:var(--ink);color:#fff}
+  .bizsw button[aria-pressed=true] .sw{box-shadow:0 0 0 2px rgba(255,255,255,.25)}
   .bizsw .n{font-size:12px;font-weight:700;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:999px;background:var(--soft);color:var(--ink);padding:0 5px}
-  .bizsw button[aria-pressed=true] .n{background:rgba(255,255,255,.28);color:inherit}
+  .bizsw button[aria-pressed=true] .n{background:var(--acc);color:var(--ink)}
   .hbtns{display:flex;gap:6px;flex:none}
   .iconbtn{width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex:none;color:var(--ink)}
   .iconbtn .pip{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--acc);border:2px solid var(--card)}
@@ -38,7 +37,9 @@
   @media (prefers-reduced-motion:reduce){.spin svg{animation:none}}
   /* page titles */
   .hero{display:flex;flex-direction:column;gap:2px;padding:4px 2px 0}
-  h1{margin:0;font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1.15}
+  h1{margin:0;font-size:34px;font-weight:700;letter-spacing:-1.4px;line-height:1.05}
+  .brk{font-size:15px;color:var(--muted);font-weight:500;margin-bottom:8px}
+  mark{background:var(--acc);color:var(--ink);border-radius:7px;padding:1px 7px;font-weight:600}
   .lead{font-size:15px;color:var(--muted);line-height:1.4}
   .lead b{color:var(--ink);font-weight:600}
   .eyebrow{font-size:14px;color:var(--muted);font-weight:500}
@@ -48,9 +49,11 @@
   .stats{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px;scrollbar-width:none}
   .stat{flex:none;display:flex;align-items:baseline;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;cursor:pointer;font-family:inherit}
   .stat .v{font-size:16px;font-weight:700}.stat .k{font-size:13px;color:var(--muted);font-weight:500}
-  .stat.hot{background:var(--acc-t);border-color:transparent}.stat.hot .v{color:var(--acc-d)}
+  .stat.hot{background:var(--ink);border-color:var(--ink)}.stat.hot .v,.stat.hot .k{color:#fff}
   /* lists: one surface, rows divided */
   .list{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+  .list>.card{touch-action:pan-y;transition:transform .18s ease}
+  .swipebg{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;padding-right:20px;background:var(--soft);color:var(--muted);font-size:14px;font-weight:600}
   .list>*+*{border-top:1px solid var(--line)}
   .card{display:flex;flex-direction:column;gap:3px;text-align:left;background:var(--card);border:none;border-radius:0;padding:14px 16px 14px 18px;cursor:pointer;width:100%;position:relative;font-size:inherit}
   .list>.card::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--acc)}
@@ -89,9 +92,10 @@
   textarea:focus{outline:none;border-color:var(--acc)}
   .orig.box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;white-space:pre-wrap;line-height:1.55;font-size:15px}
   .actions{display:flex;gap:10px}
-  .bar{position:sticky;bottom:0;margin:0 -16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--paper) 75%,rgba(243,245,244,0));display:flex;gap:10px;z-index:4}
-  .btn{height:52px;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
-  .btn.ok{flex:2;border:none;background:var(--acc);color:var(--on-acc)}
+  .bar{position:sticky;bottom:0;margin:0 -16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--paper) 75%,rgba(255,255,255,0));display:flex;gap:10px;z-index:4}
+  .btn{height:52px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+  .btn.ok{flex:2;border:none;background:var(--ink);color:#fff}
+  .btn.ok:active{background:#26302B}
   .btn.ok svg path{stroke:currentColor}
   .btn.rej,.btn.fyi{flex:1}
   .btn.danger{color:var(--red)}
@@ -102,12 +106,13 @@
   .menu small{font-size:13px;font-weight:500;color:var(--muted)}
   .menu .danger{color:var(--red)}
   /* sheet + toast + lock */
-  .sheet{position:fixed;inset:0;background:rgba(30,42,38,.4);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+  .sheet{position:fixed;inset:0;background:rgba(11,15,13,.38);display:flex;align-items:flex-end;justify-content:center;z-index:20}
   .sheet .box{background:var(--paper);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
   .sheet h2{margin:0;font-size:20px;font-weight:700;letter-spacing:-.3px}
   .sheet p{margin:0;color:var(--body);font-size:15px;line-height:1.5}
   .sheet .actions .btn{flex:1}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));background:var(--ink);color:#fff;border-radius:12px;padding:12px 16px;font-size:14px;font-weight:500;z-index:30;display:flex;gap:10px;align-items:center;max-width:92vw;box-shadow:0 8px 24px rgba(30,42,38,.25)}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom));background:var(--ink);color:#fff;border-radius:12px;padding:12px 16px;font-size:14px;font-weight:500;z-index:30;display:flex;gap:10px;align-items:center;max-width:92vw;box-shadow:0 8px 24px rgba(30,42,38,.25)}
+  .toast{width:max-content}.toast>span:not(.bar2){flex:1}
   .toast i{width:8px;height:8px;border-radius:50%;background:var(--acc);display:inline-block;flex:none}
   .lock{display:flex;flex-direction:column;gap:14px;margin-top:10vh}
   .lock input{height:56px;border:1px solid var(--line);border-radius:14px;font-size:22px;text-align:center;font-family:inherit;background:var(--card)}
@@ -116,15 +121,15 @@
   .hidden{display:none!important}
   .brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}
   /* bottom nav */
-  .nav{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+  .nav{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:15;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;box-shadow:0 10px 30px rgba(11,15,13,.10);padding:4px;max-width:520px;margin:0 auto}
   .nav .in{max-width:520px;margin:0 auto;display:flex}
   .nav button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);padding:6px 0 4px;cursor:pointer;position:relative}
   .nav button svg *{stroke:currentColor}
-  .nav button[aria-current=true]{color:var(--acc-d)}
+  .nav button[aria-current=true]{color:var(--ink)}
   .nav .ic{width:48px;height:30px;border-radius:999px;display:flex;align-items:center;justify-content:center}
   .nav button[aria-current=true] .ic{background:var(--acc-t)}
-  .nav .dot{position:absolute;top:2px;left:calc(50% + 10px);min-width:17px;height:17px;border-radius:999px;background:var(--ink);color:#fff;font-size:10px;font-weight:700;line-height:17px;padding:0 5px;border:2px solid #fff;box-sizing:content-box}
-  .nav .dot.red{background:var(--red)}
+  .nav .dot{position:absolute;top:2px;left:calc(50% + 10px);min-width:17px;height:17px;border-radius:999px;background:var(--acc);color:var(--ink);font-size:10px;font-weight:700;line-height:17px;padding:0 5px;border:2px solid #fff;box-sizing:content-box}
+  .nav .dot.red{background:var(--red);color:#fff}
   /* pipeline */
   .stages{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none}
   .stg,.hchip{flex:none;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--body)}
@@ -153,7 +158,7 @@
   .stgpick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .stgpick button{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:14px;cursor:pointer}
   .stgpick button[aria-pressed=true]{border-color:var(--acc);background:var(--acc-t);color:var(--acc-d)}
-  .fab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(150px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:16px;background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:26px;line-height:1;box-shadow:var(--sh);cursor:pointer;z-index:14}
+  .fab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(156px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:16px;background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:26px;line-height:1;box-shadow:var(--sh);cursor:pointer;z-index:14}
   /* calls */
   .callrow{display:flex;align-items:center;gap:12px;background:var(--card);padding:12px 12px 12px 16px}
   .callrow .who{flex:1;min-width:0}
@@ -183,7 +188,7 @@
   .folder{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--acc-d);text-decoration:none}
   .folder svg *{stroke:currentColor}
   /* chat */
-  .askfab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(84px + env(safe-area-inset-bottom));z-index:15;height:48px;padding:0 16px 0 14px;border:none;border-radius:999px;background:var(--ink);color:#fff;font-size:15px;font-weight:600;box-shadow:0 8px 22px rgba(30,42,38,.28);cursor:pointer;display:flex;align-items:center;gap:8px}
+  .askfab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(96px + env(safe-area-inset-bottom));z-index:15;height:48px;padding:0 16px 0 14px;border:none;border-radius:999px;background:var(--ink);color:#fff;font-size:15px;font-weight:600;box-shadow:0 8px 22px rgba(11,15,13,.28);cursor:pointer;display:flex;align-items:center;gap:8px}
   .askfab span{color:var(--acc);font-size:18px}
   .chead{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--paper);margin:calc(-12px - env(safe-area-inset-top)) -16px 0;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
   .ctitle{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px}
@@ -225,6 +230,25 @@
   .xg.tot{margin-top:0;border:1px solid var(--line)}
   .xg.tot>div{background:var(--card);padding:12px}
   .xg.tot b{font-size:18px}
+  /* website-style extras */
+  .focus{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+  .focus button{display:flex;align-items:center;gap:12px;border:none;background:none;padding:13px 16px;text-align:left;font-size:15px;font-weight:500;cursor:pointer;color:var(--ink)}
+  .focus button+button{border-top:1px solid var(--line)}
+  .focus .fi{width:34px;height:34px;border-radius:10px;background:var(--soft);display:flex;align-items:center;justify-content:center;flex:none}
+  .focus .fi svg{width:18px;height:18px}.focus .fi svg *{stroke:var(--ink)}
+  .focus .ft{flex:1;min-width:0}.focus .ft small{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .focus .fn{font-weight:700;font-size:15px;min-width:26px;height:26px;border-radius:999px;background:var(--acc);display:flex;align-items:center;justify-content:center;padding:0 8px}
+  .focus .fn.red{background:var(--red-t);color:var(--red)}
+  .tweak{display:flex;gap:6px;overflow-x:auto;margin:-6px -16px 0;padding:0 16px 2px;scrollbar-width:none}
+  .tweak button{flex:none;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px}
+  .tweak button:first-child{border-color:var(--ink)}
+  .tweak button span{color:var(--acc-d)}
+  .tweak[aria-busy=true] button{opacity:.45;pointer-events:none}
+  .toast .undo{margin-left:6px;border:none;background:var(--acc);color:var(--ink);font:inherit;font-weight:700;font-size:14px;border-radius:8px;padding:6px 12px;cursor:pointer}
+  .toast .bar2{position:absolute;left:12px;right:12px;bottom:4px;height:2px;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden}
+  .toast .bar2 i{display:block;height:100%;width:100%;background:var(--acc);border-radius:0;animation:drain linear forwards}
+  @keyframes drain{to{width:0}}
+  .progress{font-size:13px;color:var(--muted);font-weight:500}
 </style>
 </head>
 <body>
@@ -316,12 +340,13 @@ async function api(payload) {
       { tenantId: 't2', name: 'Avalon Village Meats', recv: 3120, recvCount: 4, overdue: 0, overdueCount: 0, payables: 7850.2, payCount: 11, overduePay: 2300 },
       { tenantId: 't3', name: "Topper's Mountain Wines", recv: 9400, recvCount: 5, overdue: 1450, overdueCount: 1, payables: 1200, payCount: 2, overduePay: 0 }] };
     if (payload.action === 'draft' || payload.action === 'later' || payload.action === 'tobills') return { ok: true };
+    if (payload.action === 'ask') return { answer: (payload.messages.at(-1).content.split('---\n')[1] || '').trim() };
     if (payload.action === 'addlead' || payload.action === 'movelead') { const i = DEMO_LEADS.findIndex((x) => x.LeadId === payload.lead.LeadId); if (i >= 0) DEMO_LEADS[i] = { ...DEMO_LEADS[i], ...payload.lead }; else DEMO_LEADS.push({ ...payload.lead, Created: new Date().toISOString() }); return { ok: true }; }
     const it = DEMO.find((d) => d.id === payload.id);
     if (it) { it.status = payload.action === 'approve' ? 'Sent' : (payload.status || 'Rejected'); it.actionedAt = new Date().toISOString(); }
     return { ok: true };
   }
-  const res = await fetch(state.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  const res = await fetch(state.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: payload.action === 'approve' || payload.action === 'reject' });
   if (!res.ok) throw new Error('The approvals service answered ' + res.status);
   return res.json();
 }
@@ -399,6 +424,24 @@ function toast(msg) {
   document.body.appendChild(t); setTimeout(() => t.remove(), 3200);
 }
 
+// Gmail/Superhuman-style undo: the action only happens after a short countdown.
+const pendingActs = new Map();
+function undoToast(msg, ms, commit, undo) {
+  document.querySelectorAll('.toast').forEach((x) => x.remove());
+  const key = Math.random().toString(36).slice(2);
+  const t = document.createElement('div'); t.className = 'toast';
+  t.innerHTML = `<i></i><span>${esc(msg)}</span><button class="undo">Undo</button><span class="bar2"><i style="animation-duration:${ms}ms"></i></span>`;
+  document.body.appendChild(t);
+  const run = () => { if (!pendingActs.has(key)) return; pendingActs.delete(key); clearTimeout(timer); t.remove(); commit(); };
+  const timer = setTimeout(run, ms);
+  pendingActs.set(key, run);
+  t.querySelector('.undo').onclick = () => { pendingActs.delete(key); clearTimeout(timer); t.remove(); undo(); };
+}
+// If the app is closed or put in the background, finish anything still counting down.
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') [...pendingActs.values()].forEach((f) => f()); });
+const buzz = () => { try { navigator.vibrate && navigator.vibrate(12); } catch {} };
+const nextWaiting = (it) => waiting(it.business).find((x) => x.id !== it.id);
+
 /* ---------- views ---------- */
 function bizSwitch(counts) {
   return `<div class="bizsw" role="group" aria-label="Business">${CONFIG.BUSINESSES.map((b) => { const n = counts ? waiting(b.id).length : 0;
@@ -450,15 +493,32 @@ function viewList() {
   }
   return `${header(`<button class="iconbtn" id="files" aria-label="Client files">${I.folder20}</button>${refreshBtn('refresh', w.length)}`, true)}
     ${state.demo ? '<div class="notice"><b>Preview:</b> these are sample emails, not your real inbox.</div>' : ''}
-    <div class="hero"><h1>${greeting()}, Brad</h1>
-      <div class="lead">${w.length ? `<b>${w.length} ${w.length === 1 ? 'reply' : 'replies'}</b> drafted and ready to approve` : 'Nothing waiting on you'}</div></div>
+    <div class="hero"><div class="brk">[ ${esc(biz.firm.replace(' for Better Business', ''))} ]</div><h1>${greeting()}, Brad</h1>
+      <div class="lead" style="margin-top:8px">${w.length ? `<mark>${w.length} ${w.length === 1 ? 'reply' : 'replies'}</mark> drafted and ready to approve` : 'Nothing waiting on you. Nice.'}</div></div>
     <div class="stats">
       <button class="stat ${w.length ? 'hot' : ''}" data-hist="Waiting"><span class="v">${w.length}</span><span class="k">to approve</span></button>
       <button class="stat" data-hist="Sent"><span class="v">${sent}</span><span class="k">sent today</span></button>
       <button class="stat" data-hist="FYI"><span class="v">${fyi.length}</span><span class="k">FYI today</span></button>
       <button class="stat" data-hist="All"><span class="k">All history</span></button>
     </div>
-    ${body}`;
+    ${body}
+    ${focusRows()}
+    ${w.length > 1 ? '<div class="hint">Tip: swipe a card left to file it as FYI. After you send, the next reply opens on its own.</div>' : ''}`;
+}
+
+// "Also needs you": everything else waiting across the app, in one place.
+function focusRows() {
+  const rows = [];
+  const miss = missedToday(), unread = inboxOpen().filter((m) => !m.read);
+  const od = state.xero ? state.xero.list.filter((c) => c.overdue > 0) : [];
+  const sugN = suggestions().length;
+  const other = CONFIG.BUSINESSES.filter((b) => b.id !== state.biz).map((b) => [b, waiting(b.id).length]).filter((x) => x[1]);
+  other.forEach(([b, n]) => rows.push(`<button data-sw="${esc(b.id)}"><span class="fi">${I.check}</span><span class="ft">${esc(b.label)} approvals<small>Switch to ${esc(b.label)}</small></span><span class="fn">${n}</span></button>`));
+  if (miss.length) rows.push(`<button data-go="calls"><span class="fi">${I.phone}</span><span class="ft">Missed calls today<small>Latest from ${esc(miss[0].from.replace(/^61/, '0'))}</small></span><span class="fn red">${miss.length}</span></button>`);
+  if (unread.length) rows.push(`<button data-go="inbox"><span class="fi">${I.mail}</span><span class="ft">Unread emails<small>${esc(unread[0].subject)}</small></span><span class="fn">${unread.length}</span></button>`);
+  if (sugN) rows.push(`<button data-go="pipeline"><span class="fi">${I.board}</span><span class="ft">Possible new clients<small>From calls and emails</small></span><span class="fn">${sugN}</span></button>`);
+  if (od.length) rows.push(`<button data-go="clients"><span class="fi">${I.xero}</span><span class="ft">Clients with overdue invoices<small>${esc(od.map((c) => c.name).join(', '))}</small></span><span class="fn red">${od.length}</span></button>`);
+  return rows.length ? `<div class="sec">Also needs you</div><div class="focus">${rows.join('')}</div>` : '';
 }
 
 function viewPipeline() {
@@ -598,7 +658,7 @@ function viewHistory() {
     .sort((a, b) => new Date(stamp(b)) - new Date(stamp(a)));
   const dayName = (iso) => { const d = new Date(iso); if (isNaN(d)) return 'Earlier'; const t = new Date(); const y = new Date(Date.now() - 864e5);
     return d.toDateString() === t.toDateString() ? 'Today' : d.toDateString() === y.toDateString() ? 'Yesterday' : d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }); };
-  const verb = { Sent: 'Sent', FYI: 'FYI', Rejected: 'Rejected', Waiting: 'Waiting', Approved: 'Sending' };
+  const verb = { Sent: 'Sent', FYI: 'FYI', Rejected: 'Rejected', Waiting: 'Waiting', Approved: 'Sending', Sending: 'Sending' };
   let last = '', list = '';
   rows.forEach((i) => {
     const dn = dayName(stamp(i));
@@ -645,12 +705,20 @@ function viewFiles() {
     <div class="hint">Opens in the OneDrive app if it's installed, otherwise in your browser.</div>`;
 }
 
+const TWEAKS = [
+  ['Shorter', 'shorter and more to the point'],
+  ['Friendlier', 'warmer and friendlier, still professional'],
+  ['More formal', 'more formal and polished'],
+  ['Fix spelling', 'correct spelling, grammar and punctuation only, changing nothing else'],
+  ['Ask for documents', 'also politely ask the client for any documents or details we would need to finish this'],
+];
 function viewReview(it) {
   const ph = (it.draft.match(/\[[^\]]+\]/g) || []).length;
   return `${msgHead(it, 'Reply to client')}
     <details><summary>Client's email</summary><div class="orig">${esc(it.clientEmail || '(empty)')}</div></details>
     <div class="lbl"><div>Claude's draft <span>tap to edit</span></div>${ph ? `<span class="ph">${ph} to fill in</span>` : ''}</div>
     <textarea id="draft" aria-label="Reply draft">${esc(it.draft)}</textarea>
+    <div class="tweak" id="tweak" aria-label="Ask Claude to change the draft">${TWEAKS.map((t, i) => `<button data-tw="${i}">${i ? '' : '<span>✦</span>'}${esc(t[0])}</button>`).join('')}</div>
     <div class="sendas"><span class="sw"></span><div>Sends from <b>${esc(senderOf(it.business))}</b> with the signature added${ph ? '. Fill in anything in [square brackets] first.' : '.'}</div></div>
     <div class="bar"><button class="btn" id="more" aria-label="More options">${I.more}</button><button class="btn ok" id="approve">Approve and send ${I.send}</button></div>`;
 }
@@ -880,10 +948,35 @@ function bindLock() {
 }
 
 function bindList() {
-  document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); });
+  document.querySelectorAll('.card').forEach((c) => c.onclick = () => { if (c.dataset.swiped) return; state.open = c.dataset.id; render(); scrollTo(0, 0); });
+  document.querySelectorAll('.list>.card:not(.fyi)').forEach(swipeable);
+  document.querySelectorAll('[data-go]').forEach((b) => b.onclick = () => { state.view = b.dataset.go; render(); scrollTo(0, 0); });
   $('#refresh').onclick = () => load();
   $('#files').onclick = () => { state.files = true; render(); scrollTo(0, 0); };
   document.querySelectorAll('[data-hist]').forEach((b) => b.onclick = () => { state.hist = b.dataset.hist; render(); scrollTo(0, 0); });
+}
+
+// Swipe a card left to file it as FYI (with undo).
+function swipeable(c) {
+  let x0 = null, y0 = 0, dx = 0, lock = null;
+  c.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; lock = null; c.style.transition = 'none'; }, { passive: true });
+  c.addEventListener('touchmove', (e) => {
+    if (x0 === null) return;
+    const mx = e.touches[0].clientX - x0, my = e.touches[0].clientY - y0;
+    if (lock === null && (Math.abs(mx) > 8 || Math.abs(my) > 8)) lock = Math.abs(mx) > Math.abs(my) ? 'x' : 'y';
+    if (lock !== 'x') return;
+    dx = Math.min(0, mx); c.style.transform = `translateX(${dx}px)`;
+    if (!c.previousElementSibling || !c.previousElementSibling.classList || !c.querySelector('.swipebg')) {}
+  }, { passive: true });
+  c.addEventListener('touchend', () => {
+    c.style.transition = '';
+    if (lock === 'x' && dx < -110) {
+      c.dataset.swiped = '1'; c.style.transform = 'translateX(-110%)';
+      const it = state.items.find((i) => i.id === c.dataset.id);
+      setTimeout(() => it && fyiWithUndo(it, false), 160);
+    } else { c.style.transform = ''; if (lock === 'x' && dx < -8) { c.dataset.swiped = '1'; setTimeout(() => delete c.dataset.swiped, 50); } }
+    x0 = null;
+  });
 }
 
 function bindReview(it) {
@@ -893,12 +986,25 @@ function bindReview(it) {
     if (/\[[^\]]+\]/.test(draft)) {
       confirmSheet('Some blanks aren\'t filled in', 'The draft still has text in [square brackets]. Send it anyway?', 'Send anyway', () => send(it, draft));
     } else {
-      confirmSheet('Send this reply?', `It goes to ${it.from} from ${senderOf(it.business)}.`, 'Send reply', () => send(it, draft));
+      send(it, draft);
     }
   };
+  $('#tweak').onclick = async (e) => {
+    const b = e.target.closest('[data-tw]'); if (!b) return;
+    const box = $('#tweak'), ta = $('#draft'), before = ta.value, how = TWEAKS[+b.dataset.tw][1];
+    box.setAttribute('aria-busy', 'true'); const label = b.innerHTML; b.textContent = 'Rewriting…';
+    try {
+      const r = await api({ action: 'ask', context: '', messages: [{ role: 'user', content: `Rewrite this email reply so it is ${how}. Keep every fact, amount and date, keep anything in [square brackets] as it is, write in Australian English, do not add a greeting change, sign-off or signature, and reply with only the new email text, nothing else.\n---\n${before}` }] });
+      const out = String(r.answer || '').trim();
+      if (!out) throw new Error('empty');
+      ta.value = out; it.draft = out;
+      undoToast('Draft rewritten', 6000, () => {}, () => { ta.value = before; it.draft = before; });
+    } catch { toast('Claude couldn\'t rewrite it just now. Try again.'); }
+    box.removeAttribute('aria-busy'); b.innerHTML = label;
+  };
+  $('#draft').oninput = () => { it.draft = $('#draft').value; };
   const fileFyi = async () => {
-    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); it.status = 'FYI'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Filed as FYI, no reply sent'); }
-    catch { toast('Couldn\'t file it. Try again.'); }
+    fyiWithUndo(it, true);
   };
   const reject = () => confirmSheet('Reject this draft?', 'Nothing is sent to the client. The email stays in the inbox for you to handle yourself.', 'Reject draft', async () => {
     try { await api({ action: 'reject', id: it.id, business: it.business }); it.status = 'Rejected'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Draft rejected, nothing sent'); }
@@ -924,17 +1030,30 @@ function bindReview(it) {
   };
 }
 
-async function send(it, draft) {
-  try {
-    await api({ action: 'approve', id: it.id, business: it.business, draft });
-    it.status = 'Sent'; it.actionedAt = new Date().toISOString(); it.draft = draft;
-    state.open = null; render(); toast('Reply sent to ' + it.from);
-  } catch { toast('Couldn\'t send. Nothing went out, try again.'); }
+// Send with a 6 second undo, then open the next reply straight away.
+function send(it, draft) {
+  buzz();
+  it.draft = draft; it.status = 'Sending'; it.actionedAt = new Date().toISOString();
+  const nx = nextWaiting(it); state.open = nx ? nx.id : null; render(); scrollTo(0, 0);
+  undoToast('Sending to ' + it.from, 6000, async () => {
+    try { await api({ action: 'approve', id: it.id, business: it.business, draft }); it.status = 'Sent'; render(); }
+    catch { it.status = 'Waiting'; render(); toast('Couldn\'t send the reply to ' + it.from + '. Nothing went out, it\'s back in Approvals.'); }
+  }, () => { it.status = 'Waiting'; state.open = it.id; render(); scrollTo(0, 0); });
+}
+function fyiWithUndo(it, advance) {
+  buzz();
+  it.status = 'FYI'; it.actionedAt = new Date().toISOString();
+  if (advance) { const nx = nextWaiting(it); state.open = nx ? nx.id : null; }
+  render();
+  undoToast('Filed as FYI, no reply sent', 5000, async () => {
+    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); }
+    catch { it.status = 'Waiting'; render(); toast('Couldn\'t file it. It\'s back in Approvals.'); }
+  }, () => { it.status = 'Waiting'; render(); });
 }
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '14';
+const APP_VERSION = '15';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
