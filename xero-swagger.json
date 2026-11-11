@@ -1,0 +1,364 @@
+{
+ "swagger": "2.0",
+ "info": {
+  "title": "Xero Practice Hub",
+  "description": "Read-only Xero data for Easy Books Practice Hub",
+  "version": "1.0"
+ },
+ "host": "api.xero.com",
+ "basePath": "/",
+ "schemes": [
+  "https"
+ ],
+ "consumes": [
+  "application/json"
+ ],
+ "produces": [
+  "application/json"
+ ],
+ "securityDefinitions": {
+  "oauth2_auth": {
+   "type": "oauth2",
+   "flow": "accessCode",
+   "authorizationUrl": "https://login.xero.com/identity/connect/authorize",
+   "tokenUrl": "https://identity.xero.com/connect/token",
+   "scopes": {
+    "offline_access": "offline_access",
+    "openid": "openid",
+    "profile": "profile",
+    "email": "email",
+    "accounting.settings.read": "accounting.settings.read",
+    "accounting.contacts.read": "accounting.contacts.read",
+    "accounting.invoices.read": "accounting.invoices.read",
+    "accounting.payments.read": "accounting.payments.read",
+    "accounting.banktransactions.read": "accounting.banktransactions.read",
+    "accounting.reports.aged.read": "accounting.reports.aged.read",
+    "accounting.reports.banksummary.read": "accounting.reports.banksummary.read",
+    "accounting.reports.profitandloss.read": "accounting.reports.profitandloss.read",
+    "accounting.reports.balancesheet.read": "accounting.reports.balancesheet.read",
+    "accounting.reports.taxreports.read": "accounting.reports.taxreports.read"
+   }
+  }
+ },
+ "security": [
+  {
+   "oauth2_auth": [
+    "offline_access",
+    "openid",
+    "profile",
+    "email",
+    "accounting.settings.read",
+    "accounting.contacts.read",
+    "accounting.invoices.read",
+    "accounting.payments.read",
+    "accounting.banktransactions.read",
+    "accounting.reports.aged.read",
+    "accounting.reports.banksummary.read",
+    "accounting.reports.profitandloss.read",
+    "accounting.reports.balancesheet.read",
+    "accounting.reports.taxreports.read"
+   ]
+  }
+ ],
+ "paths": {
+  "/connections": {
+   "get": {
+    "operationId": "GetConnections",
+    "summary": "List connected Xero organisations",
+    "description": "List connected Xero organisations",
+    "parameters": [],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "tenantId": {
+          "type": "string"
+         },
+         "tenantName": {
+          "type": "string"
+         },
+         "tenantType": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api.xro/2.0/Organisation": {
+   "get": {
+    "operationId": "GetOrganisation",
+    "summary": "Get organisation details",
+    "description": "Get organisation details",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "/api.xro/2.0/Invoices": {
+   "get": {
+    "operationId": "GetInvoices",
+    "summary": "Get invoices",
+    "description": "Get invoices",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     },
+     {
+      "name": "where",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "Where filter"
+     },
+     {
+      "name": "Statuses",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "Statuses"
+     },
+     {
+      "name": "page",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "Page"
+     },
+     {
+      "name": "summaryOnly",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "Summary only"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "/api.xro/2.0/Contacts": {
+   "get": {
+    "operationId": "GetContacts",
+    "summary": "Get contacts",
+    "description": "Get contacts",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     },
+     {
+      "name": "where",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "Where filter"
+     },
+     {
+      "name": "page",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "Page"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "/api.xro/2.0/Reports/BankSummary": {
+   "get": {
+    "operationId": "GetBankSummary",
+    "summary": "Bank summary report",
+    "description": "Bank summary report",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     },
+     {
+      "name": "fromDate",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "From date"
+     },
+     {
+      "name": "toDate",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "To date"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "/api.xro/2.0/Reports/ProfitAndLoss": {
+   "get": {
+    "operationId": "GetProfitAndLoss",
+    "summary": "Profit and loss report",
+    "description": "Profit and loss report",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     },
+     {
+      "name": "fromDate",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "From date"
+     },
+     {
+      "name": "toDate",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "To date"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "/api.xro/2.0/Reports/BalanceSheet": {
+   "get": {
+    "operationId": "GetBalanceSheet",
+    "summary": "Balance sheet report",
+    "description": "Balance sheet report",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     },
+     {
+      "name": "date",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-summary": "Date"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  }
+ }
+}
