@@ -198,7 +198,7 @@ const CONFIG = {
   ENDPOINT_ENC: { salt: "/lZ+5dD8it1b2hXTaQwzew==", iv: "QC4ANzfjObqctPYS", data: "MCYRuqdIRnUXvwDKFTAR2eOmMQjcmfN8MEO1JIJ0RyGQTV6ktp2QvAmi7hEoggvvIRFdgQezQRanvVQ8E9J1lvB9iZLDiNOkstvIRfyMiKJDvDYmy3yRVkh6KvmqN8IX0lVGy8NXfj/OttC4AeH8/wiWL6Cr5eICLdV/8d5a3j43M4rgcBmnqWcwoQZvB06H63sIOJiYbrN8IJLc7Ajuf9RfBM/rIEvAPJKCszqDOFfhexVwoAnB3accQkLkpLT2ZXq9VbQVwLe4qwoBd7m4y1dTfeTkkLXUjKbHjbOkpQ3BUOTCx0L+b3hIxXTthmgJKVb+C3G2ztZGOGbiNs56FeD/HTZF4Hz7o1HThDAbt4PIrSQw9KDbA1FDYGOl1PVSigt6g8/xMCQk0zpx1WQ+JjJ5t/9TarrU" }, // private flow link, encrypted with the app passcode
   BUSINESSES: [
     { id: 'Easy Books', label: 'Easy Books', firm: 'Easy Books for Better Business' },
-    { id: 'Sydney Bookkeeping', label: 'Sydney Bookkeeping', firm: 'Sydney Bookkeeping & Advisory', connected: false }
+    { id: 'Sydney Bookkeeping', label: 'Sydney Bookkeeping', firm: 'Sydney Bookkeeping & Advisory' }
   ],
   // Easy Books OneDrive (client emails are filed under Clients/<client>/Emails)
   ONEDRIVE: 'https://easybooksaccounting-my.sharepoint.com',
@@ -875,7 +875,7 @@ async function send(it, draft) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '12';
+const APP_VERSION = '13';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
