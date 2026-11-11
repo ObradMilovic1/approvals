@@ -29,6 +29,7 @@
     "email": "email",
     "accounting.settings.read": "accounting.settings.read",
     "accounting.contacts.read": "accounting.contacts.read",
+    "accounting.invoices": "accounting.invoices",
     "accounting.invoices.read": "accounting.invoices.read",
     "accounting.payments.read": "accounting.payments.read",
     "accounting.banktransactions.read": "accounting.banktransactions.read",
@@ -36,7 +37,8 @@
     "accounting.reports.banksummary.read": "accounting.reports.banksummary.read",
     "accounting.reports.profitandloss.read": "accounting.reports.profitandloss.read",
     "accounting.reports.balancesheet.read": "accounting.reports.balancesheet.read",
-    "accounting.reports.taxreports.read": "accounting.reports.taxreports.read"
+    "accounting.reports.taxreports.read": "accounting.reports.taxreports.read",
+    "accounting.attachments.read": "accounting.attachments.read"
    }
   }
  },
@@ -49,6 +51,7 @@
     "email",
     "accounting.settings.read",
     "accounting.contacts.read",
+    "accounting.invoices",
     "accounting.invoices.read",
     "accounting.payments.read",
     "accounting.banktransactions.read",
@@ -56,7 +59,8 @@
     "accounting.reports.banksummary.read",
     "accounting.reports.profitandloss.read",
     "accounting.reports.balancesheet.read",
-    "accounting.reports.taxreports.read"
+    "accounting.reports.taxreports.read",
+    "accounting.attachments.read"
    ]
   }
  ],
@@ -171,6 +175,45 @@
       "required": false,
       "type": "string",
       "x-ms-summary": "Summary only"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   },
+   "post": {
+    "operationId": "UpdateInvoices",
+    "summary": "Create or update invoices/bills",
+    "description": "Create or update invoices/bills",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     },
+     {
+      "name": "body",
+      "in": "body",
+      "required": true,
+      "schema": {
+       "type": "object"
+      },
+      "x-ms-summary": "Invoices JSON"
      }
     ],
     "responses": {
@@ -348,6 +391,45 @@
       "required": false,
       "type": "string",
       "x-ms-summary": "Date"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "OK",
+      "schema": {
+       "type": "object"
+      }
+     }
+    }
+   }
+  },
+  "/api.xro/2.0/Invoices/{InvoiceID}": {
+   "get": {
+    "operationId": "GetInvoice",
+    "summary": "Get one invoice/bill",
+    "description": "Get one invoice/bill",
+    "parameters": [
+     {
+      "name": "xero-tenant-id",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Tenant ID"
+     },
+     {
+      "name": "Accept",
+      "in": "header",
+      "required": true,
+      "type": "string",
+      "default": "application/json",
+      "x-ms-visibility": "internal"
+     },
+     {
+      "name": "InvoiceID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "x-ms-summary": "Invoice ID"
      }
     ],
     "responses": {
