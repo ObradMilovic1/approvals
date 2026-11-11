@@ -141,6 +141,10 @@
   .btn.fyi{flex:1;border:1.5px solid var(--ink);background:#fff}
   .actions.two{position:static}
   .links{display:flex;flex-direction:column;gap:10px}
+  .bopts{display:flex;flex-wrap:wrap;gap:8px}
+  .bopt{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer}
+  .bopt[aria-pressed=true]{background:var(--mint);border-color:var(--ink)}
+  .btn[disabled]{opacity:.5}
   .xg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
   .xg>div{background:#F6F7F6;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
   .xg small{font-size:11px;color:var(--muted);font-weight:600}
@@ -162,6 +166,7 @@
    ENDPOINT_ENC is the private link to the Power Automate flow, encrypted with the app passcode.
    Nothing private lives in this file: without the passcode it cannot be decrypted. */
 const CONFIG = {
+  BILLS_ENC: { salt: "L6SOKbs8JI/jASBV2Mz6+g==", iv: "r2+AMmDQfn1uu9o3", data: "HJDe9lvAC/hRi0eeXjamSpkHyqSeWkIIN92VuOrVNY3wwt7pQIOvOqc2SDLFyHM/hLBs8tgVzRoVAnExzA+b/naNKn16KaXOnXWs0qTXCNol6A//Ghw=" }, // Xero bills inbox addresses, encrypted with the flow link
   ENDPOINT_ENC: { salt: "/lZ+5dD8it1b2hXTaQwzew==", iv: "QC4ANzfjObqctPYS", data: "MCYRuqdIRnUXvwDKFTAR2eOmMQjcmfN8MEO1JIJ0RyGQTV6ktp2QvAmi7hEoggvvIRFdgQezQRanvVQ8E9J1lvB9iZLDiNOkstvIRfyMiKJDvDYmy3yRVkh6KvmqN8IX0lVGy8NXfj/OttC4AeH8/wiWL6Cr5eICLdV/8d5a3j43M4rgcBmnqWcwoQZvB06H63sIOJiYbrN8IJLc7Ajuf9RfBM/rIEvAPJKCszqDOFfhexVwoAnB3accQkLkpLT2ZXq9VbQVwLe4qwoBd7m4y1dTfeTkkLXUjKbHjbOkpQ3BUOTCx0L+b3hIxXTthmgJKVb+C3G2ztZGOGbiNs56FeD/HTZF4Hz7o1HThDAbt4PIrSQw9KDbA1FDYGOl1PVSigt6g8/xMCQk0zpx1WQ+JjJ5t/9TarrU" }, // private flow link, encrypted with the app passcode
   BUSINESSES: [
     { id: 'Easy Books', label: 'Easy Books', firm: 'Easy Books for Better Business' },
@@ -238,7 +243,7 @@ async function api(payload) {
       { tenantId: 't1', name: 'Zephyr Empire Pty Ltd', recv: 18450.5, recvCount: 9, overdue: 6200, overdueCount: 3, payables: 4210.75, payCount: 6, overduePay: 980 },
       { tenantId: 't2', name: 'Avalon Village Meats', recv: 3120, recvCount: 4, overdue: 0, overdueCount: 0, payables: 7850.2, payCount: 11, overduePay: 2300 },
       { tenantId: 't3', name: "Topper's Mountain Wines", recv: 9400, recvCount: 5, overdue: 1450, overdueCount: 1, payables: 1200, payCount: 2, overduePay: 0 }] };
-    if (payload.action === 'draft' || payload.action === 'later') return { ok: true };
+    if (payload.action === 'draft' || payload.action === 'later' || payload.action === 'tobills') return { ok: true };
     if (payload.action === 'addlead' || payload.action === 'movelead') { const i = DEMO_LEADS.findIndex((x) => x.LeadId === payload.lead.LeadId); if (i >= 0) DEMO_LEADS[i] = { ...DEMO_LEADS[i], ...payload.lead }; else DEMO_LEADS.push({ ...payload.lead, Created: new Date().toISOString() }); return { ok: true }; }
     const it = DEMO.find((d) => d.id === payload.id);
     if (it) { it.status = payload.action === 'approve' ? 'Sent' : (payload.status || 'Rejected'); it.actionedAt = new Date().toISOString(); }
@@ -491,7 +496,7 @@ function viewInbox() {
       <div class="subj">${esc(m.subject)}</div>
       <div class="mail">${esc(m.preview)}</div>
       ${ap ? `<div class="ibtns"><span class="inapp">Already in approvals</span></div><div class="ibtns"><button class="btn ok" data-goto="${esc(ap.id)}">Open draft</button></div>`
-        : `<div class="ibtns"><button class="btn ok" data-draft="${esc(m.id)}">Reply with Claude</button>${later ? `<button class="btn rej" data-done="${esc(m.id)}">Done</button>` : `<button class="btn rej" data-later="${esc(m.id)}">Later</button>`}</div>`}
+        : `<div class="ibtns"><button class="btn ok" data-draft="${esc(m.id)}">Reply with Claude</button>${later ? `<button class="btn rej" data-done="${esc(m.id)}">Done</button>` : `<button class="btn rej" data-later="${esc(m.id)}">Later</button>`}</div><div class="ibtns"><button class="btn fyi" data-bill="${esc(m.id)}">Send to Xero bills</button></div>`}
     </div>`;
   };
   const open = inboxOpen(), later = inboxLater();
@@ -516,6 +521,7 @@ function bindInbox() {
   });
   document.querySelectorAll('[data-done]').forEach((b) => b.onclick = () => { lsDel('later', b.dataset.done); lsAdd('handled', b.dataset.done); render(); toast('Marked done'); });
   document.querySelectorAll('[data-goto]').forEach((b) => b.onclick = () => { state.view = null; state.open = b.dataset.goto; render(); scrollTo(0, 0); });
+  document.querySelectorAll('[data-bill]').forEach((b) => b.onclick = () => { const m = state.inbox.find((x) => x.id === b.dataset.bill); if (m) billsSheet(m, () => { lsAdd('handled', m.id); lsDel('later', m.id); render(); }); });
 }
 
 function viewHistory() {
@@ -574,7 +580,8 @@ function viewReview(it) {
     <textarea id="draft">${esc(it.draft)}</textarea>
     <div class="hint">Fill in anything in [square brackets] before sending. Sends from Brad@easybooksaccounting.com with your signature added automatically.</div>
     <div class="actions"><button class="btn ok" id="approve" style="flex:1">Approve &amp; send ${I.send}</button></div>
-    <div class="actions two"><button class="btn fyi" id="fyi">FYI · no reply</button><button class="btn rej" id="reject">Reject</button></div>`;
+    <div class="actions two"><button class="btn fyi" id="fyi">FYI · no reply</button><button class="btn rej" id="reject">Reject</button></div>
+    <div class="actions two"><button class="btn fyi" id="tobills" style="flex:1">Send to Xero bills</button></div>`;
 }
 
 function viewFyi(it) {
@@ -630,6 +637,59 @@ function bindClients() {
   $('#xrefresh').onclick = () => loadXero();
   if (!state.xero && !state.xeroLoading && !state.xeroError) loadXero();
   else if (state.xero && Date.now() - new Date(state.xero.at) > 30 * 60e3 && !state.xeroLoading && !state.xeroError) loadXero();
+}
+
+
+/* ---------- Xero bills: forward supplier emails to a client's Xero bills inbox ---------- */
+let BILLS_BASE = null;
+async function billsBase() {
+  if (BILLS_BASE) return BILLS_BASE;
+  if (state.demo || !CONFIG.BILLS_ENC) return (BILLS_BASE = { 'Avalon Village Meats': 'bills.demo@xerofiles.com' });
+  try {
+    const { salt, iv, data } = CONFIG.BILLS_ENC;
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(state.endpoint), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(salt), iterations: 100000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    BILLS_BASE = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(iv) }, key, b64(data))));
+  } catch { BILLS_BASE = {}; }
+  return BILLS_BASE;
+}
+const myBills = () => { try { return JSON.parse(store.get('bills') || '{}'); } catch { return {}; } };
+const supplierMap = () => { try { return JSON.parse(store.get('supplierClient') || '{}'); } catch { return {}; } };
+async function billsSheet(msg, onDone) {
+  const all = { ...(await billsBase()), ...myBills() };
+  const names = Object.keys(all).sort();
+  const guess = supplierMap()[String(msg.from || '').toLowerCase()];
+  const s = document.createElement('div'); s.className = 'sheet';
+  const opts = names.map((n) => `<button class="bopt" data-n="${esc(n)}" aria-pressed="${n === guess}">${esc(n)}</button>`).join('');
+  s.innerHTML = `<div class="box"><h2>Send to Xero bills</h2>
+    <p>Forwards “${esc(msg.subject)}” and its attachments to the client's Xero. It shows up there as a draft bill.</p>
+    <div class="bopts">${opts || '<p>No clients set up yet.</p>'}</div>
+    <details><summary style="font-weight:700;cursor:pointer">Add another client</summary>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <input id="bn" placeholder="Client name" style="padding:12px;border:1px solid var(--line);border-radius:12px;font:inherit">
+        <input id="be" placeholder="Xero bills email (…@xerofiles.com)" style="padding:12px;border:1px solid var(--line);border-radius:12px;font:inherit">
+        <div class="hint">In Xero: Bills → New bill ▾ → Copy your forwarding email address.</div>
+        <button class="btn fyi" id="badd">Save client</button>
+      </div></details>
+    <div class="actions" style="position:static"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-ok ${guess ? '' : 'disabled'}>Send to Xero</button></div></div>`;
+  let pick = guess || '';
+  const ok = s.querySelector('[data-ok]');
+  s.querySelectorAll('.bopt').forEach((b) => b.onclick = () => { pick = b.dataset.n; s.querySelectorAll('.bopt').forEach((x) => x.setAttribute('aria-pressed', x === b)); ok.disabled = false; });
+  s.querySelector('#badd').onclick = () => {
+    const n = s.querySelector('#bn').value.trim(), e = s.querySelector('#be').value.trim().toLowerCase();
+    if (!n || !/^[^@\s]+@xerofiles\.com$/.test(e)) { toast('Enter a name and a …@xerofiles.com address'); return; }
+    const m = myBills(); m[n] = e; store.set('bills', JSON.stringify(m)); s.remove(); billsSheet(msg, onDone); toast('Saved ' + n);
+  };
+  s.addEventListener('click', (e) => { if (e.target === s || e.target.closest('[data-x]')) s.remove(); });
+  ok.onclick = async () => {
+    if (!pick) return; ok.disabled = true; ok.textContent = 'Sending…';
+    try {
+      await api({ action: 'tobills', id: msg.id, to: all[pick] });
+      const sm = supplierMap(); sm[String(msg.from || '').toLowerCase()] = pick; store.set('supplierClient', JSON.stringify(sm));
+      s.remove(); toast('Sent to ' + pick + ' in Xero bills'); if (onDone) onDone();
+    } catch { ok.disabled = false; ok.textContent = 'Send to Xero'; toast('Couldn\'t forward it, try again'); }
+  };
+  document.body.appendChild(s);
 }
 
 /* ---------- render + events ---------- */
@@ -699,6 +759,10 @@ function bindReview(it) {
     try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); it.status = 'FYI'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Filed as FYI — no reply sent'); }
     catch { toast('Couldn\'t file it — try again'); }
   };
+  $('#tobills').onclick = () => billsSheet(it, async () => {
+    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); it.status = 'FYI'; it.actionedAt = new Date().toISOString(); } catch {}
+    state.open = null; render();
+  });
   $('#reject').onclick = () => confirmSheet('Reject this draft?', 'Nothing is sent to the client. The email stays in your inbox for you to handle.', 'Reject', async () => {
     try { await api({ action: 'reject', id: it.id, business: it.business }); it.status = 'Rejected'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Draft rejected — nothing was sent'); }
     catch { toast('Couldn\'t reject — try again'); }
