@@ -3,187 +3,228 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#F3F5F4">
 <title>Approvals</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--ink:#0B0F0D;--mint:#00E187;--mint-d:#00C877;--line:#E3E8E5;--soft:#F1F4F2;--muted:#4F5753;--body:#2A302D;--chip:#E6FCF2;--chip-t:#00663D;--red:#B42318}
+  :root{--paper:#F3F5F4;--card:#FFFFFF;--ink:#1E2A26;--body:#33403B;--muted:#5E6B66;--line:#DFE5E2;--soft:#ECF0EE;
+    --acc:#00B86B;--acc-d:#0B6E49;--acc-t:#E2F6EC;--on-acc:#06281A;--red:#C4382D;--red-t:#FBEAE8;--amber:#9A5B00;--amber-t:#FFF1D9;
+    --r:14px;--sh:0 1px 2px rgba(30,42,38,.06),0 4px 14px rgba(30,42,38,.05)}
+  body[data-biz="Sydney Bookkeeping"]{--acc:#2F5BD3;--acc-d:#1F3E99;--acc-t:#E7EDFC;--on-acc:#FFFFFF}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;height:100%}
-  body{font-family:Geist,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#fff;
-    background-image:linear-gradient(var(--soft) 1px,transparent 1px),linear-gradient(90deg,var(--soft) 1px,transparent 1px);background-size:48px 48px;background-attachment:fixed}
-  .wrap{max-width:480px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px;min-height:100%}
+  html,body{margin:0;min-height:100%}
+  body{font-family:"Instrument Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--paper);font-size:16px;line-height:1.45;font-variant-numeric:tabular-nums}
+  .wrap{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;min-height:100%}
   button{font-family:inherit;color:inherit}
-  .hdr{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 12px}
-  .brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;letter-spacing:-.2px}
-  .brand .dot{color:var(--mint-d)}
-  .iconbtn{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
-  .iconbtn .pip{position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:var(--mint);border:2px solid #fff}
+  :focus-visible{outline:2px solid var(--acc-d);outline-offset:2px}
+  a{color:inherit}
+  /* header + business switch */
+  .hdr{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .bizsw{display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;min-width:0}
+  .bizsw button{border:none;background:none;height:38px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap}
+  .bizsw button .sw{width:8px;height:8px;border-radius:50%;flex:none}
+  .bizsw button[aria-pressed=true]{background:var(--acc);color:var(--on-acc)}
+  .bizsw button[aria-pressed=true] .sw{display:none}
+  .bizsw .n{font-size:12px;font-weight:700;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:999px;background:var(--soft);color:var(--ink);padding:0 5px}
+  .bizsw button[aria-pressed=true] .n{background:rgba(255,255,255,.28);color:inherit}
+  .hbtns{display:flex;gap:6px;flex:none}
+  .iconbtn{width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex:none;color:var(--ink)}
+  .iconbtn .pip{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--acc);border:2px solid var(--card)}
   .spin svg{animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
-  .tabs{display:flex;background:var(--soft);border-radius:999px;padding:4px;gap:4px;margin-top:-4px}
-  .tab{flex:1;height:44px;border:none;border-radius:999px;background:transparent;color:var(--body);font-size:14px;font-weight:600;cursor:pointer}
-  .tab[aria-selected=true]{background:var(--ink);color:#fff;font-weight:700}
-  .tab .n{display:inline-block;min-width:20px;height:20px;line-height:20px;border-radius:999px;background:var(--mint);color:var(--ink);font-size:12px;font-weight:700;margin-left:6px;padding:0 6px}
-  .hero{display:flex;flex-direction:column;gap:6px;padding:0 4px}
-  .eyebrow{font-size:14px;color:var(--muted)}
-  h1{margin:0;font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1}
-  .lead{font-size:18px;font-weight:600;line-height:1.35}
-  .hl{background:var(--mint);border-radius:6px;padding:0 6px}
-  .stats{display:flex;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 20px rgba(11,15,13,.06)}
-  .stat{flex:1;padding:12px 8px;text-align:center;border-right:1px solid var(--line)}.stat:last-child{border-right:none}
-  .stat .k{font-size:11px;color:var(--muted)}.stat .v{font-size:20px;font-weight:700}
-  .list{display:flex;flex-direction:column;gap:12px}
-  .card{display:flex;flex-direction:column;gap:8px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;cursor:pointer;width:100%}
-  .card:first-child{border-color:var(--ink)}
-  .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .chip{font-size:12px;font-weight:600;background:var(--chip);color:var(--chip-t);border-radius:999px;padding:4px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70%}
-  .chip.new{background:var(--ink);color:#fff}
-  .time{font-size:12px;color:var(--muted)}
-  .subj{font-size:17px;font-weight:700}
+  @media (prefers-reduced-motion:reduce){.spin svg{animation:none}}
+  /* page titles */
+  .hero{display:flex;flex-direction:column;gap:2px;padding:4px 2px 0}
+  h1{margin:0;font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1.15}
+  .lead{font-size:15px;color:var(--muted);line-height:1.4}
+  .lead b{color:var(--ink);font-weight:600}
+  .eyebrow{font-size:14px;color:var(--muted);font-weight:500}
+  .top{display:flex;align-items:center;gap:10px;min-height:42px}
+  .top .eyebrow{flex:1}
+  /* summary strip */
+  .stats{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px;scrollbar-width:none}
+  .stat{flex:none;display:flex;align-items:baseline;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;cursor:pointer;font-family:inherit}
+  .stat .v{font-size:16px;font-weight:700}.stat .k{font-size:13px;color:var(--muted);font-weight:500}
+  .stat.hot{background:var(--acc-t);border-color:transparent}.stat.hot .v{color:var(--acc-d)}
+  /* lists: one surface, rows divided */
+  .list{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+  .list>*+*{border-top:1px solid var(--line)}
+  .card{display:flex;flex-direction:column;gap:3px;text-align:left;background:var(--card);border:none;border-radius:0;padding:14px 16px 14px 18px;cursor:pointer;width:100%;position:relative;font-size:inherit}
+  .list>.card::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--acc)}
+  .card:active{background:var(--soft)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .chip{font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .who2{display:flex;align-items:center;gap:8px;min-width:0}
+  .newtag{flex:none;font-size:11px;font-weight:700;background:var(--acc-t);color:var(--acc-d);border-radius:6px;padding:2px 7px}
+  .time{font-size:13px;color:var(--muted);flex:none}
+  .subj{font-size:16px;font-weight:600;line-height:1.3}
   .from{font-size:13px;color:var(--muted);word-break:break-all}
-  .prev{font-size:14px;line-height:1.4;color:var(--body);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-  .empty{background:#fff;border:1px dashed var(--line);border-radius:18px;padding:28px 18px;text-align:center;color:var(--muted);font-size:15px;line-height:1.45}
-  .empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
-  .notice{background:var(--ink);color:#fff;border-radius:14px;padding:10px 14px;font-size:13px;line-height:1.4}
-  .notice b{color:var(--mint)}
+  .prev{font-size:14px;line-height:1.45;color:var(--body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+  .empty{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px 20px;text-align:center;color:var(--muted);font-size:15px;line-height:1.5}
+  .empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+  .notice{background:var(--amber-t);color:var(--amber);border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.4}
+  .notice b{color:inherit}
+  .sec{font-size:14px;font-weight:600;margin:6px 2px -6px;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}
+  .sec span{font-weight:500;color:var(--muted)}
+  .card.fyi{background:var(--card)}
+  .list>.card.fyi::before{background:var(--line)}
+  .fyitag{font-size:11px;font-weight:700;background:var(--soft);color:var(--muted);border-radius:6px;padding:2px 8px;flex:none}
+  .hint{font-size:13px;color:var(--muted);line-height:1.45;padding:0 2px}
   /* review */
-  .top{display:flex;align-items:center;gap:12px}
-  .rt{font-size:28px;font-weight:800;letter-spacing:-.8px;margin:0;line-height:1.1;word-break:break-word}
-  details{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:#F7F9F8}
-  summary{font-size:13px;font-weight:600;cursor:pointer}
-  details .orig{font-size:14px;color:var(--body);margin-top:8px;line-height:1.45;white-space:pre-wrap;max-height:40vh;overflow:auto}
-  .lbl{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700}
-  .lbl span{font-weight:500;color:var(--muted)}
-  .ph{font-size:12px;font-weight:600;background:var(--mint);border-radius:6px;padding:2px 8px}
-  textarea{width:100%;min-height:46vh;resize:vertical;font-family:inherit;font-size:16px;line-height:1.5;color:var(--ink);border:1.5px solid var(--ink);border-radius:16px;padding:14px;background:#fff}
-  .hint{font-size:12px;color:var(--muted)}
-  .actions{display:flex;gap:10px;position:sticky;bottom:calc(12px + env(safe-area-inset-bottom))}
-  .btn{height:54px;border-radius:999px;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-  .btn.rej{flex:1;border:1.5px solid var(--ink);background:#fff}
-  .btn.ok{flex:2;border:none;background:var(--mint)}
-  .btn:disabled{opacity:.5}
+  .rt{font-size:22px;font-weight:700;letter-spacing:-.3px;margin:0;line-height:1.25;word-break:break-word}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:6px;font-size:13px;color:var(--muted)}
+  .sendas{display:flex;align-items:center;gap:10px;background:var(--acc-t);color:var(--acc-d);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.35}
+  .sendas b{color:var(--ink);font-weight:600;word-break:break-all}
+  .sendas .sw{width:10px;height:10px;border-radius:50%;background:var(--acc);flex:none}
+  details{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--card)}
+  summary{font-size:14px;font-weight:600;cursor:pointer}
+  details .orig{font-size:14px;color:var(--body);margin-top:8px;line-height:1.5;white-space:pre-wrap;max-height:40vh;overflow:auto}
+  .lbl{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;padding:0 2px;margin-bottom:-8px}
+  .lbl span{font-weight:500;color:var(--muted);margin-left:6px}
+  .ph{font-size:12px;font-weight:700;background:var(--amber-t);color:var(--amber);border-radius:6px;padding:3px 8px}
+  textarea{width:100%;min-height:42vh;resize:vertical;font-family:inherit;font-size:16px;line-height:1.55;color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--card);box-shadow:var(--sh)}
+  textarea:focus{outline:none;border-color:var(--acc)}
+  .orig.box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;white-space:pre-wrap;line-height:1.55;font-size:15px}
+  .actions{display:flex;gap:10px}
+  .bar{position:sticky;bottom:0;margin:0 -16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--paper) 75%,rgba(243,245,244,0));display:flex;gap:10px;z-index:4}
+  .btn{height:52px;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+  .btn.ok{flex:2;border:none;background:var(--acc);color:var(--on-acc)}
+  .btn.ok svg path{stroke:currentColor}
+  .btn.rej,.btn.fyi{flex:1}
+  .btn.danger{color:var(--red)}
+  .btn:disabled,.btn[disabled]{opacity:.5}
+  .menu{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .menu button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:none;background:none;padding:14px 16px;text-align:left;font-size:16px;font-weight:600;cursor:pointer}
+  .menu button+button{border-top:1px solid var(--line)}
+  .menu small{font-size:13px;font-weight:500;color:var(--muted)}
+  .menu .danger{color:var(--red)}
   /* sheet + toast + lock */
-  .sheet{position:fixed;inset:0;background:rgba(11,15,13,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
-  .sheet .box{background:#fff;width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
-  .sheet h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.5px}
-  .sheet p{margin:0;color:var(--body);font-size:15px;line-height:1.45}
-  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom));background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px;font-size:14px;font-weight:600;z-index:30;display:flex;gap:8px;align-items:center;max-width:92vw}
-  .toast i{width:10px;height:10px;border-radius:50%;background:var(--mint);display:inline-block}
-  .lock{display:flex;flex-direction:column;gap:16px;margin-top:8vh}
-  .lock input{height:58px;border:1.5px solid var(--ink);border-radius:16px;font-size:24px;letter-spacing:8px;text-align:center;font-family:inherit}
+  .sheet{position:fixed;inset:0;background:rgba(30,42,38,.4);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+  .sheet .box{background:var(--paper);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+  .sheet h2{margin:0;font-size:20px;font-weight:700;letter-spacing:-.3px}
+  .sheet p{margin:0;color:var(--body);font-size:15px;line-height:1.5}
+  .sheet .actions .btn{flex:1}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));background:var(--ink);color:#fff;border-radius:12px;padding:12px 16px;font-size:14px;font-weight:500;z-index:30;display:flex;gap:10px;align-items:center;max-width:92vw;box-shadow:0 8px 24px rgba(30,42,38,.25)}
+  .toast i{width:8px;height:8px;border-radius:50%;background:var(--acc);display:inline-block;flex:none}
+  .lock{display:flex;flex-direction:column;gap:14px;margin-top:10vh}
+  .lock input{height:56px;border:1px solid var(--line);border-radius:14px;font-size:22px;text-align:center;font-family:inherit;background:var(--card)}
+  .lock .btn{width:100%}
   .err{color:var(--red);font-size:14px;min-height:20px}
   .hidden{display:none!important}
-  .nav{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
-  .nav .in{max-width:480px;margin:0 auto;display:flex}
-  .nav button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);padding:6px 0;cursor:pointer;position:relative;font-family:inherit}
-  .nav button[aria-current=true]{color:var(--ink)}
-  .nav button[aria-current=true] .ic{background:var(--mint)}
-  .nav .ic{width:44px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center}
-  .nav .dot{position:absolute;top:4px;left:calc(50% + 8px);min-width:16px;height:16px;border-radius:999px;background:var(--ink);color:#fff;font-size:10px;line-height:16px;padding:0 4px}
-  .nav .dot.red{background:#E5484D}
-  .stages{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:0 -16px;padding-left:16px;padding-right:16px}
-  .stg{flex:none;height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
-  .stg b{display:inline-block;min-width:18px;margin-left:6px;border-radius:999px;background:var(--soft);font-size:11px;line-height:18px;padding:0 5px}
-  .stg[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .stg[aria-pressed=true] b{background:var(--mint);color:var(--ink)}
-  .lcard{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px}
-  .lcard .nm{font-size:17px;font-weight:700}
+  .brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}
+  /* bottom nav */
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+  .nav .in{max-width:520px;margin:0 auto;display:flex}
+  .nav button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);padding:6px 0 4px;cursor:pointer;position:relative}
+  .nav button svg *{stroke:currentColor}
+  .nav button[aria-current=true]{color:var(--acc-d)}
+  .nav .ic{width:48px;height:30px;border-radius:999px;display:flex;align-items:center;justify-content:center}
+  .nav button[aria-current=true] .ic{background:var(--acc-t)}
+  .nav .dot{position:absolute;top:2px;left:calc(50% + 10px);min-width:17px;height:17px;border-radius:999px;background:var(--ink);color:#fff;font-size:10px;font-weight:700;line-height:17px;padding:0 5px;border:2px solid #fff;box-sizing:content-box}
+  .nav .dot.red{background:var(--red)}
+  /* pipeline */
+  .stages{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none}
+  .stg,.hchip{flex:none;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--body)}
+  .stg b{margin-left:6px;font-weight:600;color:var(--muted)}
+  .stg[aria-pressed=true],.hchip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .stg[aria-pressed=true] b{color:rgba(255,255,255,.7)}
+  .hrow{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none}
+  .lcard{display:flex;flex-direction:column;gap:4px;background:var(--card);padding:14px 16px}
+  .links>.lcard{border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+  .lcard .nm{font-size:16px;font-weight:600}
   .lcard .sub{font-size:13px;color:var(--muted);word-break:break-all}
-  .lcard .note{font-size:13px;color:var(--body);line-height:1.4;white-space:pre-wrap}
-  .lacts{display:flex;gap:8px;margin-top:4px}
-  .lacts a,.lacts button{height:40px;border-radius:999px;border:1.5px solid var(--ink);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;text-decoration:none;color:var(--ink);cursor:pointer;font-family:inherit}
-  .lacts .go{flex:1;background:var(--mint);border-color:var(--mint)}
-  .src{font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;background:var(--chip);color:var(--chip-t)}
-  .sug{display:flex;align-items:center;gap:10px;background:#F7F9F8;border:1px dashed var(--line);border-radius:16px;padding:12px 14px}
-  .sug .who{flex:1;min-width:0;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .sug .who small{display:block;font-weight:500;color:var(--muted);font-size:12px}
-  .sug button{height:36px;border-radius:999px;border:none;background:var(--ink);color:#fff;font-size:12px;font-weight:700;padding:0 12px;cursor:pointer;font-family:inherit;flex:none}
-  .fld{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
-  .fld input,.fld textarea,.fld select{font:inherit;font-size:16px;color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;min-height:0}
-  .fld textarea{min-height:80px;resize:vertical}
+  .lcard .note{font-size:14px;color:var(--body);line-height:1.45;white-space:pre-wrap}
+  .lacts{display:flex;gap:8px;margin-top:6px}
+  .lacts a,.lacts button{height:40px;min-width:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;text-decoration:none;color:var(--ink);cursor:pointer}
+  .lacts .go{flex:1;background:var(--acc-t);border-color:transparent;color:var(--acc-d)}
+  .lacts .go svg *{stroke:currentColor}
+  .src{font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;background:var(--soft);color:var(--muted);flex:none}
+  .sug{display:flex;align-items:center;gap:8px;background:var(--card);padding:12px 12px 12px 16px}
+  .sug .who{flex:1;min-width:0;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sug .who small{display:block;font-weight:500;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis}
+  .sug button{height:36px;border-radius:10px;border:none;background:var(--acc-t);color:var(--acc-d);font-size:13px;font-weight:700;padding:0 12px;cursor:pointer;flex:none}
+  .sug button.x{background:none;color:var(--muted);padding:0 6px}
+  .fld{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600;color:var(--muted)}
+  .fld input,.fld textarea,.fld select{font:inherit;font-size:16px;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--card);min-height:0;box-shadow:none}
+  .fld textarea{min-height:84px;resize:vertical}
   .stgpick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .stgpick button{height:44px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
-  .stgpick button[aria-pressed=true]{border-color:var(--ink);background:var(--mint)}
-  .fab{position:fixed;right:calc(50% - 224px);bottom:calc(84px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:var(--ink);color:#fff;border:none;font-size:28px;line-height:56px;box-shadow:0 8px 24px rgba(11,15,13,.25);cursor:pointer;z-index:14}
-  @media (max-width:480px){.fab{right:16px}}
-  .callrow{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 14px 14px 16px}
+  .stgpick button{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:14px;cursor:pointer}
+  .stgpick button[aria-pressed=true]{border-color:var(--acc);background:var(--acc-t);color:var(--acc-d)}
+  .fab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(150px + env(safe-area-inset-bottom));width:52px;height:52px;border-radius:16px;background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:26px;line-height:1;box-shadow:var(--sh);cursor:pointer;z-index:14}
+  /* calls */
+  .callrow{display:flex;align-items:center;gap:12px;background:var(--card);padding:12px 12px 12px 16px}
   .callrow .who{flex:1;min-width:0}
-  .callrow .num{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .callrow .meta{font-size:12px;color:var(--muted);margin-top:2px}
-  .callbtn{width:48px;height:48px;border-radius:50%;background:var(--mint);display:flex;align-items:center;justify-content:center;flex:none;text-decoration:none}
-  .tag{font-size:10px;font-weight:700;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle}
-  .tag.miss{background:#FDECEC;color:#B42318}.tag.newc{background:var(--ink);color:var(--mint)}.tag.out{background:var(--chip);color:var(--chip-t)}
-  .namebtn{border:none;background:none;font-size:12px;font-weight:600;color:var(--chip-t);padding:0;cursor:pointer;margin-top:4px}
-  .ibtns{display:flex;gap:8px;margin-top:4px}
-  .ibtns .btn{height:44px;font-size:14px;flex:1}
-  .mail{font-size:14px;line-height:1.4;color:var(--body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .unread .subj::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mint);margin-right:8px;vertical-align:middle}
-  .inapp{font-size:11px;font-weight:700;background:var(--mint);border-radius:6px;padding:2px 8px}
-  button.stat{background:none;border:none;border-right:1px solid var(--line);cursor:pointer;font-family:inherit}
-  button.stat:last-child{border-right:none}
-  button.stat .k::after{content:' ›';color:var(--muted)}
-  .hrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
-  .hchip{flex:none;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;cursor:pointer}
-  .hchip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .day{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:8px 4px -4px}
-  .st{font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px}
-  .st.Sent{background:var(--mint);color:var(--ink)}.st.FYI{background:var(--ink);color:var(--mint)}.st.Rejected{background:#FDECEC;color:#B42318}.st.Waiting{background:var(--chip);color:var(--chip-t)}
-  .hbtns{display:flex;gap:8px}
-  .sec{font-size:13px;font-weight:700;margin:6px 4px -4px;display:flex;justify-content:space-between;align-items:center}
-  .sec span{font-weight:500;color:var(--muted)}
-  .card.fyi{background:#F7F9F8;cursor:pointer}
-  .card.fyi:first-child{border-color:var(--line)}
-  .fyitag{font-size:11px;font-weight:700;background:var(--ink);color:var(--mint);border-radius:6px;padding:2px 8px}
-  .btn.fyi{flex:1;border:1.5px solid var(--ink);background:#fff}
-  .actions.two{position:static}
+  .callrow .num{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .callrow .meta{margin-top:2px}
+  .callbtn{width:46px;height:46px;border-radius:14px;background:var(--acc-t);display:flex;align-items:center;justify-content:center;flex:none;text-decoration:none}
+  .callbtn svg *{stroke:var(--acc-d)}
+  .tag{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;margin-left:6px;vertical-align:2px}
+  .tag.miss{background:var(--red-t);color:var(--red)}.tag.newc{background:var(--acc-t);color:var(--acc-d)}.tag.out{background:var(--soft);color:var(--muted)}
+  .namebtn{border:none;background:none;font-size:13px;font-weight:600;color:var(--acc-d);padding:0;cursor:pointer;margin-top:4px}
+  /* inbox */
+  .icard{display:flex;flex-direction:column;gap:3px;background:var(--card);padding:14px 16px}
+  .ibtns{display:flex;gap:8px;margin-top:8px}
+  .ibtns .btn{height:40px;font-size:14px;flex:1;border-radius:10px;padding:0 10px}
+  .ibtns .btn.ok{flex:1.4}
+  .mail{font-size:14px;line-height:1.45;color:var(--body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .unread .subj::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-right:8px;vertical-align:2px}
+  .inapp{font-size:12px;font-weight:700;background:var(--acc-t);color:var(--acc-d);border-radius:6px;padding:3px 8px}
+  /* history */
+  .day{font-size:13px;font-weight:600;color:var(--muted);margin:8px 2px -8px}
+  .st{font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;flex:none}
+  .st.Sent{background:var(--acc-t);color:var(--acc-d)}.st.FYI{background:var(--soft);color:var(--muted)}.st.Rejected{background:var(--red-t);color:var(--red)}.st.Waiting{background:var(--amber-t);color:var(--amber)}.st.Approved{background:var(--acc-t);color:var(--acc-d)}
   .links{display:flex;flex-direction:column;gap:10px}
-  .askfab{position:fixed;right:max(16px,calc(50% - 224px));bottom:calc(86px + env(safe-area-inset-bottom));z-index:15;width:56px;height:56px;border:none;border-radius:50%;background:var(--ink);color:var(--mint);font-size:24px;box-shadow:0 8px 24px rgba(11,15,13,.28);cursor:pointer;display:flex;align-items:center;justify-content:center}
-  .chead{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;margin:calc(-16px - env(safe-area-inset-top)) -16px 0;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
-  .ctitle{font-weight:800;font-size:18px;display:flex;align-items:center;gap:8px}
-  .cstar{width:44px;height:44px;border-radius:50%;background:var(--ink);color:var(--mint);display:inline-flex;align-items:center;justify-content:center;font-size:20px}
-  .cstar.sm{width:28px;height:28px;font-size:14px}
-  .cclear{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+  .link{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);padding:14px 16px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:600}
+  .links>.link{border:1px solid var(--line);border-radius:var(--r)}
+  .link small{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-top:2px}
+  .folder{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--acc-d);text-decoration:none}
+  .folder svg *{stroke:currentColor}
+  /* chat */
+  .askfab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(84px + env(safe-area-inset-bottom));z-index:15;height:48px;padding:0 16px 0 14px;border:none;border-radius:999px;background:var(--ink);color:#fff;font-size:15px;font-weight:600;box-shadow:0 8px 22px rgba(30,42,38,.28);cursor:pointer;display:flex;align-items:center;gap:8px}
+  .askfab span{color:var(--acc);font-size:18px}
+  .chead{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--paper);margin:calc(-12px - env(safe-area-inset-top)) -16px 0;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line)}
+  .ctitle{font-weight:700;font-size:17px;display:flex;align-items:center;gap:8px}
+  .cstar{width:40px;height:40px;border-radius:12px;background:var(--ink);color:var(--acc);display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+  .cstar.sm{width:28px;height:28px;border-radius:8px;font-size:14px}
+  .cclear{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
   .chat{display:flex;flex-direction:column;gap:12px;padding-bottom:110px}
-  .cempty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:40px 8px 0;color:var(--body)}
-  .cempty b{font-size:20px;color:var(--ink)}
-  .cideas{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:14px}
-  .cideas button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px;font:inherit;font-size:15px;text-align:left;cursor:pointer}
-  .cb{max-width:88%;padding:11px 14px;border-radius:18px;font-size:15px;line-height:1.45;word-wrap:break-word;overflow-wrap:anywhere}
-  .cb.me{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:6px}
-  .cb.ai{align-self:flex-start;background:#F4F6F5;border-bottom-left-radius:6px}
+  .cempty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:36px 4px 0;color:var(--muted)}
+  .cempty b{font-size:19px;color:var(--ink)}
+  .cideas{display:flex;flex-direction:column;width:100%;margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .cideas button{border:none;background:none;padding:14px 16px;font:inherit;font-size:15px;text-align:left;cursor:pointer;color:var(--ink)}
+  .cideas button+button{border-top:1px solid var(--line)}
+  .cb{max-width:88%;padding:11px 14px;border-radius:16px;font-size:15px;line-height:1.5;word-wrap:break-word;overflow-wrap:anywhere}
+  .cb.me{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:5px}
+  .cb.ai{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
   .cb.ai p{margin:0 0 8px}.cb.ai p:last-of-type{margin-bottom:0}
   .cb.ai h4{margin:10px 0 4px;font-size:15px}.cb.ai h4:first-child{margin-top:0}
   .cb.ai ul{margin:0 0 8px;padding-left:18px}.cb.ai li{margin:3px 0}
-  .ccopy{display:block;margin-top:8px;border:none;background:none;padding:0;font:inherit;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+  .ccopy{display:block;margin-top:8px;border:none;background:none;padding:0;font:inherit;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
   .cb.typing{display:flex;gap:5px;padding:14px 16px}
-  .cb.typing span{width:7px;height:7px;border-radius:50%;background:#9AA39E;animation:cdot 1s infinite}
+  .cb.typing span{width:7px;height:7px;border-radius:50%;background:#9AA6A1;animation:cdot 1s infinite}
   .cb.typing span:nth-child(2){animation-delay:.15s}.cb.typing span:nth-child(3){animation-delay:.3s}
-  @keyframes cdot{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
-  .cin{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:480px;box-sizing:border-box;display:flex;align-items:flex-end;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);z-index:16}
-  .cin textarea{flex:1;min-height:0;height:46px;resize:none;border:1px solid var(--line);border-radius:23px;padding:12px 16px;font:inherit;font-size:16px;line-height:1.3;max-height:140px;box-sizing:border-box;outline:none;background:#F4F6F5}
-  .cin textarea:focus{border-color:var(--ink);background:#fff}
-  .csend{width:46px;height:46px;flex:none;border:none;border-radius:50%;background:var(--mint);display:flex;align-items:center;justify-content:center;cursor:pointer}
+  @keyframes cdot{0%,80%,100%{opacity:.3}40%{opacity:1}}
+  .cin{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:520px;display:flex;align-items:flex-end;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--paper);border-top:1px solid var(--line);z-index:16}
+  .cin textarea{flex:1;min-height:0;height:46px;resize:none;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;font-size:16px;line-height:1.3;max-height:140px;outline:none;background:var(--card);box-shadow:none}
+  .cin textarea:focus{border-color:var(--ink)}
+  .csend{width:46px;height:46px;flex:none;border:none;border-radius:14px;background:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .csend svg *{stroke:#fff}
   .csend[disabled]{opacity:.4}
-
+  /* xero */
   .bopts{display:flex;flex-wrap:wrap;gap:8px}
-  .bopt{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer}
-  .bopt[aria-pressed=true]{background:var(--mint);border-color:var(--ink)}
-  .btn[disabled]{opacity:.5}
-  .xg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-  .xg>div{background:#F6F7F6;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
-  .xg small{font-size:11px;color:var(--muted);font-weight:600}
-  .xg b{font-size:15px}
-  .xg span{font-size:11px;color:var(--muted)}
-  .xg.tot>div{background:#fff;border:1px solid var(--line)}
-  .nav button{font-size:10.5px}
-  .nav .ic{width:40px}
-  .link{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:600}
-  .link small{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
-  .folder{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;margin-top:8px}
+  .bopt{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer}
+  .bopt[aria-pressed=true]{background:var(--acc-t);border-color:var(--acc);color:var(--acc-d)}
+  .xg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:10px;background:var(--line);border-radius:10px;overflow:hidden}
+  .xg>div{background:var(--soft);padding:9px 10px;display:flex;flex-direction:column;gap:1px}
+  .xg small{font-size:12px;color:var(--muted);font-weight:500}
+  .xg b{font-size:16px;font-weight:700}
+  .xg span{font-size:12px;color:var(--muted)}
+  .xg.tot{margin-top:0;border:1px solid var(--line)}
+  .xg.tot>div{background:var(--card);padding:12px}
+  .xg.tot b{font-size:18px}
 </style>
 </head>
 <body>
@@ -197,8 +238,8 @@ const CONFIG = {
   BILLS_ENC: { salt: "L6SOKbs8JI/jASBV2Mz6+g==", iv: "r2+AMmDQfn1uu9o3", data: "HJDe9lvAC/hRi0eeXjamSpkHyqSeWkIIN92VuOrVNY3wwt7pQIOvOqc2SDLFyHM/hLBs8tgVzRoVAnExzA+b/naNKn16KaXOnXWs0qTXCNol6A//Ghw=" }, // Xero bills inbox addresses, encrypted with the flow link
   ENDPOINT_ENC: { salt: "/lZ+5dD8it1b2hXTaQwzew==", iv: "QC4ANzfjObqctPYS", data: "MCYRuqdIRnUXvwDKFTAR2eOmMQjcmfN8MEO1JIJ0RyGQTV6ktp2QvAmi7hEoggvvIRFdgQezQRanvVQ8E9J1lvB9iZLDiNOkstvIRfyMiKJDvDYmy3yRVkh6KvmqN8IX0lVGy8NXfj/OttC4AeH8/wiWL6Cr5eICLdV/8d5a3j43M4rgcBmnqWcwoQZvB06H63sIOJiYbrN8IJLc7Ajuf9RfBM/rIEvAPJKCszqDOFfhexVwoAnB3accQkLkpLT2ZXq9VbQVwLe4qwoBd7m4y1dTfeTkkLXUjKbHjbOkpQ3BUOTCx0L+b3hIxXTthmgJKVb+C3G2ztZGOGbiNs56FeD/HTZF4Hz7o1HThDAbt4PIrSQw9KDbA1FDYGOl1PVSigt6g8/xMCQk0zpx1WQ+JjJ5t/9TarrU" }, // private flow link, encrypted with the app passcode
   BUSINESSES: [
-    { id: 'Easy Books', label: 'Easy Books', firm: 'Easy Books for Better Business' },
-    { id: 'Sydney Bookkeeping', label: 'Sydney Bookkeeping', firm: 'Sydney Bookkeeping & Advisory' }
+    { id: 'Easy Books', label: 'Easy Books', firm: 'Easy Books for Better Business', sender: 'Brad@easybooksaccounting.com', color: '#00B86B' },
+    { id: 'Sydney Bookkeeping', label: 'Sydney', firm: 'Sydney Bookkeeping & Advisory', sender: 'Zeljka@sydneybookkeepingandadvisory.com.au', color: '#2F5BD3' }
   ],
   // Easy Books OneDrive (client emails are filed under Clients/<client>/Emails)
   ONEDRIVE: 'https://easybooksaccounting-my.sharepoint.com',
@@ -209,17 +250,19 @@ const odLink = (sub) => CONFIG.ONEDRIVE + '/personal/brad_easybooksaccounting_co
 
 const LOGO = '<svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"><rect x="0" y="11" width="5" height="9" rx="1.5" fill="#0B0F0D"/><rect x="8" y="6" width="5" height="14" rx="1.5" fill="#0B0F0D"/><rect x="16" y="0" width="5" height="20" rx="1.5" fill="#00E187"/></svg>';
 const I = {
-  refresh: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
-  back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
-  mail: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
-  board: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>',
-  check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
-  phone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
-  cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.5 3.3 3.3 0 0 0 6 19z"/></svg>',
-  folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
-  arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
-  xero: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 17V10M10 17V6M14 17v-5M18 17V8"/></svg>',
-  send: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>'
+  refresh: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+  back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
+  mail: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+  board: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>',
+  check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  phone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+  cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.5 3.3 3.3 0 0 0 6 19z"/></svg>',
+  folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+  xero: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 17V10M10 17V6M14 17v-5M18 17V8"/></svg>',
+  more: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  folder20: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  send: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>'
 };
 
 const store = {
@@ -229,7 +272,7 @@ const store = {
 
 const state = {
   biz: store.get('biz') || 'Easy Books',
-  items: [], inbox: [], calls: [], callsStatus: '', leads: [], xero: (() => { try { return JSON.parse(store.get('xero') || 'null'); } catch { return null; } })(), xeroLoading: false, xeroError: '', stage: 'Open', loading: false, open: null, files: false, hist: null, view: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
+  items: [], inbox: [], calls: [], callsStatus: '', leads: [], xero: (() => { try { return JSON.parse(store.get('xero') || 'null'); } catch { return null; } })(), xeroLoading: false, xeroError: '', stage: 'Open', loading: false, open: null, files: false, hist: null, view: null, error: '', demo: !CONFIG.ENDPOINT_ENC || /[?&]demo\b/.test(location.search),
   endpoint: store.get('endpoint')
 };
 
@@ -249,7 +292,8 @@ async function decryptEndpoint(pass) {
 /* ---------- API (Power Automate flow) ---------- */
 const DEMO = [
   { id: 'demo1', business: 'Easy Books', client: 'New client', from: 'obradmilovic@hotmail.com', subject: 'BAS question', receivedAt: new Date().toISOString(), clientEmail: 'Hi Brad, can you check my BAS for this quarter before I lodge it?', draft: 'Hi,\n\nThanks for getting in touch. Happy to review your BAS before you lodge it.\n\nCould you send through your [quarter] figures, or give us a call on [phone number]? We\'ll get back to you within one business day.\n\nKind regards,\nBrad', status: 'Waiting' },
-  { id: 'demo2', business: 'Easy Books', client: 'Jo Goodwin', from: 'jo@example.com', subject: 'Quad filters paid by Jo', receivedAt: new Date(Date.now() - 3600e3).toISOString(), clientEmail: 'Hi, I paid the quad filters personally — can that go through the business?', draft: 'Hi Jo,\n\nThanks for letting us know. Yes, we can record that as a reimbursement to you. Could you send the receipt through and we\'ll post it this week?\n\nKind regards,\nBrad', status: 'Waiting' }
+  { id: 'demo2', business: 'Easy Books', client: 'Jo Goodwin', from: 'jo@example.com', subject: 'Quad filters paid by Jo', receivedAt: new Date(Date.now() - 3600e3).toISOString(), clientEmail: 'Hi, I paid the quad filters personally — can that go through the business?', draft: 'Hi Jo,\n\nThanks for letting us know. Yes, we can record that as a reimbursement to you. Could you send the receipt through and we\'ll post it this week?\n\nKind regards,\nBrad', status: 'Waiting' },
+  { id: 'demo3', business: 'Sydney Bookkeeping', client: 'Northside Plumbing', from: 'accounts@northsideplumbing.com.au', subject: 'Payroll for this fortnight', receivedAt: new Date(Date.now() - 7200e3).toISOString(), clientEmail: 'Hi Zeljka, two new starters this fortnight. Timesheets attached.', draft: 'Hi,\n\nThanks for sending the timesheets through. We\'ll set up the two new starters and process this fortnight\'s pay by [day].\n\nCould you send their TFN declarations and super details when you get a chance?', status: 'Waiting' }
 ];
 
 const DEMO_LEADS = [
@@ -301,7 +345,7 @@ async function load(quiet) {
 // The Outlook signature (added automatically when a reply is sent) already says "Kind regards, Brad",
 // so strip a sign-off from the end of Claude's draft to avoid it appearing twice.
 function stripSignoff(t) {
-  return String(t || '').replace(/\s*\n\s*(kind regards|warm regards|best regards|regards|many thanks|thanks|thank you|cheers|best)[,!.]?\s*(\n\s*brad( milovic)?\.?)?\s*$/i, '').replace(/\s+$/, '');
+  return String(t || '').replace(/\s*\n\s*(kind regards|warm regards|best regards|regards|many thanks|thanks|thank you|cheers|best)[,!.]?\s*(\n\s*(brad( milovic)?|zeljka)\.?)?\s*$/i, '').replace(/\s+$/, '');
 }
 
 function normalise(x) {
@@ -356,15 +400,23 @@ function toast(msg) {
 }
 
 /* ---------- views ---------- */
-function header(rightBtn) {
-  return `<header class="hdr"><div class="brand">${LOGO}<div>${esc(bizCfg().firm)}<span class="dot">.</span></div></div>${rightBtn}</header>`;
+function bizSwitch(counts) {
+  return `<div class="bizsw" role="group" aria-label="Business">${CONFIG.BUSINESSES.map((b) => { const n = counts ? waiting(b.id).length : 0;
+    return `<button data-sw="${esc(b.id)}" aria-pressed="${b.id === state.biz}"><span class="sw" style="background:${b.color}"></span>${esc(b.label)}${n ? `<span class="n">${n}</span>` : ''}</button>`; }).join('')}</div>`;
 }
+function header(rightBtn, counts) {
+  return `<header class="hdr">${bizSwitch(counts)}<div class="hbtns">${rightBtn || ''}</div></header>`;
+}
+const refreshBtn = (id, pip) => `<button class="iconbtn ${state.loading ? 'spin' : ''}" id="${id || 'refresh'}" aria-label="Refresh">${I.refresh}${pip ? '<span class="pip"></span>' : ''}</button>`;
+const senderOf = (biz) => (CONFIG.BUSINESSES.find((b) => b.id === biz) || CONFIG.BUSINESSES[0]).sender;
+const greeting = () => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; };
+const clientLabel = (it) => it.client === 'New client' ? it.from : it.client;
 
 function viewLock() {
   return `<div class="lock">
-    <div class="brand" style="justify-content:center;font-size:16px">${LOGO}<div>Approvals<span class="dot" style="color:#00C877">.</span></div></div>
-    <h1 style="text-align:center;font-size:36px">Enter passcode</h1>
-    <p style="text-align:center;color:var(--muted);margin:0">You only need to do this once on this phone.</p>
+    <div class="brand">${LOGO}<div>Easy Books &amp; Sydney Bookkeeping</div></div>
+    <h1>Enter your passcode</h1>
+    <p class="lead" style="margin:0">You only need to do this once on this phone.</p>
     <input id="pass" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" maxlength="20" placeholder="xxxx-xxxx-xxxx" style="letter-spacing:2px;font-size:22px">
     <div class="err" id="err"></div>
     <button class="btn ok" id="unlock">Unlock</button>
@@ -373,47 +425,39 @@ function viewLock() {
 
 function viewList() {
   const biz = bizCfg();
-  const tabs = CONFIG.BUSINESSES.map((b) => {
-    const n = waiting(b.id).length;
-    return `<button class="tab" role="tab" data-biz="${esc(b.id)}" aria-selected="${b.id === state.biz}">${esc(b.label)}${n ? `<span class="n">${n}</span>` : ''}</button>`;
-  }).join('');
   const w = waiting(state.biz);
   const sent = state.items.filter((i) => i.business === state.biz && i.status === 'Sent' && isToday(i.actionedAt)).length;
   const fyi = fyiToday(state.biz);
-  const nIn = inboxOpen().filter((m) => !m.read).length;
-  const refresh = `<div class="hbtns"><button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button></div>`;
-
   let body;
-  if (biz.connected === false) {
-    body = `<div class="empty"><b>Not connected yet</b>${esc(biz.firm)}'s inbox isn't linked. Once it is, client emails and Claude's drafts will appear here, the same as Easy Books.</div>`;
-  } else if (state.error) {
-    body = `<div class="empty"><b>Can't load right now</b>${esc(state.error)}</div>`;
+  if (state.error) {
+    body = `<div class="empty"><b>Can't load your approvals</b>${esc(state.error)}</div>`;
   } else if (!w.length) {
-    body = `<div class="empty"><b>All clear</b>${state.loading ? 'Checking your inbox…' : 'No drafts waiting. New client emails will appear here with Claude\'s reply ready to approve.'}</div>`;
+    body = `<div class="empty"><b>${state.loading ? 'Checking for new emails…' : 'All caught up'}</b>${state.loading ? '' : `New client emails to ${esc(biz.sender)} appear here with a reply already drafted.`}</div>`;
   } else {
     body = '<div class="list">' + w.map((it) => `
       <button class="card" data-id="${esc(it.id)}">
-        <div class="row"><span class="chip ${it.client === 'New client' ? 'new' : ''}">${esc(it.client)}</span><span class="time">${esc(when(it.receivedAt))}</span></div>
+        <div class="row"><span class="who2"><span class="chip">${esc(clientLabel(it))}</span>${it.client === 'New client' ? '<span class="newtag">New client</span>' : ''}</span><span class="time">${esc(when(it.receivedAt))}</span></div>
         <div class="subj">${esc(it.subject)}</div>
-        <div class="from">${esc(it.from)}</div>
-        <div class="prev">“${esc(it.draft.replace(/\s+/g, ' ').trim())}”</div>
+        <div class="prev">${esc(it.draft.replace(/\s+/g, ' ').trim())}</div>
       </button>`).join('') + '</div>';
   }
-  if (biz.connected !== false && fyi.length) {
-    body += `<div class="sec">FYI today <span>no reply needed</span></div><div class="list">` + fyi.map((it) => `
+  if (fyi.length) {
+    body += `<div class="sec">Filed as FYI today <span>no reply sent</span></div><div class="list">` + fyi.map((it) => `
       <button class="card fyi" data-id="${esc(it.id)}">
-        <div class="row"><span class="chip">${esc(it.client)}</span><span class="fyitag">FYI</span></div>
+        <div class="row"><span class="chip">${esc(clientLabel(it))}</span><span class="fyitag">FYI</span></div>
         <div class="subj">${esc(it.subject)}</div>
-        <div class="from">${esc(it.from)} · ${esc(when(it.receivedAt))}</div>
       </button>`).join('') + '</div>';
   }
-
-  return `${header(refresh)}
-    <div class="tabs" role="tablist" aria-label="Business">${tabs}</div>
-    ${state.demo ? '<div class="notice"><b>Preview.</b> Showing sample emails. Your real inbox appears once the private link is switched on.</div>' : ''}
-    <div class="hero"><div class="eyebrow">[ Today ]</div><h1>APPROVALS</h1>
-      <div class="lead">${w.length ? `Claude has drafted ${w.length === 1 ? 'a reply' : w.length + ' replies'}, <span class="hl">ready for you</span>` : 'Nothing waiting, <span class="hl">you\'re all caught up</span>'}</div></div>
-    <div class="stats"><button class="stat" data-hist="Waiting"><div class="k">Waiting</div><div class="v">${w.length}</div></button><button class="stat" data-hist="Sent"><div class="k">Sent today</div><div class="v">${sent}</div></button><button class="stat" data-hist="FYI"><div class="k">FYI today</div><div class="v">${fyi.length}</div></button></div>
+  return `${header(`<button class="iconbtn" id="files" aria-label="Client files">${I.folder20}</button>${refreshBtn('refresh', w.length)}`, true)}
+    ${state.demo ? '<div class="notice"><b>Preview:</b> these are sample emails, not your real inbox.</div>' : ''}
+    <div class="hero"><h1>${greeting()}, Brad</h1>
+      <div class="lead">${w.length ? `<b>${w.length} ${w.length === 1 ? 'reply' : 'replies'}</b> drafted and ready to approve` : 'Nothing waiting on you'}</div></div>
+    <div class="stats">
+      <button class="stat ${w.length ? 'hot' : ''}" data-hist="Waiting"><span class="v">${w.length}</span><span class="k">to approve</span></button>
+      <button class="stat" data-hist="Sent"><span class="v">${sent}</span><span class="k">sent today</span></button>
+      <button class="stat" data-hist="FYI"><span class="v">${fyi.length}</span><span class="k">FYI today</span></button>
+      <button class="stat" data-hist="All"><span class="k">All history</span></button>
+    </div>
     ${body}`;
 }
 
@@ -425,18 +469,17 @@ function viewPipeline() {
     .sort((a, b) => OPEN.indexOf(b.Stage) - OPEN.indexOf(a.Stage) || new Date(b.Updated) - new Date(a.Updated));
   const card = (l) => `<div class="lcard">
       <div class="row"><div class="nm">${esc(l.Name || prettyNum(l.Phone) || l.Email || 'New lead')}</div><span class="src">${esc(l.Source || 'Manual')}</span></div>
-      <div class="sub">${[l.Phone ? prettyNum(l.Phone) : '', l.Email].filter(Boolean).map(esc).join(' · ')}</div>
-      <div class="sub">${esc(l.Stage)}${l.Updated ? ' · ' + esc(daysAgo(l.Updated)) : ''}</div>
+      <div class="sub">${[l.Phone ? prettyNum(l.Phone) : '', l.Email].filter(Boolean).map(esc).join(', ')}</div>
+      <div class="sub">${esc(l.Stage)}${l.Updated ? ', updated ' + esc(daysAgo(l.Updated)) + (daysAgo(l.Updated) === 'today' ? '' : ' ago') : ''}</div>
       ${l.Notes ? `<div class="note">${esc(l.Notes)}</div>` : ''}
-      <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update stage</button></div>
+      <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update</button></div>
     </div>`;
   const sug = suggestions();
-  return `${header(`<button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}</button>`)}
-    <div class="tabs" role="tablist" aria-label="Business">${CONFIG.BUSINESSES.map((b) => `<button class="tab" role="tab" data-pbiz="${esc(b.id)}" aria-selected="${b.id === state.biz}">${esc(b.label)}</button>`).join('')}</div>
-    <div class="hero"><div class="eyebrow">[ Sales pipeline ]</div><h1>PIPELINE</h1><div class="lead">${count('Open')} open lead${count('Open') === 1 ? '' : 's'}, <span class="hl">${count('Won')} won</span></div></div>
-    ${sug.length ? `<div class="sec">New clients spotted <span>calls &amp; emails</span></div><div class="list">${sug.map((g, i) => `<div class="sug"><div class="who">${esc(g.title)}<small>${esc(g.kind)} · ${esc(g.sub)}</small></div><button data-sug="${i}">Add lead</button><button data-nosug="${esc(g.key)}" style="background:none;color:var(--muted);padding:0 4px">✕</button></div>`).join('')}</div>` : ''}
+  return `${header(refreshBtn())}
+    <div class="hero"><h1>Pipeline</h1><div class="lead"><b>${count('Open')} open lead${count('Open') === 1 ? '' : 's'}</b>, ${count('Won')} won</div></div>
+    ${sug.length ? `<div class="sec">Possible new clients <span>from calls and emails</span></div><div class="list">${sug.map((g, i) => `<div class="sug"><div class="who">${esc(g.title)}<small>${esc(g.kind)}: ${esc(g.sub)}</small></div><button data-sug="${i}">Add lead</button><button class="x" data-nosug="${esc(g.key)}" aria-label="Dismiss">✕</button></div>`).join('')}</div>` : ''}
     <div class="stages">${tabs}</div>
-    ${list.length ? `<div class="list">${list.map(card).join('')}</div>` : `<div class="empty"><b>No leads here</b>Tap + to add one, or add new callers and emails from the list above.</div>`}
+    ${list.length ? `<div class="list">${list.map(card).join('')}</div>` : `<div class="empty"><b>No leads in this stage</b>Tap + to add a lead.</div>`}
     <button class="fab" id="addlead" aria-label="Add lead">+</button>`;
 }
 
@@ -470,7 +513,6 @@ function leadSheet(lead, isNew) {
 function bindPipeline() {
   $('#refresh').onclick = () => load();
   document.querySelectorAll('[data-stage]').forEach((b) => b.onclick = () => { state.stage = b.dataset.stage; render(); });
-  document.querySelectorAll('[data-pbiz]').forEach((b) => b.onclick = () => { state.biz = b.dataset.pbiz; store.set('biz', state.biz); render(); });
   document.querySelectorAll('[data-move]').forEach((b) => b.onclick = () => leadSheet(state.leads.find((l) => l.LeadId === b.dataset.move), false));
   const sug = suggestions();
   document.querySelectorAll('[data-sug]').forEach((b) => b.onclick = () => leadSheet(sug[+b.dataset.sug].lead, true));
@@ -488,24 +530,22 @@ function viewCalls() {
     const dur = c.secs ? ` · ${Math.floor(c.secs / 60)}m ${c.secs % 60}s` : '';
     return `<div class="callrow"><div class="who">
         <div class="num">${esc(name || prettyNum(n) || 'Unknown')}${tag}${isNew ? '<span class="tag newc">New caller</span>' : ''}</div>
-        <div class="meta">${name ? esc(prettyNum(n)) + ' · ' : ''}${esc(when(c.at))}${dur}</div>
-        <button class="namebtn" data-name="${esc(n)}">${name ? 'Rename' : '+ Add name'}</button>${n && c.dir !== 'outbound' ? (leadByPhone(n) ? `<span class="namebtn" style="color:var(--muted)"> · In pipeline: ${esc(leadByPhone(n).Stage)}</span>` : ` · <button class="namebtn" data-tolead="${esc(n)}">Add to pipeline</button>`) : ''}
+        <div class="meta">${name ? esc(prettyNum(n)) + ', ' : ''}${esc(when(c.at))}${dur.replace(' · ', ', ')}</div>
+        <button class="namebtn" data-name="${esc(n)}">${name ? 'Rename' : '+ Add name'}</button>${n && c.dir !== 'outbound' ? (leadByPhone(n) ? `<span class="namebtn" style="color:var(--muted)">&nbsp; In pipeline: ${esc(leadByPhone(n).Stage)}</span>` : `&nbsp; <button class="namebtn" data-tolead="${esc(n)}">Add to pipeline</button>`) : ''}
       </div>${n ? `<a class="callbtn" href="tel:${esc(n)}" aria-label="Call ${esc(name || n)}">${I.phone}</a>` : ''}</div>`;
   };
   const missed = state.calls.filter((c) => c.dir !== 'outbound' && !c.answered);
   let body;
-  if (state.callsStatus && state.callsStatus !== 'Succeeded') body = '<div class="empty"><b>Crazytel not connected yet</b>The Crazytel API key still needs to be added to the flow. Once it is, your calls appear here.</div>';
-  else if (!state.calls.length) body = '<div class="empty"><b>No calls yet</b>Calls to and from 02 3814 5525 will show here.</div>';
+  if (state.callsStatus && state.callsStatus !== 'Succeeded') body = '<div class="empty"><b>Calls aren\'t connected</b>Add the Crazytel API key to the flow and your calls will show here.</div>';
+  else if (!state.calls.length) body = '<div class="empty"><b>No calls yet</b>Calls to and from 02 3814 5525 show here.</div>';
   else body = `${missed.length ? `<div class="sec">Missed <span>${missed.length}</span></div><div class="list">${missed.slice(0, 10).map(row).join('')}</div>` : ''}
     <div class="sec">All calls <span>latest ${state.calls.length}</span></div><div class="list">${state.calls.map(row).join('')}</div>`;
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Calls · Sydney Bookkeeping · 02 3814 5525 ]</div></div>
-    <div class="hero"><h1>CALLS</h1><div class="lead">Who rang, <span class="hl">call them back</span></div></div>
+  return `<div class="hero"><h1>Calls</h1><div class="lead"><b>${missed.length ? missed.length + ' missed' : 'No missed calls'}</b> on the Sydney Bookkeeping line, 02 3814 5525</div></div>
     ${body}
-    <div class="hint">Tap the green button to call from your phone. Use the Crazytel CrazyPhone app as your dialler so the call goes out on your business number.</div>`;
+    <div class="hint">Tap the phone button to call back. Use the Crazytel CrazyPhone app as your dialler so the call shows your business number.</div>`;
 }
 
 function bindCalls() {
-  $('#back').onclick = () => { state.view = null; render(); };
   document.querySelectorAll('[data-tolead]').forEach((b) => b.onclick = () => leadSheet({ Name: names()[b.dataset.tolead] || '', Phone: b.dataset.tolead, Source: 'Call', Business: CALLS_BIZ }, true));
   document.querySelectorAll('[data-name]').forEach((b) => b.onclick = () => {
     const n = b.dataset.name, nm = names();
@@ -519,24 +559,22 @@ function bindCalls() {
 function viewInbox() {
   const card = (m, later) => {
     const ap = inApprovals(m);
-    return `<div class="card ${m.read ? '' : 'unread'}" style="cursor:default">
-      <div class="row"><span class="chip" style="max-width:62%">${esc(m.from)}</span><span class="time">${esc(when(m.at))}</span></div>
+    return `<div class="icard ${m.read ? '' : 'unread'}">
+      <div class="row"><span class="chip">${esc(m.from)}</span><span class="time">${esc(when(m.at))}</span></div>
       <div class="subj">${esc(m.subject)}</div>
       <div class="mail">${esc(m.preview)}</div>
-      ${ap ? `<div class="ibtns"><span class="inapp">Already in approvals</span></div><div class="ibtns"><button class="btn ok" data-goto="${esc(ap.id)}">Open draft</button></div>`
-        : `<div class="ibtns"><button class="btn ok" data-draft="${esc(m.id)}">Reply with Claude</button>${later ? `<button class="btn rej" data-done="${esc(m.id)}">Done</button>` : `<button class="btn rej" data-later="${esc(m.id)}">Later</button>`}</div><div class="ibtns"><button class="btn fyi" data-bill="${esc(m.id)}">Send to Xero bills</button></div>`}
+      ${ap ? `<div class="ibtns"><button class="btn ok" data-goto="${esc(ap.id)}">Open Claude's draft</button></div>`
+        : `<div class="ibtns"><button class="btn ok" data-draft="${esc(m.id)}">Draft reply</button>${later ? `<button class="btn rej" data-done="${esc(m.id)}">Done</button>` : `<button class="btn rej" data-later="${esc(m.id)}">Later</button>`}<button class="btn fyi" data-bill="${esc(m.id)}" aria-label="Send to Xero bills">Bill</button></div>`}
     </div>`;
   };
   const open = inboxOpen(), later = inboxLater();
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Inbox · Easy Books ]</div></div>
-    <div class="hero"><h1>INBOX</h1><div class="lead">Every email that comes in, <span class="hl">you choose</span></div></div>
-    ${open.length ? `<div class="sec">To decide <span>${open.length}</span></div><div class="list">${open.map((m) => card(m, false)).join('')}</div>` : '<div class="empty"><b>Inbox clear</b>Nothing new to decide on.</div>'}
-    ${later.length ? `<div class="sec">Later <span>flagged in Outlook</span></div><div class="list">${later.map((m) => card(m, true)).join('')}</div>` : ''}
-    <div class="hint">“Reply with Claude” moves the email into AI Drafts. Claude's reply shows up in Approvals in about a minute. “Later” flags it in Outlook.</div>`;
+  return `<div class="hero"><h1>Inbox</h1><div class="lead"><b>${open.length ? open.length + ' to decide on' : 'All clear'}</b> at Brad@easybooksaccounting.com</div></div>
+    ${open.length ? `<div class="list">${open.map((m) => card(m, false)).join('')}</div>` : '<div class="empty"><b>Inbox clear</b>New emails show here for you to reply to, save for later or send to Xero.</div>'}
+    ${later.length ? `<div class="sec">Saved for later <span>flagged in Outlook</span></div><div class="list">${later.map((m) => card(m, true)).join('')}</div>` : ''}
+    <div class="hint">Draft reply: a draft appears in Approvals in about a minute. Later: flags the email in Outlook. Bill: forwards it to a client's Xero bills.</div>`;
 }
 
 function bindInbox() {
-  $('#back').onclick = () => { state.view = null; render(); };
   document.querySelectorAll('[data-draft]').forEach((b) => b.onclick = async () => {
     b.disabled = true;
     try { await api({ action: 'draft', id: b.dataset.draft }); lsAdd('handled', b.dataset.draft); lsDel('later', b.dataset.draft); render(); toast('Sent to Claude, the draft will appear in Approvals shortly'); setTimeout(() => load(true), 75000); }
@@ -560,69 +598,72 @@ function viewHistory() {
     .sort((a, b) => new Date(stamp(b)) - new Date(stamp(a)));
   const dayName = (iso) => { const d = new Date(iso); if (isNaN(d)) return 'Earlier'; const t = new Date(); const y = new Date(Date.now() - 864e5);
     return d.toDateString() === t.toDateString() ? 'Today' : d.toDateString() === y.toDateString() ? 'Yesterday' : d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }); };
-  const verb = { Sent: 'Sent', FYI: 'Filed FYI', Rejected: 'Rejected', Waiting: 'Received' };
+  const verb = { Sent: 'Sent', FYI: 'FYI', Rejected: 'Rejected', Waiting: 'Waiting', Approved: 'Sending' };
   let last = '', list = '';
   rows.forEach((i) => {
     const dn = dayName(stamp(i));
     if (dn !== last) { list += (last ? '</div>' : '') + `<div class="day">${esc(dn)}</div><div class="list">`; last = dn; }
     list += `<button class="card ${i.status === 'Waiting' ? '' : 'fyi'}" data-id="${esc(i.id)}">
-      <div class="row"><span class="chip ${i.client === 'New client' ? 'new' : ''}">${esc(i.client)}</span><span class="st ${esc(i.status)}">${esc(verb[i.status] || i.status)} · ${esc(when(stamp(i)))}</span></div>
-      <div class="subj">${esc(i.subject)}</div><div class="from">${esc(i.from)}</div></button>`;
+      <div class="row"><span class="who2"><span class="chip">${esc(clientLabel(i))}</span>${i.client === 'New client' ? '<span class="newtag">New</span>' : ''}</span><span class="st ${esc(i.status)}">${esc(verb[i.status] || i.status)} ${esc(when(stamp(i)))}</span></div>
+      <div class="subj">${esc(i.subject)}</div></button>`;
   });
   if (last) list += '</div>';
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ History · ${esc(bizCfg().label)} ]</div></div>
-    <div class="hero"><h1>HISTORY</h1><div class="lead">Everything that's come in, <span class="hl">and what you did</span></div></div>
-    <div class="hrow">${filters.map(([k, l]) => `<button class="hchip" data-f="${k}" aria-pressed="${k === f}">${l} ${k === 'All' ? '' : state.items.filter((i) => i.business === state.biz && i.status === k).length}</button>`).join('')}</div>
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button></div>
+    <div class="hero"><h1>History</h1><div class="lead">Every client email for ${esc(bizCfg().firm)} and what happened to it</div></div>
+    <div class="hrow">${filters.map(([k, l]) => `<button class="hchip" data-f="${k}" aria-pressed="${k === f}">${l}${k === 'All' ? '' : ' ' + state.items.filter((i) => i.business === state.biz && i.status === k).length}</button>`).join('')}</div>
     ${rows.length ? list : `<div class="empty"><b>Nothing here yet</b>Emails you ${f === 'Sent' ? 'send' : f === 'FYI' ? 'file as FYI' : f === 'Rejected' ? 'reject' : 'receive'} will be listed here.</div>`}`;
 }
 
+const isEB = (it) => it.business !== 'Sydney Bookkeeping';
+const msgHead = (it, label) => `<div class="top"><button class="iconbtn" id="back" aria-label="Back">${I.back}</button><div class="eyebrow">${esc(label)}</div></div>
+    <div><h2 class="rt">${esc(it.subject)}</h2>
+      <div class="meta"><span>${esc(clientLabel(it))}${it.client === 'New client' ? '' : ', ' + esc(it.from)}</span><span>${esc(when(it.receivedAt))}</span>
+      ${it.folder && isEB(it) ? `<a class="folder" href="${esc(odLink('Clients/' + it.folder))}" target="_blank" rel="noopener">${I.folder} Client folder</a>` : ''}</div></div>`;
+
 function viewDone(it) {
-  const verb = { Sent: 'Reply sent', Rejected: 'Rejected · nothing sent' }[it.status] || it.status;
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back">${I.back}</button><div class="eyebrow">[ ${esc(verb)} · ${esc(when(it.actionedAt))} ]</div></div>
-    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div>${it.folder ? `<a class="folder" href="${esc(odLink('Clients/' + it.folder))}" target="_blank" rel="noopener">${I.folder} Client folder</a>` : ''}</div>
+  const label = { Sent: 'Reply sent ' + when(it.actionedAt), Rejected: 'Rejected, nothing sent', Approved: 'Sending now' }[it.status] || it.status;
+  return `${msgHead(it, label)}
     <details ${it.status === 'Sent' ? '' : 'open'}><summary>Client's email</summary><div class="orig">${esc(it.clientEmail || '(empty)')}</div></details>
-    ${it.status === 'Sent' ? `<div class="lbl"><div>What you sent <span>· plus your signature</span></div></div><div class="orig" style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;white-space:pre-wrap;line-height:1.5">${esc(it.draft)}</div>` : ''}
-    ${it.status === 'Rejected' ? '<div class="actions"><button class="btn ok" id="reopen" style="flex:1">Reply after all</button></div>' : ''}`;
+    ${it.status === 'Sent' || it.status === 'Approved' ? `<div class="lbl"><div>Your reply <span>from ${esc(senderOf(it.business))}</span></div></div><div class="orig box">${esc(it.draft)}</div>` : ''}
+    ${it.status === 'Rejected' ? '<div class="bar"><button class="btn ok" id="reopen">Reply after all</button></div>' : ''}`;
 }
 
 function viewFiles() {
-  const clients = [...new Map(state.items.filter((i) => i.business === state.biz && i.folder && i.status === 'Waiting').map((i) => [i.folder, i])).values()];
   const row = (href, title, sub) => `<a class="link" href="${esc(href)}" target="_blank" rel="noopener"><div>${esc(title)}<small>${esc(sub)}</small></div>${I.arrow}</a>`;
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ OneDrive · Easy Books ]</div></div>
-    <div class="hero"><h1>FILES</h1><div class="lead">Your OneDrive, <span class="hl">one tap away</span></div></div>
-    <div class="links">
+  if (state.biz === 'Sydney Bookkeeping') return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button></div>
+    <div class="hero"><h1>Files</h1><div class="lead">Sydney Bookkeeping files live in Zeljka's OneDrive</div></div>
+    <div class="empty"><b>Filed automatically</b>Client emails and attachments are saved to Client, then the client's name, then Emails, in Zeljka's OneDrive. New senders go to Client, then _New Clients.</div>`;
+  const clients = [...new Map(state.items.filter((i) => i.business === state.biz && i.folder && i.status === 'Waiting').map((i) => [i.folder, i])).values()];
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button></div>
+    <div class="hero"><h1>Files</h1><div class="lead">Easy Books OneDrive</div></div>
+    <div class="list">
       ${row(odLink('Clients'), 'All clients', 'Every client folder and filed email')}
       ${row(odLink('Clients/_New Clients'), 'New clients', 'Emails from people not on your client list')}
       ${row(odLink(''), 'My OneDrive', 'Everything in your OneDrive')}
     </div>
-    ${clients.length ? `<div class="sec">Clients waiting on you <span>${clients.length}</span></div><div class="links">${clients.map((i) => row(odLink('Clients/' + i.folder), i.client === 'New client' ? i.from : i.client, 'Client folder')).join('')}</div>` : ''}
+    ${clients.length ? `<div class="sec">Clients waiting on you <span>${clients.length}</span></div><div class="list">${clients.map((i) => row(odLink('Clients/' + i.folder), clientLabel(i), 'Client folder')).join('')}</div>` : ''}
     <div class="hint">Opens in the OneDrive app if it's installed, otherwise in your browser.</div>`;
 }
 
 function viewReview(it) {
   const ph = (it.draft.match(/\[[^\]]+\]/g) || []).length;
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ Reply to client · ${esc(it.business)} ]</div></div>
-    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div>${it.folder ? `<a class="folder" href="${esc(odLink('Clients/' + it.folder))}" target="_blank" rel="noopener">${I.folder} Client folder</a>` : ''}</div>
+  return `${msgHead(it, 'Reply to client')}
     <details><summary>Client's email</summary><div class="orig">${esc(it.clientEmail || '(empty)')}</div></details>
-    <div class="lbl"><div>Claude's draft <span>· tap to edit</span></div>${ph ? `<span class="ph">${ph} placeholder${ph > 1 ? 's' : ''}</span>` : ''}</div>
-    <textarea id="draft">${esc(it.draft)}</textarea>
-    <div class="hint">Fill in anything in [square brackets] before sending. Sends from Brad@easybooksaccounting.com with your signature added automatically.</div>
-    <div class="actions"><button class="btn ok" id="approve" style="flex:1">Approve &amp; send ${I.send}</button></div>
-    <div class="actions two"><button class="btn fyi" id="fyi">FYI · no reply</button><button class="btn rej" id="reject">Reject</button></div>
-    <div class="actions two"><button class="btn fyi" id="tobills" style="flex:1">Send to Xero bills</button></div>`;
+    <div class="lbl"><div>Claude's draft <span>tap to edit</span></div>${ph ? `<span class="ph">${ph} to fill in</span>` : ''}</div>
+    <textarea id="draft" aria-label="Reply draft">${esc(it.draft)}</textarea>
+    <div class="sendas"><span class="sw"></span><div>Sends from <b>${esc(senderOf(it.business))}</b> with the signature added${ph ? '. Fill in anything in [square brackets] first.' : '.'}</div></div>
+    <div class="bar"><button class="btn" id="more" aria-label="More options">${I.more}</button><button class="btn ok" id="approve">Approve and send ${I.send}</button></div>`;
 }
 
 function viewFyi(it) {
-  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ FYI · ${esc(it.business)} ]</div></div>
-    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div>${it.folder ? `<a class="folder" href="${esc(odLink('Clients/' + it.folder))}" target="_blank" rel="noopener">${I.folder} Client folder</a>` : ''}</div>
-    <div class="lbl"><div>Client's email <span>· filed as FYI, no reply sent</span></div></div>
-    <div class="orig" style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;white-space:pre-wrap;line-height:1.5">${esc(it.clientEmail || '(empty)')}</div>
-    <div class="actions"><button class="btn ok" id="reopen" style="flex:1">Reply after all</button></div>`;
+  return `${msgHead(it, 'Filed as FYI, no reply sent')}
+    <div class="orig box">${esc(it.clientEmail || '(empty)')}</div>
+    <div class="bar"><button class="btn ok" id="reopen">Reply after all</button></div>`;
 }
 
 function confirmSheet(title, text, okLabel, onOk) {
   const s = document.createElement('div'); s.className = 'sheet';
-  s.innerHTML = `<div class="box"><h2>${esc(title)}</h2><p>${esc(text)}</p><div class="actions" style="position:static"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-ok>${esc(okLabel)}</button></div></div>`;
+  s.innerHTML = `<div class="box"><h2>${esc(title)}</h2><p>${esc(text)}</p><div class="actions"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-ok>${esc(okLabel)}</button></div></div>`;
   s.addEventListener('click', (e) => { if (e.target === s || e.target.closest('[data-x]')) s.remove(); });
   s.querySelector('[data-ok]').addEventListener('click', async (e) => { e.target.disabled = true; await onOk(); s.remove(); });
   document.body.appendChild(s);
@@ -644,22 +685,21 @@ function viewClients() {
   const x = state.xero, list = x ? [...x.list].sort((a, b) => b.overdue - a.overdue || a.name.localeCompare(b.name)) : [];
   const tot = (k) => list.reduce((t, c) => t + c[k], 0);
   const card = (c) => `<div class="lcard">
-      <div class="row"><div class="nm">${esc(c.name)}</div>${c.overdue > 0 ? `<span class="src" style="background:#FDECEC;color:#B42318">${c.overdueCount} overdue</span>` : '<span class="src">Up to date</span>'}</div>
+      <div class="row"><div class="nm">${esc(c.name)}</div>${c.overdue > 0 ? `<span class="src" style="background:var(--red-t);color:var(--red)">${c.overdueCount} overdue</span>` : '<span class="src">Up to date</span>'}</div>
       <div class="xg">
         <div><small>Owed to them</small><b>${money(c.recv)}</b><span>${c.recvCount} invoice${c.recvCount === 1 ? '' : 's'}</span></div>
-        <div><small>Overdue</small><b style="${c.overdue > 0 ? 'color:#B42318' : ''}">${money(c.overdue)}</b><span>${c.overdueCount} invoice${c.overdueCount === 1 ? '' : 's'}</span></div>
+        <div><small>Overdue</small><b style="${c.overdue > 0 ? 'color:var(--red)' : ''}">${money(c.overdue)}</b><span>${c.overdueCount} invoice${c.overdueCount === 1 ? '' : 's'}</span></div>
         <div><small>Bills to pay</small><b>${money(c.payables)}</b><span>${c.overduePay > 0 ? money(c.overduePay) + ' overdue' : c.payCount + ' bill' + (c.payCount === 1 ? '' : 's')}</span></div>
       </div>
-      <div class="lacts"><a class="go" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" href="https://go.xero.com/" target="_blank" rel="noopener">Open Xero ${I.arrow}</a></div>
+      <div class="lacts"><a class="go" href="https://go.xero.com/" target="_blank" rel="noopener">Open in Xero ${I.arrow}</a></div>
     </div>`;
-  return `<div class="top"><div class="eyebrow">[ Xero · ${list.length || 'your'} clients ]</div><button class="iconbtn" id="xrefresh" aria-label="Refresh from Xero">${I.refresh}</button></div>
-    <div class="hero"><h1>CLIENTS</h1><div class="lead">Live from <span class="hl">Xero</span>${x ? ' · updated ' + esc(when(x.at)) : ''}</div></div>
-    ${state.xeroError ? `<div class="hint" style="color:#B42318">${esc(state.xeroError)}</div>` : ''}
+  return `<div class="hdr"><div class="hero" style="padding:0"><h1>Xero clients</h1><div class="lead">${list.length ? `<b>${list.length} connected</b>` : 'Live from Xero'}${x ? ', updated ' + esc(when(x.at)) : ''}</div></div><button class="iconbtn ${state.xeroLoading ? 'spin' : ''}" id="xrefresh" aria-label="Refresh from Xero">${I.refresh}</button></div>
+    ${state.xeroError ? `<div class="hint" style="color:var(--red)">${esc(state.xeroError)}</div>` : ''}
     ${state.xeroLoading && !list.length ? '<div class="hint">Fetching from Xero… this takes a few seconds.</div>' : ''}
-    ${list.length ? `<div class="xg tot"><div><small>Total owed</small><b>${money(tot('recv'))}</b></div><div><small>Overdue</small><b style="color:${tot('overdue') > 0 ? '#B42318' : 'inherit'}">${money(tot('overdue'))}</b></div><div><small>Bills to pay</small><b>${money(tot('payables'))}</b></div></div>
+    ${list.length ? `<div class="xg tot"><div><small>Total owed</small><b>${money(tot('recv'))}</b></div><div><small>Overdue</small><b style="color:${tot('overdue') > 0 ? 'var(--red)' : 'inherit'}">${money(tot('overdue'))}</b></div><div><small>Bills to pay</small><b>${money(tot('payables'))}</b></div></div>
       <div class="sec">Clients <span>${list.length}</span></div><div class="links">${list.map(card).join('')}</div>` : (!state.xeroLoading && !state.xeroError ? '<div class="hint">No Xero data yet. Tap refresh.</div>' : '')}
     ${state.xeroLoading && list.length ? '<div class="hint">Refreshing…</div>' : ''}
-    <div class="hint">Unpaid sales invoices, overdue invoices and unpaid bills for each connected Xero organisation.</div>`;
+    <div class="hint">Owed to them: unpaid sales invoices. Bills to pay: unpaid supplier bills. Overdue means past the due date.</div>`;
 }
 function bindClients() {
   $('#xrefresh').onclick = () => loadXero();
@@ -754,7 +794,7 @@ function viewChat() {
   const log = chatLog();
   const bubbles = log.map((m, i) => m.role === 'user' ? `<div class="cb me">${esc(m.content).replace(/\n/g, '<br>')}</div>`
     : `<div class="cb ai">${mdChat(m.content)}<button class="ccopy" data-copy="${i}">Copy</button></div>`).join('');
-  const empty = `<div class="cempty"><div class="cstar">✦</div><b>Ask Claude anything</b><span>It can see your emails, approvals, leads, calls and Xero figures.</span>
+  const empty = `<div class="cempty"><div class="cstar">✦</div><b>Ask Claude</b><span>It can see your approvals, inbox, leads, calls and Xero figures.</span>
     <div class="cideas">${CHAT_IDEAS.map((q) => `<button data-idea="${esc(q)}">${esc(q)}</button>`).join('')}</div></div>`;
   return `<div class="chead"><button class="iconbtn" id="back" aria-label="Back">${I.back}</button><div class="ctitle"><span class="cstar sm">✦</span> Ask Claude</div>${log.length ? '<button class="cclear" id="clear">New chat</button>' : '<span style="width:44px"></span>'}</div>
     <div class="chat" id="chat">${bubbles || empty}${state.chatBusy ? '<div class="cb ai typing"><span></span><span></span><span></span></div>' : ''}</div>
@@ -788,13 +828,12 @@ function renderNav(show) {
   let n = document.getElementById('nav');
   if (!show) { if (n) n.remove(); const f = document.getElementById('fab'); if (f) f.remove(); return; }
   if (!n) { n = document.createElement('nav'); n.id = 'nav'; n.className = 'nav'; document.body.appendChild(n); }
-  const cur = state.files ? 'files' : (state.view || 'home');
+  const cur = state.view || 'home';
   const nIn = inboxOpen().filter((m) => !m.read).length, nMiss = missedToday().length, nW = waiting(state.biz).length, nSug = (() => { const b = state.biz; let t = 0; for (const x of CONFIG.BUSINESSES) { state.biz = x.id; t += suggestions().length; } state.biz = b; return t; })();
   const tab = (k, label, icon, badge, red) => `<button data-nav="${k}" aria-current="${cur === k}"><span class="ic">${icon}</span>${label}${badge ? `<span class="dot ${red ? 'red' : ''}">${badge}</span>` : ''}</button>`;
-  n.innerHTML = `<div class="in">${tab('home', 'Approvals', I.check, nW)}${tab('inbox', 'Inbox', I.mail, nIn)}${tab('calls', 'Calls', I.phone, nMiss, true)}${tab('pipeline', 'Pipeline', I.board, nSug)}${tab('clients', 'Xero', I.xero, (state.xero ? state.xero.list.filter((c) => c.overdue > 0).length : 0), true)}${tab('files', 'Files', I.cloud, 0)}</div>`;
+  n.innerHTML = `<div class="in">${tab('home', 'Approvals', I.check, nW)}${tab('inbox', 'Inbox', I.mail, nIn)}${tab('calls', 'Calls', I.phone, nMiss, true)}${tab('pipeline', 'Pipeline', I.board, nSug)}${tab('clients', 'Xero', I.xero, (state.xero ? state.xero.list.filter((c) => c.overdue > 0).length : 0), true)}</div>`;
   let fab = document.getElementById('fab');
-  if (!fab) { fab = document.createElement('button'); fab.id = 'fab'; fab.className = 'askfab'; fab.setAttribute('aria-label', 'Ask Claude'); fab.innerHTML = '✦'; document.body.appendChild(fab); }
-  fab.style.bottom = state.view === 'pipeline' ? 'calc(152px + env(safe-area-inset-bottom))' : '';
+  if (!fab) { fab = document.createElement('button'); fab.id = 'fab'; fab.className = 'askfab'; fab.setAttribute('aria-label', 'Ask Claude'); fab.innerHTML = '<span>✦</span>Ask Claude'; document.body.appendChild(fab); }
   fab.onclick = () => { state.open = null; state.hist = null; state.files = false; state.view = 'chat'; render(); };
   n.querySelectorAll('[data-nav]').forEach((b) => b.onclick = () => {
     const k = b.dataset.nav; state.open = null; state.hist = null; state.files = k === 'files'; state.view = (k === 'home' || k === 'files') ? null : k; render(); scrollTo(0, 0);
@@ -802,6 +841,13 @@ function renderNav(show) {
 }
 
 function render() {
+  const app = $('#app');
+  const openIt = state.open && state.items.find((i) => i.id === state.open);
+  document.body.dataset.biz = openIt ? openIt.business : (state.view === 'calls' ? CALLS_BIZ : state.biz);
+  renderView();
+  document.querySelectorAll('[data-sw]').forEach((b) => b.onclick = () => { state.biz = b.dataset.sw; store.set('biz', state.biz); render(); });
+}
+function renderView() {
   const app = $('#app');
   if (!state.demo && !state.endpoint) { renderNav(false); app.innerHTML = viewLock(); bindLock(); return; }
   renderNav(!state.open);
@@ -812,7 +858,7 @@ function render() {
   if (state.view === 'pipeline' && !it) { app.innerHTML = viewPipeline(); bindPipeline(); return; }
   if (state.view === 'clients' && !it) { app.innerHTML = viewClients(); bindClients(); return; }
   if (state.view === 'chat' && !it) { const old = $('#q') ? $('#q').value : ''; renderNav(false); app.innerHTML = viewChat(); if (old) $('#q').value = old; bindChat(); return; }
-  if (it && (it.status === 'Sent' || it.status === 'Rejected')) { app.innerHTML = viewDone(it); $('#back').onclick = back; const r = $('#reopen'); if (r) r.onclick = () => { it.status = 'Waiting'; render(); }; return; }
+  if (it && (it.status === 'Sent' || it.status === 'Rejected' || it.status === 'Approved')) { app.innerHTML = viewDone(it); $('#back').onclick = back; const r = $('#reopen'); if (r) r.onclick = () => { it.status = 'Waiting'; render(); }; return; }
   if (state.hist && !it) { app.innerHTML = viewHistory(); $('#back').onclick = () => { state.hist = null; render(); };
     document.querySelectorAll('.hchip').forEach((c) => c.onclick = () => { state.hist = c.dataset.f; render(); });
     document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); }); return; }
@@ -834,10 +880,9 @@ function bindLock() {
 }
 
 function bindList() {
-  document.querySelectorAll('.tab').forEach((t) => t.onclick = () => { state.biz = t.dataset.biz; store.set('biz', state.biz); render(); });
   document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); });
   $('#refresh').onclick = () => load();
-
+  $('#files').onclick = () => { state.files = true; render(); scrollTo(0, 0); };
   document.querySelectorAll('[data-hist]').forEach((b) => b.onclick = () => { state.hist = b.dataset.hist; render(); scrollTo(0, 0); });
 }
 
@@ -846,23 +891,37 @@ function bindReview(it) {
   $('#approve').onclick = () => {
     const draft = $('#draft').value;
     if (/\[[^\]]+\]/.test(draft)) {
-      confirmSheet('Placeholders still in the draft', 'There\'s still text in [square brackets]. Send it anyway?', 'Send anyway', () => send(it, draft));
+      confirmSheet('Some blanks aren\'t filled in', 'The draft still has text in [square brackets]. Send it anyway?', 'Send anyway', () => send(it, draft));
     } else {
-      confirmSheet('Send this reply?', `It goes to ${it.from} from Brad@easybooksaccounting.com.`, 'Send', () => send(it, draft));
+      confirmSheet('Send this reply?', `It goes to ${it.from} from ${senderOf(it.business)}.`, 'Send reply', () => send(it, draft));
     }
   };
-  $('#fyi').onclick = async () => {
-    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); it.status = 'FYI'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Filed as FYI — no reply sent'); }
-    catch { toast('Couldn\'t file it — try again'); }
+  const fileFyi = async () => {
+    try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); it.status = 'FYI'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Filed as FYI, no reply sent'); }
+    catch { toast('Couldn\'t file it. Try again.'); }
   };
-  $('#tobills').onclick = () => billsSheet(it, async () => {
+  const reject = () => confirmSheet('Reject this draft?', 'Nothing is sent to the client. The email stays in the inbox for you to handle yourself.', 'Reject draft', async () => {
+    try { await api({ action: 'reject', id: it.id, business: it.business }); it.status = 'Rejected'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Draft rejected, nothing sent'); }
+    catch { toast('Couldn\'t reject it. Try again.'); }
+  });
+  const toBills = () => billsSheet(it, async () => {
     try { await api({ action: 'reject', status: 'FYI', id: it.id, business: it.business }); it.status = 'FYI'; it.actionedAt = new Date().toISOString(); } catch {}
     state.open = null; render();
   });
-  $('#reject').onclick = () => confirmSheet('Reject this draft?', 'Nothing is sent to the client. The email stays in your inbox for you to handle.', 'Reject', async () => {
-    try { await api({ action: 'reject', id: it.id, business: it.business }); it.status = 'Rejected'; it.actionedAt = new Date().toISOString(); state.open = null; render(); toast('Draft rejected — nothing was sent'); }
-    catch { toast('Couldn\'t reject — try again'); }
-  });
+  $('#more').onclick = () => {
+    const s = document.createElement('div'); s.className = 'sheet';
+    s.innerHTML = `<div class="box"><h2>Other options</h2><div class="menu">
+      <button data-a="fyi">File as FYI<small>No reply needed. Keeps a record in History.</small></button>
+      <button data-a="bills">Send to Xero bills<small>Forwards it to a client's Xero as a draft bill.</small></button>
+      <button data-a="reject" class="danger">Reject draft<small>Nothing is sent. Handle the email yourself.</small></button></div>
+      <button class="btn" data-x>Cancel</button></div>`;
+    s.addEventListener('click', (e) => {
+      if (e.target === s || e.target.closest('[data-x]')) return s.remove();
+      const a = e.target.closest('[data-a]'); if (!a) return; s.remove();
+      ({ fyi: fileFyi, bills: toBills, reject })[a.dataset.a]();
+    });
+    document.body.appendChild(s);
+  };
 }
 
 async function send(it, draft) {
@@ -870,12 +929,12 @@ async function send(it, draft) {
     await api({ action: 'approve', id: it.id, business: it.business, draft });
     it.status = 'Sent'; it.actionedAt = new Date().toISOString(); it.draft = draft;
     state.open = null; render(); toast('Reply sent to ' + it.from);
-  } catch { toast('Couldn\'t send — nothing went out. Try again.'); }
+  } catch { toast('Couldn\'t send. Nothing went out, try again.'); }
 }
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '13';
+const APP_VERSION = '14';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
