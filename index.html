@@ -141,6 +141,14 @@
   .btn.fyi{flex:1;border:1.5px solid var(--ink);background:#fff}
   .actions.two{position:static}
   .links{display:flex;flex-direction:column;gap:10px}
+  .xg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .xg>div{background:#F6F7F6;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+  .xg small{font-size:11px;color:var(--muted);font-weight:600}
+  .xg b{font-size:15px}
+  .xg span{font-size:11px;color:var(--muted)}
+  .xg.tot>div{background:#fff;border:1px solid var(--line)}
+  .nav button{font-size:10.5px}
+  .nav .ic{width:40px}
   .link{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:600}
   .link small{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
   .folder{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;margin-top:8px}
@@ -177,6 +185,7 @@ const I = {
   cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.5 3.3 3.3 0 0 0 6 19z"/></svg>',
   folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
   arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+  xero: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 17V10M10 17V6M14 17v-5M18 17V8"/></svg>',
   send: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>'
 };
 
@@ -187,7 +196,7 @@ const store = {
 
 const state = {
   biz: store.get('biz') || 'Easy Books',
-  items: [], inbox: [], calls: [], callsStatus: '', leads: [], stage: 'Open', loading: false, open: null, files: false, hist: null, view: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
+  items: [], inbox: [], calls: [], callsStatus: '', leads: [], xero: (() => { try { return JSON.parse(store.get('xero') || 'null'); } catch { return null; } })(), xeroLoading: false, xeroError: '', stage: 'Open', loading: false, open: null, files: false, hist: null, view: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
   endpoint: store.get('endpoint')
 };
 
@@ -225,6 +234,10 @@ async function api(payload) {
       { id: 'c1', direction: 'inbound', source_number: '61412555123', destination_number: '61238145525', started_at: new Date(Date.now() - 1200e3).toISOString(), answered_at: null, duration_seconds: 0, status_name: 'Missed' },
       { id: 'c2', direction: 'inbound', source_number: '61298765432', destination_number: '61238145525', started_at: new Date(Date.now() - 7200e3).toISOString(), answered_at: new Date().toISOString(), duration_seconds: 312, status_name: 'Completed' },
       { id: 'c3', direction: 'outbound', source_number: '61238145525', destination_number: '61298765432', started_at: new Date(Date.now() - 90000e3).toISOString(), answered_at: new Date().toISOString(), duration_seconds: 95, status_name: 'Completed' }] };
+    if (payload.action === 'xero') return { xero: [
+      { tenantId: 't1', name: 'Zephyr Empire Pty Ltd', recv: 18450.5, recvCount: 9, overdue: 6200, overdueCount: 3, payables: 4210.75, payCount: 6, overduePay: 980 },
+      { tenantId: 't2', name: 'Avalon Village Meats', recv: 3120, recvCount: 4, overdue: 0, overdueCount: 0, payables: 7850.2, payCount: 11, overduePay: 2300 },
+      { tenantId: 't3', name: "Topper's Mountain Wines", recv: 9400, recvCount: 5, overdue: 1450, overdueCount: 1, payables: 1200, payCount: 2, overduePay: 0 }] };
     if (payload.action === 'draft' || payload.action === 'later') return { ok: true };
     if (payload.action === 'addlead' || payload.action === 'movelead') { const i = DEMO_LEADS.findIndex((x) => x.LeadId === payload.lead.LeadId); if (i >= 0) DEMO_LEADS[i] = { ...DEMO_LEADS[i], ...payload.lead }; else DEMO_LEADS.push({ ...payload.lead, Created: new Date().toISOString() }); return { ok: true }; }
     const it = DEMO.find((d) => d.id === payload.id);
@@ -580,6 +593,45 @@ function confirmSheet(title, text, okLabel, onOk) {
   document.body.appendChild(s);
 }
 
+
+/* ---------- Xero clients ---------- */
+const money = (n) => '$' + Math.round(Number(n) || 0).toLocaleString('en-AU');
+async function loadXero() {
+  state.xeroLoading = true; state.xeroError = ''; render();
+  try {
+    const r = await api({ action: 'xero' });
+    const list = (r.xero || []).map((x) => ({ id: x.tenantId || '', name: x.name || 'Client', recv: +x.recv || 0, recvCount: +x.recvCount || 0, overdue: +x.overdue || 0, overdueCount: +x.overdueCount || 0, payables: +x.payables || 0, payCount: +x.payCount || 0, overduePay: +x.overduePay || 0 }));
+    state.xero = { at: new Date().toISOString(), list }; store.set('xero', JSON.stringify(state.xero));
+  } catch (e) { state.xeroError = 'Couldn\'t reach Xero just now. Tap refresh to try again.'; }
+  state.xeroLoading = false; render();
+}
+function viewClients() {
+  const x = state.xero, list = x ? [...x.list].sort((a, b) => b.overdue - a.overdue || a.name.localeCompare(b.name)) : [];
+  const tot = (k) => list.reduce((t, c) => t + c[k], 0);
+  const card = (c) => `<div class="lcard">
+      <div class="row"><div class="nm">${esc(c.name)}</div>${c.overdue > 0 ? `<span class="src" style="background:#FDECEC;color:#B42318">${c.overdueCount} overdue</span>` : '<span class="src">Up to date</span>'}</div>
+      <div class="xg">
+        <div><small>Owed to them</small><b>${money(c.recv)}</b><span>${c.recvCount} invoice${c.recvCount === 1 ? '' : 's'}</span></div>
+        <div><small>Overdue</small><b style="${c.overdue > 0 ? 'color:#B42318' : ''}">${money(c.overdue)}</b><span>${c.overdueCount} invoice${c.overdueCount === 1 ? '' : 's'}</span></div>
+        <div><small>Bills to pay</small><b>${money(c.payables)}</b><span>${c.overduePay > 0 ? money(c.overduePay) + ' overdue' : c.payCount + ' bill' + (c.payCount === 1 ? '' : 's')}</span></div>
+      </div>
+      <div class="lacts"><a class="go" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px" href="https://go.xero.com/" target="_blank" rel="noopener">Open Xero ${I.arrow}</a></div>
+    </div>`;
+  return `<div class="top"><div class="eyebrow">[ Xero · ${list.length || 'your'} clients ]</div><button class="iconbtn" id="xrefresh" aria-label="Refresh from Xero">${I.refresh}</button></div>
+    <div class="hero"><h1>CLIENTS</h1><div class="lead">Live from <span class="hl">Xero</span>${x ? ' · updated ' + esc(when(x.at)) : ''}</div></div>
+    ${state.xeroError ? `<div class="hint" style="color:#B42318">${esc(state.xeroError)}</div>` : ''}
+    ${state.xeroLoading && !list.length ? '<div class="hint">Fetching from Xero… this takes a few seconds.</div>' : ''}
+    ${list.length ? `<div class="xg tot"><div><small>Total owed</small><b>${money(tot('recv'))}</b></div><div><small>Overdue</small><b style="color:${tot('overdue') > 0 ? '#B42318' : 'inherit'}">${money(tot('overdue'))}</b></div><div><small>Bills to pay</small><b>${money(tot('payables'))}</b></div></div>
+      <div class="sec">Clients <span>${list.length}</span></div><div class="links">${list.map(card).join('')}</div>` : (!state.xeroLoading && !state.xeroError ? '<div class="hint">No Xero data yet. Tap refresh.</div>' : '')}
+    ${state.xeroLoading && list.length ? '<div class="hint">Refreshing…</div>' : ''}
+    <div class="hint">Unpaid sales invoices, overdue invoices and unpaid bills for each connected Xero organisation.</div>`;
+}
+function bindClients() {
+  $('#xrefresh').onclick = () => loadXero();
+  if (!state.xero && !state.xeroLoading && !state.xeroError) loadXero();
+  else if (state.xero && Date.now() - new Date(state.xero.at) > 30 * 60e3 && !state.xeroLoading && !state.xeroError) loadXero();
+}
+
 /* ---------- render + events ---------- */
 function renderNav(show) {
   let n = document.getElementById('nav');
@@ -588,7 +640,7 @@ function renderNav(show) {
   const cur = state.files ? 'files' : (state.view || 'home');
   const nIn = inboxOpen().filter((m) => !m.read).length, nMiss = missedToday().length, nW = waiting(state.biz).length, nSug = (() => { const b = state.biz; let t = 0; for (const x of CONFIG.BUSINESSES) { state.biz = x.id; t += suggestions().length; } state.biz = b; return t; })();
   const tab = (k, label, icon, badge, red) => `<button data-nav="${k}" aria-current="${cur === k}"><span class="ic">${icon}</span>${label}${badge ? `<span class="dot ${red ? 'red' : ''}">${badge}</span>` : ''}</button>`;
-  n.innerHTML = `<div class="in">${tab('home', 'Approvals', I.check, nW)}${tab('inbox', 'Inbox', I.mail, nIn)}${tab('calls', 'Calls', I.phone, nMiss, true)}${tab('pipeline', 'Pipeline', I.board, nSug)}${tab('files', 'Files', I.cloud, 0)}</div>`;
+  n.innerHTML = `<div class="in">${tab('home', 'Approvals', I.check, nW)}${tab('inbox', 'Inbox', I.mail, nIn)}${tab('calls', 'Calls', I.phone, nMiss, true)}${tab('pipeline', 'Pipeline', I.board, nSug)}${tab('clients', 'Xero', I.xero, (state.xero ? state.xero.list.filter((c) => c.overdue > 0).length : 0), true)}${tab('files', 'Files', I.cloud, 0)}</div>`;
   n.querySelectorAll('[data-nav]').forEach((b) => b.onclick = () => {
     const k = b.dataset.nav; state.open = null; state.hist = null; state.files = k === 'files'; state.view = (k === 'home' || k === 'files') ? null : k; render(); scrollTo(0, 0);
   });
@@ -603,6 +655,7 @@ function render() {
   if (state.view === 'inbox' && !it) { app.innerHTML = viewInbox(); bindInbox(); return; }
   if (state.view === 'calls' && !it) { app.innerHTML = viewCalls(); bindCalls(); return; }
   if (state.view === 'pipeline' && !it) { app.innerHTML = viewPipeline(); bindPipeline(); return; }
+  if (state.view === 'clients' && !it) { app.innerHTML = viewClients(); bindClients(); return; }
   if (it && (it.status === 'Sent' || it.status === 'Rejected')) { app.innerHTML = viewDone(it); $('#back').onclick = back; const r = $('#reopen'); if (r) r.onclick = () => { it.status = 'Waiting'; render(); }; return; }
   if (state.hist && !it) { app.innerHTML = viewHistory(); $('#back').onclick = () => { state.hist = null; render(); };
     document.querySelectorAll('.hchip').forEach((c) => c.onclick = () => { state.hist = c.dataset.f; render(); });
