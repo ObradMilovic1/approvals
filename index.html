@@ -77,6 +77,15 @@
   .lock input{height:58px;border:1.5px solid var(--ink);border-radius:16px;font-size:24px;letter-spacing:8px;text-align:center;font-family:inherit}
   .err{color:var(--red);font-size:14px;min-height:20px}
   .hidden{display:none!important}
+  button.stat{background:none;border:none;border-right:1px solid var(--line);cursor:pointer;font-family:inherit}
+  button.stat:last-child{border-right:none}
+  button.stat .k::after{content:' ›';color:var(--muted)}
+  .hrow{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+  .hchip{flex:none;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;cursor:pointer}
+  .hchip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .day{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:8px 4px -4px}
+  .st{font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px}
+  .st.Sent{background:var(--mint);color:var(--ink)}.st.FYI{background:var(--ink);color:var(--mint)}.st.Rejected{background:#FDECEC;color:#B42318}.st.Waiting{background:var(--chip);color:var(--chip-t)}
   .hbtns{display:flex;gap:8px}
   .sec{font-size:13px;font-weight:700;margin:6px 4px -4px;display:flex;justify-content:space-between;align-items:center}
   .sec span{font-weight:500;color:var(--muted)}
@@ -128,7 +137,7 @@ const store = {
 
 const state = {
   biz: store.get('biz') || 'Easy Books',
-  items: [], loading: false, open: null, files: false, error: '', demo: !CONFIG.ENDPOINT_ENC,
+  items: [], loading: false, open: null, files: false, hist: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
   endpoint: store.get('endpoint')
 };
 
@@ -266,8 +275,41 @@ function viewList() {
     ${state.demo ? '<div class="notice"><b>Preview.</b> Showing sample emails. Your real inbox appears once the private link is switched on.</div>' : ''}
     <div class="hero"><div class="eyebrow">[ Today ]</div><h1>APPROVALS</h1>
       <div class="lead">${w.length ? `Claude has drafted ${w.length === 1 ? 'a reply' : w.length + ' replies'}, <span class="hl">ready for you</span>` : 'Nothing waiting, <span class="hl">you\'re all caught up</span>'}</div></div>
-    <div class="stats"><div class="stat"><div class="k">Waiting</div><div class="v">${w.length}</div></div><div class="stat"><div class="k">Sent today</div><div class="v">${sent}</div></div><div class="stat"><div class="k">FYI today</div><div class="v">${fyi.length}</div></div></div>
+    <div class="stats"><button class="stat" data-hist="Waiting"><div class="k">Waiting</div><div class="v">${w.length}</div></button><button class="stat" data-hist="Sent"><div class="k">Sent today</div><div class="v">${sent}</div></button><button class="stat" data-hist="FYI"><div class="k">FYI today</div><div class="v">${fyi.length}</div></button></div>
     ${body}`;
+}
+
+function viewHistory() {
+  const f = state.hist;
+  const filters = [['All', 'All'], ['Waiting', 'Waiting'], ['Sent', 'Sent'], ['FYI', 'FYI'], ['Rejected', 'Rejected']];
+  const stamp = (i) => i.status === 'Waiting' ? i.receivedAt : (i.actionedAt || i.receivedAt);
+  const rows = state.items.filter((i) => i.business === state.biz && (f === 'All' || i.status === f))
+    .sort((a, b) => new Date(stamp(b)) - new Date(stamp(a)));
+  const dayName = (iso) => { const d = new Date(iso); if (isNaN(d)) return 'Earlier'; const t = new Date(); const y = new Date(Date.now() - 864e5);
+    return d.toDateString() === t.toDateString() ? 'Today' : d.toDateString() === y.toDateString() ? 'Yesterday' : d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }); };
+  const verb = { Sent: 'Sent', FYI: 'Filed FYI', Rejected: 'Rejected', Waiting: 'Received' };
+  let last = '', list = '';
+  rows.forEach((i) => {
+    const dn = dayName(stamp(i));
+    if (dn !== last) { list += (last ? '</div>' : '') + `<div class="day">${esc(dn)}</div><div class="list">`; last = dn; }
+    list += `<button class="card ${i.status === 'Waiting' ? '' : 'fyi'}" data-id="${esc(i.id)}">
+      <div class="row"><span class="chip ${i.client === 'New client' ? 'new' : ''}">${esc(i.client)}</span><span class="st ${esc(i.status)}">${esc(verb[i.status] || i.status)} · ${esc(when(stamp(i)))}</span></div>
+      <div class="subj">${esc(i.subject)}</div><div class="from">${esc(i.from)}</div></button>`;
+  });
+  if (last) list += '</div>';
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back to approvals">${I.back}</button><div class="eyebrow">[ History · ${esc(bizCfg().label)} ]</div></div>
+    <div class="hero"><h1>HISTORY</h1><div class="lead">Everything that's come in, <span class="hl">and what you did</span></div></div>
+    <div class="hrow">${filters.map(([k, l]) => `<button class="hchip" data-f="${k}" aria-pressed="${k === f}">${l} ${k === 'All' ? '' : state.items.filter((i) => i.business === state.biz && i.status === k).length}</button>`).join('')}</div>
+    ${rows.length ? list : `<div class="empty"><b>Nothing here yet</b>Emails you ${f === 'Sent' ? 'send' : f === 'FYI' ? 'file as FYI' : f === 'Rejected' ? 'reject' : 'receive'} will be listed here.</div>`}`;
+}
+
+function viewDone(it) {
+  const verb = { Sent: 'Reply sent', Rejected: 'Rejected · nothing sent' }[it.status] || it.status;
+  return `<div class="top"><button class="iconbtn" id="back" aria-label="Back">${I.back}</button><div class="eyebrow">[ ${esc(verb)} · ${esc(when(it.actionedAt))} ]</div></div>
+    <div><h2 class="rt">${esc(it.subject)}</h2><div class="from" style="margin-top:4px">From ${esc(it.from)} · ${esc(when(it.receivedAt))}</div>${it.folder ? `<a class="folder" href="${esc(odLink('Clients/' + it.folder))}" target="_blank" rel="noopener">${I.folder} Client folder</a>` : ''}</div>
+    <details ${it.status === 'Sent' ? '' : 'open'}><summary>Client's email</summary><div class="orig">${esc(it.clientEmail || '(empty)')}</div></details>
+    ${it.status === 'Sent' ? `<div class="lbl"><div>What you sent <span>· plus your signature</span></div></div><div class="orig" style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;white-space:pre-wrap;line-height:1.5">${esc(it.draft)}</div>` : ''}
+    ${it.status === 'Rejected' ? '<div class="actions"><button class="btn ok" id="reopen" style="flex:1">Reply after all</button></div>' : ''}`;
 }
 
 function viewFiles() {
@@ -317,6 +359,11 @@ function render() {
   const app = $('#app');
   if (!state.demo && !state.endpoint) { app.innerHTML = viewLock(); bindLock(); return; }
   const it = state.open && state.items.find((i) => i.id === state.open);
+  const back = () => { state.open = null; render(); };
+  if (it && (it.status === 'Sent' || it.status === 'Rejected')) { app.innerHTML = viewDone(it); $('#back').onclick = back; const r = $('#reopen'); if (r) r.onclick = () => { it.status = 'Waiting'; render(); }; return; }
+  if (state.hist && !it) { app.innerHTML = viewHistory(); $('#back').onclick = () => { state.hist = null; render(); };
+    document.querySelectorAll('.hchip').forEach((c) => c.onclick = () => { state.hist = c.dataset.f; render(); });
+    document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); }); return; }
   if (state.files && !it) { app.innerHTML = viewFiles(); $('#back').onclick = () => { state.files = false; render(); }; return; }
   if (it && it.status === 'FYI') { app.innerHTML = viewFyi(it); $('#back').onclick = () => { state.open = null; render(); }; $('#reopen').onclick = () => { it.status = 'Waiting'; render(); }; return; }
   app.innerHTML = it ? viewReview(it) : viewList();
@@ -339,6 +386,7 @@ function bindList() {
   document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); });
   $('#refresh').onclick = () => load();
   $('#files').onclick = () => { state.files = true; render(); scrollTo(0, 0); };
+  document.querySelectorAll('[data-hist]').forEach((b) => b.onclick = () => { state.hist = b.dataset.hist; render(); scrollTo(0, 0); });
 }
 
 function bindReview(it) {
@@ -372,7 +420,7 @@ async function send(it, draft) {
 /* ---------- start ---------- */
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 document.addEventListener('visibilitychange', () => { if (!document.hidden && (state.demo || state.endpoint)) load(true); });
-setInterval(() => { if (!document.hidden && !state.open && !state.files && (state.demo || state.endpoint)) load(true); }, 60000);
+setInterval(() => { if (!document.hidden && !state.open && !state.files && !state.hist && (state.demo || state.endpoint)) load(true); }, 60000);
 if (state.demo || state.endpoint) load(); else render();
 </script>
 </body>
