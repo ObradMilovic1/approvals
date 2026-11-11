@@ -16,7 +16,7 @@
   html,body{margin:0;height:100%}
   body{font-family:Geist,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#fff;
     background-image:linear-gradient(var(--soft) 1px,transparent 1px),linear-gradient(90deg,var(--soft) 1px,transparent 1px);background-size:48px 48px;background-attachment:fixed}
-  .wrap{max-width:480px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px;min-height:100%}
+  .wrap{max-width:480px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px;min-height:100%}
   button{font-family:inherit;color:inherit}
   .hdr{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 12px}
   .brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;letter-spacing:-.2px}
@@ -77,6 +77,39 @@
   .lock input{height:58px;border:1.5px solid var(--ink);border-radius:16px;font-size:24px;letter-spacing:8px;text-align:center;font-family:inherit}
   .err{color:var(--red);font-size:14px;min-height:20px}
   .hidden{display:none!important}
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .nav .in{max-width:480px;margin:0 auto;display:flex}
+  .nav button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);padding:6px 0;cursor:pointer;position:relative;font-family:inherit}
+  .nav button[aria-current=true]{color:var(--ink)}
+  .nav button[aria-current=true] .ic{background:var(--mint)}
+  .nav .ic{width:44px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center}
+  .nav .dot{position:absolute;top:4px;left:calc(50% + 8px);min-width:16px;height:16px;border-radius:999px;background:var(--ink);color:#fff;font-size:10px;line-height:16px;padding:0 4px}
+  .nav .dot.red{background:#E5484D}
+  .stages{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:0 -16px;padding-left:16px;padding-right:16px}
+  .stg{flex:none;height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .stg b{display:inline-block;min-width:18px;margin-left:6px;border-radius:999px;background:var(--soft);font-size:11px;line-height:18px;padding:0 5px}
+  .stg[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .stg[aria-pressed=true] b{background:var(--mint);color:var(--ink)}
+  .lcard{display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+  .lcard .nm{font-size:17px;font-weight:700}
+  .lcard .sub{font-size:13px;color:var(--muted);word-break:break-all}
+  .lcard .note{font-size:13px;color:var(--body);line-height:1.4;white-space:pre-wrap}
+  .lacts{display:flex;gap:8px;margin-top:4px}
+  .lacts a,.lacts button{height:40px;border-radius:999px;border:1.5px solid var(--ink);background:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;text-decoration:none;color:var(--ink);cursor:pointer;font-family:inherit}
+  .lacts .go{flex:1;background:var(--mint);border-color:var(--mint)}
+  .src{font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;background:var(--chip);color:var(--chip-t)}
+  .sug{display:flex;align-items:center;gap:10px;background:#F7F9F8;border:1px dashed var(--line);border-radius:16px;padding:12px 14px}
+  .sug .who{flex:1;min-width:0;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sug .who small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+  .sug button{height:36px;border-radius:999px;border:none;background:var(--ink);color:#fff;font-size:12px;font-weight:700;padding:0 12px;cursor:pointer;font-family:inherit;flex:none}
+  .fld{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+  .fld input,.fld textarea,.fld select{font:inherit;font-size:16px;color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;min-height:0}
+  .fld textarea{min-height:80px;resize:vertical}
+  .stgpick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stgpick button{height:44px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
+  .stgpick button[aria-pressed=true]{border-color:var(--ink);background:var(--mint)}
+  .fab{position:fixed;right:calc(50% - 224px);bottom:calc(84px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:var(--ink);color:#fff;border:none;font-size:28px;line-height:56px;box-shadow:0 8px 24px rgba(11,15,13,.25);cursor:pointer;z-index:14}
+  @media (max-width:480px){.fab{right:16px}}
   .callrow{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 14px 14px 16px}
   .callrow .who{flex:1;min-width:0}
   .callrow .num{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -138,6 +171,8 @@ const I = {
   refresh: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
   back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>',
   mail: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+  board: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="10" rx="1.5"/><rect x="17" y="4" width="4" height="13" rx="1.5"/></svg>',
+  check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
   phone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
   cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.5 3.3 3.3 0 0 0 6 19z"/></svg>',
   folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
@@ -152,7 +187,7 @@ const store = {
 
 const state = {
   biz: store.get('biz') || 'Easy Books',
-  items: [], inbox: [], calls: [], callsStatus: '', loading: false, open: null, files: false, hist: null, view: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
+  items: [], inbox: [], calls: [], callsStatus: '', leads: [], stage: 'Open', loading: false, open: null, files: false, hist: null, view: null, error: '', demo: !CONFIG.ENDPOINT_ENC,
   endpoint: store.get('endpoint')
 };
 
@@ -175,10 +210,15 @@ const DEMO = [
   { id: 'demo2', business: 'Easy Books', client: 'Jo Goodwin', from: 'jo@example.com', subject: 'Quad filters paid by Jo', receivedAt: new Date(Date.now() - 3600e3).toISOString(), clientEmail: 'Hi, I paid the quad filters personally — can that go through the business?', draft: 'Hi Jo,\n\nThanks for letting us know. Yes, we can record that as a reimbursement to you. Could you send the receipt through and we\'ll post it this week?\n\nKind regards,\nBrad', status: 'Waiting' }
 ];
 
+const DEMO_LEADS = [
+  { LeadId: 'L1', Name: 'Sam (BuilderCo)', Phone: '0412555777', Email: 'sam@builderco.com.au', Source: 'Email', Stage: 'Contacted', Notes: 'Wants catch-up bookkeeping from January', Business: 'Easy Books', Updated: new Date(Date.now() - 2 * 864e5).toISOString() },
+  { LeadId: 'L2', Name: 'Mia Chen', Phone: '0400111222', Email: 'mia@chencafe.com.au', Source: 'Calendly', Stage: 'Meeting booked', Notes: 'Meeting Thu 10:30am', Business: 'Easy Books', Updated: new Date().toISOString() },
+  { LeadId: 'L3', Name: 'Northside Plumbing', Phone: '0298765432', Email: '', Source: 'Call', Stage: 'Quote sent', Notes: 'Quoted $450/month BAS + payroll', Business: 'Easy Books', Updated: new Date(Date.now() - 5 * 864e5).toISOString() }];
+
 async function api(payload) {
   if (state.demo) {
     await new Promise((r) => setTimeout(r, 400));
-    if (payload.action === 'list') return { items: DEMO, inbox: [
+    if (payload.action === 'list') return { items: DEMO, leads: DEMO_LEADS, inbox: [
       { id: 'in1', from: 'ato@notifications.ato.gov.au', subject: 'New message in your ATO online services', at: new Date().toISOString(), preview: 'You have a new message about a client account. Log in to view it.', read: false },
       { id: 'in2', from: 'sam@builderco.com.au', subject: 'Quote for Q2 bookkeeping', at: new Date(Date.now() - 5400e3).toISOString(), preview: 'Hi Brad, can you send through a quote for catching up our books from January?', read: false },
       { id: 'in3', from: 'newsletter@xero.com', subject: 'What\'s new in Xero this month', at: new Date(Date.now() - 86400e3).toISOString(), preview: 'New bank reconciliation features and more.', read: true }], callsStatus: 'Succeeded', calls: [
@@ -186,6 +226,7 @@ async function api(payload) {
       { id: 'c2', direction: 'inbound', source_number: '61298765432', destination_number: '61238145525', started_at: new Date(Date.now() - 7200e3).toISOString(), answered_at: new Date().toISOString(), duration_seconds: 312, status_name: 'Completed' },
       { id: 'c3', direction: 'outbound', source_number: '61238145525', destination_number: '61298765432', started_at: new Date(Date.now() - 90000e3).toISOString(), answered_at: new Date().toISOString(), duration_seconds: 95, status_name: 'Completed' }] };
     if (payload.action === 'draft' || payload.action === 'later') return { ok: true };
+    if (payload.action === 'addlead' || payload.action === 'movelead') { const i = DEMO_LEADS.findIndex((x) => x.LeadId === payload.lead.LeadId); if (i >= 0) DEMO_LEADS[i] = { ...DEMO_LEADS[i], ...payload.lead }; else DEMO_LEADS.push({ ...payload.lead, Created: new Date().toISOString() }); return { ok: true }; }
     const it = DEMO.find((d) => d.id === payload.id);
     if (it) { it.status = payload.action === 'approve' ? 'Sent' : (payload.status || 'Rejected'); it.actionedAt = new Date().toISOString(); }
     return { ok: true };
@@ -202,6 +243,7 @@ async function load(quiet) {
     state.items = (r.items || []).map(normalise);
     state.calls = (r.calls || []).map((c) => ({ id: c.id || c.call_uuid, dir: c.direction || '', from: String(c.source_number || ''), to: String(c.destination_number || ''), at: c.started_at || c.created_at || '', answered: !!c.answered_at && (c.duration_seconds || 0) > 0, secs: c.duration_seconds || 0, status: c.status_name || c.status || '' }));
     state.callsStatus = r.callsStatus || '';
+    state.leads = (r.leads || []).filter((l) => l && l.LeadId).map((l) => ({ LeadId: l.LeadId, Name: l.Name || '', Phone: String(l.Phone || ''), Email: l.Email || '', Source: l.Source || '', Stage: l.Stage || 'New lead', Notes: l.Notes || '', Business: l.Business || 'Easy Books', Created: l.Created || '', Updated: l.Updated || '' }));
     state.inbox = (r.inbox || []).map((m) => ({ id: m.id, from: m.from || '', subject: m.subject || '(no subject)', at: m.at || '', preview: m.preview || '', read: !!m.read, attach: !!m.attach }));
     state.error = '';
   } catch (e) {
@@ -246,6 +288,18 @@ const prettyNum = (n) => { n = ausNum(n); return /^04\d{8}$/.test(n) ? n.replace
 const names = () => { try { return JSON.parse(store.get('names') || '{}'); } catch { return {}; } };
 const otherParty = (c) => ausNum(c.dir === 'outbound' ? c.to : c.from);
 const missedToday = () => state.calls.filter((c) => c.dir !== 'outbound' && !c.answered && isToday(c.at));
+const STAGES = ['New lead', 'Contacted', 'Meeting booked', 'Quote sent', 'Won', 'Lost'];
+const OPEN = ['New lead', 'Contacted', 'Meeting booked', 'Quote sent'];
+const bizLeads = () => state.leads.filter((l) => (l.Business || 'Easy Books') === state.biz);
+const leadByPhone = (n) => n && state.leads.find((l) => ausNum(l.Phone) === ausNum(n));
+const leadByEmail = (e) => e && state.leads.find((l) => l.Email && l.Email.toLowerCase() === String(e).toLowerCase());
+const daysAgo = (iso) => { const d = new Date(iso); if (isNaN(d)) return ''; const n = Math.floor((Date.now() - d) / 864e5); return n <= 0 ? 'today' : n === 1 ? '1 day' : n + ' days'; };
+function suggestions() {
+  const out = [], seen = new Set(), dismissed = lsList('nolead'), nm = names();
+  state.calls.filter((c) => c.dir !== 'outbound').forEach((c) => { const n = ausNum(c.from); if (!n || seen.has(n) || dismissed.includes(n) || leadByPhone(n)) return; seen.add(n); if (state.calls.filter((x) => otherParty(x) === n).length > 1 && nm[n]) return; out.push({ key: n, kind: 'Call', title: nm[n] || prettyNum(n), sub: (c.answered ? 'Called ' : 'Missed call ') + when(c.at), lead: { Name: nm[n] || '', Phone: n, Email: '', Source: 'Call' } }); });
+  state.items.filter((i) => i.client === 'New client' && i.business === state.biz).forEach((i) => { const e = i.from.toLowerCase(); if (seen.has(e) || dismissed.includes(e) || leadByEmail(e)) return; seen.add(e); out.push({ key: e, kind: 'Email', title: e, sub: i.subject, lead: { Name: '', Phone: '', Email: e, Source: 'Email', Notes: i.subject } }); });
+  return out.slice(0, 8);
+}
 const fyiToday = (biz) => state.items.filter((i) => i.business === biz && i.status === 'FYI' && isToday(i.actionedAt || i.receivedAt));
 const bizCfg = () => CONFIG.BUSINESSES.find((b) => b.id === state.biz) || CONFIG.BUSINESSES[0];
 
@@ -280,7 +334,7 @@ function viewList() {
   const sent = state.items.filter((i) => i.business === state.biz && i.status === 'Sent' && isToday(i.actionedAt)).length;
   const fyi = fyiToday(state.biz);
   const nIn = inboxOpen().filter((m) => !m.read).length;
-  const refresh = `<div class="hbtns"><button class="iconbtn" id="calls" aria-label="Calls">${I.phone}${missedToday().length && biz.connected !== false ? '<span class="pip" style="background:#E5484D"></span>' : ''}</button><button class="iconbtn" id="inbox" aria-label="Inbox">${I.mail}${nIn && biz.connected !== false ? '<span class="pip"></span>' : ''}</button><button class="iconbtn" id="files" aria-label="OneDrive files">${I.cloud}</button><button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button></div>`;
+  const refresh = `<div class="hbtns"><button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}${w.length ? '<span class="pip"></span>' : ''}</button></div>`;
 
   let body;
   if (biz.connected === false) {
@@ -316,6 +370,65 @@ function viewList() {
     ${body}`;
 }
 
+function viewPipeline() {
+  const all = bizLeads();
+  const count = (s) => s === 'Open' ? all.filter((l) => OPEN.includes(l.Stage)).length : all.filter((l) => l.Stage === s).length;
+  const tabs = ['Open', ...STAGES].map((s) => `<button class="stg" data-stage="${esc(s)}" aria-pressed="${s === state.stage}">${esc(s === 'Open' ? 'All open' : s)}<b>${count(s)}</b></button>`).join('');
+  const list = all.filter((l) => state.stage === 'Open' ? OPEN.includes(l.Stage) : l.Stage === state.stage)
+    .sort((a, b) => OPEN.indexOf(b.Stage) - OPEN.indexOf(a.Stage) || new Date(b.Updated) - new Date(a.Updated));
+  const card = (l) => `<div class="lcard">
+      <div class="row"><div class="nm">${esc(l.Name || prettyNum(l.Phone) || l.Email || 'New lead')}</div><span class="src">${esc(l.Source || 'Manual')}</span></div>
+      <div class="sub">${[l.Phone ? prettyNum(l.Phone) : '', l.Email].filter(Boolean).map(esc).join(' · ')}</div>
+      <div class="sub">${esc(l.Stage)}${l.Updated ? ' · ' + esc(daysAgo(l.Updated)) : ''}</div>
+      ${l.Notes ? `<div class="note">${esc(l.Notes)}</div>` : ''}
+      <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update stage</button></div>
+    </div>`;
+  const sug = suggestions();
+  return `${header(`<button class="iconbtn ${state.loading ? 'spin' : ''}" id="refresh" aria-label="Refresh">${I.refresh}</button>`)}
+    <div class="hero"><div class="eyebrow">[ Sales pipeline ]</div><h1>PIPELINE</h1><div class="lead">${count('Open')} open lead${count('Open') === 1 ? '' : 's'}, <span class="hl">${count('Won')} won</span></div></div>
+    ${sug.length ? `<div class="sec">New clients spotted <span>calls &amp; emails</span></div><div class="list">${sug.map((g, i) => `<div class="sug"><div class="who">${esc(g.title)}<small>${esc(g.kind)} · ${esc(g.sub)}</small></div><button data-sug="${i}">Add lead</button><button data-nosug="${esc(g.key)}" style="background:none;color:var(--muted);padding:0 4px">✕</button></div>`).join('')}</div>` : ''}
+    <div class="stages">${tabs}</div>
+    ${list.length ? `<div class="list">${list.map(card).join('')}</div>` : `<div class="empty"><b>No leads here</b>Tap + to add one, or add new callers and emails from the list above.</div>`}
+    <button class="fab" id="addlead" aria-label="Add lead">+</button>`;
+}
+
+function leadSheet(lead, isNew) {
+  const l = { LeadId: lead.LeadId || ('L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), Name: '', Phone: '', Email: '', Source: 'Manual', Stage: 'New lead', Notes: '', Business: state.biz, ...lead };
+  const s = document.createElement('div'); s.className = 'sheet';
+  s.innerHTML = `<div class="box" style="max-height:88vh;overflow:auto">
+    <h2>${isNew ? 'New lead' : esc(l.Name || prettyNum(l.Phone) || l.Email || 'Lead')}</h2>
+    <label class="fld">Name<input id="lName" value="${esc(l.Name)}" placeholder="Person or business"></label>
+    <label class="fld">Phone<input id="lPhone" type="tel" value="${esc(l.Phone)}"></label>
+    <label class="fld">Email<input id="lEmail" type="email" value="${esc(l.Email)}"></label>
+    <div class="fld">Stage<div class="stgpick">${STAGES.map((x) => `<button type="button" data-pick="${esc(x)}" aria-pressed="${x === l.Stage}">${esc(x)}</button>`).join('')}</div></div>
+    <label class="fld">Notes<textarea id="lNotes" placeholder="What they need, next step…">${esc(l.Notes)}</textarea></label>
+    <div class="actions" style="position:static"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-save>Save</button></div></div>`;
+  s.querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => { l.Stage = b.dataset.pick; s.querySelectorAll('[data-pick]').forEach((x) => x.setAttribute('aria-pressed', x === b)); });
+  s.addEventListener('click', (e) => { if (e.target === s || e.target.closest('[data-x]')) s.remove(); });
+  s.querySelector('[data-save]').onclick = async (e) => {
+    e.target.disabled = true;
+    l.Name = s.querySelector('#lName').value.trim(); l.Phone = s.querySelector('#lPhone').value.trim(); l.Email = s.querySelector('#lEmail').value.trim(); l.Notes = s.querySelector('#lNotes').value.trim();
+    try {
+      await api({ action: isNew ? 'addlead' : 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
+      const i = state.leads.findIndex((x) => x.LeadId === l.LeadId); const rec = { ...l, Updated: new Date().toISOString() };
+      if (i >= 0) state.leads[i] = rec; else state.leads.push(rec);
+      if (l.Name && l.Phone) { const nm = names(); nm[ausNum(l.Phone)] = l.Name; store.set('names', JSON.stringify(nm)); }
+      s.remove(); render(); toast(isNew ? 'Lead added' : 'Lead moved to ' + l.Stage);
+    } catch { e.target.disabled = false; toast('Couldn\'t save, try again'); }
+  };
+  document.body.appendChild(s);
+}
+
+function bindPipeline() {
+  $('#refresh').onclick = () => load();
+  document.querySelectorAll('[data-stage]').forEach((b) => b.onclick = () => { state.stage = b.dataset.stage; render(); });
+  document.querySelectorAll('[data-move]').forEach((b) => b.onclick = () => leadSheet(state.leads.find((l) => l.LeadId === b.dataset.move), false));
+  const sug = suggestions();
+  document.querySelectorAll('[data-sug]').forEach((b) => b.onclick = () => leadSheet(sug[+b.dataset.sug].lead, true));
+  document.querySelectorAll('[data-nosug]').forEach((b) => b.onclick = () => { lsAdd('nolead', b.dataset.nosug); render(); });
+  $('#addlead').onclick = () => leadSheet({}, true);
+}
+
 function viewCalls() {
   const nm = names();
   const seen = {}; state.calls.forEach((c) => { const n = otherParty(c); seen[n] = (seen[n] || 0) + 1; });
@@ -327,7 +440,7 @@ function viewCalls() {
     return `<div class="callrow"><div class="who">
         <div class="num">${esc(name || prettyNum(n) || 'Unknown')}${tag}${isNew ? '<span class="tag newc">New caller</span>' : ''}</div>
         <div class="meta">${name ? esc(prettyNum(n)) + ' · ' : ''}${esc(when(c.at))}${dur}</div>
-        <button class="namebtn" data-name="${esc(n)}">${name ? 'Rename' : '+ Add name'}</button>
+        <button class="namebtn" data-name="${esc(n)}">${name ? 'Rename' : '+ Add name'}</button>${n && c.dir !== 'outbound' ? (leadByPhone(n) ? `<span class="namebtn" style="color:var(--muted)"> · In pipeline: ${esc(leadByPhone(n).Stage)}</span>` : ` · <button class="namebtn" data-tolead="${esc(n)}">Add to pipeline</button>`) : ''}
       </div>${n ? `<a class="callbtn" href="tel:${esc(n)}" aria-label="Call ${esc(name || n)}">${I.phone}</a>` : ''}</div>`;
   };
   const missed = state.calls.filter((c) => c.dir !== 'outbound' && !c.answered);
@@ -344,6 +457,7 @@ function viewCalls() {
 
 function bindCalls() {
   $('#back').onclick = () => { state.view = null; render(); };
+  document.querySelectorAll('[data-tolead]').forEach((b) => b.onclick = () => leadSheet({ Name: names()[b.dataset.tolead] || '', Phone: b.dataset.tolead, Source: 'Call' }, true));
   document.querySelectorAll('[data-name]').forEach((b) => b.onclick = () => {
     const n = b.dataset.name, nm = names();
     const v = prompt('Name for ' + prettyNum(n), nm[n] || '');
@@ -464,13 +578,28 @@ function confirmSheet(title, text, okLabel, onOk) {
 }
 
 /* ---------- render + events ---------- */
+function renderNav(show) {
+  let n = document.getElementById('nav');
+  if (!show) { if (n) n.remove(); return; }
+  if (!n) { n = document.createElement('nav'); n.id = 'nav'; n.className = 'nav'; document.body.appendChild(n); }
+  const cur = state.files ? 'files' : (state.view || 'home');
+  const nIn = inboxOpen().filter((m) => !m.read).length, nMiss = missedToday().length, nW = waiting(state.biz).length, nSug = suggestions().length;
+  const tab = (k, label, icon, badge, red) => `<button data-nav="${k}" aria-current="${cur === k}"><span class="ic">${icon}</span>${label}${badge ? `<span class="dot ${red ? 'red' : ''}">${badge}</span>` : ''}</button>`;
+  n.innerHTML = `<div class="in">${tab('home', 'Approvals', I.check, nW)}${tab('inbox', 'Inbox', I.mail, nIn)}${tab('calls', 'Calls', I.phone, nMiss, true)}${tab('pipeline', 'Pipeline', I.board, nSug)}${tab('files', 'Files', I.cloud, 0)}</div>`;
+  n.querySelectorAll('[data-nav]').forEach((b) => b.onclick = () => {
+    const k = b.dataset.nav; state.open = null; state.hist = null; state.files = k === 'files'; state.view = (k === 'home' || k === 'files') ? null : k; render(); scrollTo(0, 0);
+  });
+}
+
 function render() {
   const app = $('#app');
-  if (!state.demo && !state.endpoint) { app.innerHTML = viewLock(); bindLock(); return; }
+  if (!state.demo && !state.endpoint) { renderNav(false); app.innerHTML = viewLock(); bindLock(); return; }
+  renderNav(!state.open);
   const it = state.open && state.items.find((i) => i.id === state.open);
   const back = () => { state.open = null; render(); };
   if (state.view === 'inbox' && !it) { app.innerHTML = viewInbox(); bindInbox(); return; }
   if (state.view === 'calls' && !it) { app.innerHTML = viewCalls(); bindCalls(); return; }
+  if (state.view === 'pipeline' && !it) { app.innerHTML = viewPipeline(); bindPipeline(); return; }
   if (it && (it.status === 'Sent' || it.status === 'Rejected')) { app.innerHTML = viewDone(it); $('#back').onclick = back; const r = $('#reopen'); if (r) r.onclick = () => { it.status = 'Waiting'; render(); }; return; }
   if (state.hist && !it) { app.innerHTML = viewHistory(); $('#back').onclick = () => { state.hist = null; render(); };
     document.querySelectorAll('.hchip').forEach((c) => c.onclick = () => { state.hist = c.dataset.f; render(); });
@@ -496,9 +625,7 @@ function bindList() {
   document.querySelectorAll('.tab').forEach((t) => t.onclick = () => { state.biz = t.dataset.biz; store.set('biz', state.biz); render(); });
   document.querySelectorAll('.card').forEach((c) => c.onclick = () => { state.open = c.dataset.id; render(); scrollTo(0, 0); });
   $('#refresh').onclick = () => load();
-  $('#files').onclick = () => { state.files = true; render(); scrollTo(0, 0); };
-  $('#inbox').onclick = () => { state.view = 'inbox'; render(); scrollTo(0, 0); };
-  $('#calls').onclick = () => { state.view = 'calls'; render(); scrollTo(0, 0); };
+
   document.querySelectorAll('[data-hist]').forEach((b) => b.onclick = () => { state.hist = b.dataset.hist; render(); scrollTo(0, 0); });
 }
 
