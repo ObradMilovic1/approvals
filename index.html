@@ -287,6 +287,24 @@
   .zero .bit{position:absolute;left:50%;top:70px;width:7px;height:14px;border-radius:2px;opacity:0;animation:burst 1.1s ease-out forwards}
   @keyframes burst{0%{opacity:1;transform:translate(-50%,0) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),var(--y)) rotate(var(--r))}}
   @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  /* week card */
+  .week{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:16px;display:flex;gap:16px;align-items:flex-end}
+  .week .wt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .week .wt .big{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1}
+  .week .wt small{color:var(--muted);font-size:13px;line-height:1.35}
+  .week .streak{align-self:flex-start;font-size:12px;font-weight:700;background:var(--ink);color:#fff;border-radius:999px;padding:3px 9px;margin-bottom:6px}
+  .week .streak span{color:var(--acc)}
+  .wbars{display:flex;gap:6px;align-items:flex-end;height:64px;flex:none}
+  .wbars div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--muted);font-weight:600}
+  .wbars i{display:block;width:14px;border-radius:5px;background:var(--ink);transform-origin:bottom;animation:grow .6s cubic-bezier(.2,.9,.3,1.2) both;min-height:3px}
+  .wbars i.z{background:var(--line)}.wbars div:last-child i{background:var(--acc);box-shadow:0 4px 14px rgba(0,225,135,.45)}
+  .age{flex:none;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;background:var(--amber-t);color:var(--amber)}
+  .age.old{background:var(--red-t);color:var(--red)}
+  .heroacts{display:flex;gap:8px;margin-top:2px}
+  .brief{height:38px;border-radius:999px;border:1px solid var(--ink);background:var(--card);font-size:14px;font-weight:600;padding:0 14px;display:flex;align-items:center;gap:7px;cursor:pointer}
+  .brief span{color:var(--acc-d)}
+  .bout{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;font-size:15px;line-height:1.55;max-height:55vh;overflow:auto}
+  .bout p{margin:0 0 8px}.bout ul{margin:0;padding-left:18px}.bout li{margin:4px 0}.bout h4{margin:8px 0 4px}
 </style>
 </head>
 <body>
@@ -359,8 +377,9 @@ async function decryptEndpoint(pass) {
 
 /* ---------- API (Power Automate flow) ---------- */
 const DEMO = [
+  ...[[1, 2, 40], [1, 1, 25], [2, 3, 70], [3, 1, 15], [3, 2, 55], [3, 4, 30], [5, 1, 90], [6, 2, 20]].map(([d, k, m], n) => ({ id: 'h' + n, business: 'Easy Books', client: 'Past client', from: 'past@example.com', subject: 'Earlier email ' + (n + 1), receivedAt: new Date(Date.now() - d * 864e5 - m * 6e4).toISOString(), actionedAt: new Date(Date.now() - d * 864e5).toISOString(), clientEmail: '', draft: 'Thanks', status: 'Sent' })),
   { id: 'demo1', business: 'Easy Books', client: 'New client', from: 'obradmilovic@hotmail.com', subject: 'BAS question', receivedAt: new Date().toISOString(), clientEmail: 'Hi Brad, can you check my BAS for this quarter before I lodge it?', draft: 'Hi,\n\nThanks for getting in touch. Happy to review your BAS before you lodge it.\n\nCould you send through your [quarter] figures, or give us a call on [phone number]? We\'ll get back to you within one business day.\n\nKind regards,\nBrad', status: 'Waiting' },
-  { id: 'demo2', business: 'Easy Books', client: 'Jo Goodwin', from: 'jo@example.com', subject: 'Quad filters paid by Jo', receivedAt: new Date(Date.now() - 3600e3).toISOString(), clientEmail: 'Hi, I paid the quad filters personally — can that go through the business?', draft: 'Hi Jo,\n\nThanks for letting us know. Yes, we can record that as a reimbursement to you. Could you send the receipt through and we\'ll post it this week?\n\nKind regards,\nBrad', status: 'Waiting' },
+  { id: 'demo2', business: 'Easy Books', client: 'Jo Goodwin', from: 'jo@example.com', subject: 'Quad filters paid by Jo', receivedAt: new Date(Date.now() - 26 * 3600e3).toISOString(), clientEmail: 'Hi, I paid the quad filters personally — can that go through the business?', draft: 'Hi Jo,\n\nThanks for letting us know. Yes, we can record that as a reimbursement to you. Could you send the receipt through and we\'ll post it this week?\n\nKind regards,\nBrad', status: 'Waiting' },
   { id: 'demo3', business: 'Sydney Bookkeeping', client: 'Northside Plumbing', from: 'accounts@northsideplumbing.com.au', subject: 'Payroll for this fortnight', receivedAt: new Date(Date.now() - 7200e3).toISOString(), clientEmail: 'Hi Zeljka, two new starters this fortnight. Timesheets attached.', draft: 'Hi,\n\nThanks for sending the timesheets through. We\'ll set up the two new starters and process this fortnight\'s pay by [day].\n\nCould you send their TFN declarations and super details when you get a chance?', status: 'Waiting' }
 ];
 
@@ -384,7 +403,7 @@ async function api(payload) {
       { tenantId: 't2', name: 'Avalon Village Meats', recv: 3120, recvCount: 4, overdue: 0, overdueCount: 0, payables: 7850.2, payCount: 11, overduePay: 2300 },
       { tenantId: 't3', name: "Topper's Mountain Wines", recv: 9400, recvCount: 5, overdue: 1450, overdueCount: 1, payables: 1200, payCount: 2, overduePay: 0 }] };
     if (payload.action === 'draft' || payload.action === 'later' || payload.action === 'tobills') return { ok: true };
-    if (payload.action === 'ask') return { answer: (payload.messages.at(-1).content.split('---\n')[1] || '').trim() };
+    if (payload.action === 'ask') { const c = payload.messages.at(-1).content; return { answer: c.includes('---\n') ? c.split('---\n')[1].trim() : '- **Approve 2 replies** first, the BAS question is a new client.\n- **Call back 0412 555 123**, missed this evening and not in your contacts.\n- **Chase Zephyr Empire**, $6,200 overdue across 3 invoices.\n- Follow up **Northside Plumbing** on the quote sent 5 days ago.' }; }
     if (payload.action === 'addlead' || payload.action === 'movelead') { const i = DEMO_LEADS.findIndex((x) => x.LeadId === payload.lead.LeadId); if (i >= 0) DEMO_LEADS[i] = { ...DEMO_LEADS[i], ...payload.lead }; else DEMO_LEADS.push({ ...payload.lead, Created: new Date().toISOString() }); return { ok: true }; }
     const it = DEMO.find((d) => d.id === payload.id);
     if (it) { it.status = payload.action === 'approve' ? 'Sent' : (payload.status || 'Rejected'); it.actionedAt = new Date().toISOString(); }
@@ -529,7 +548,7 @@ function viewList() {
   } else {
     body = '<div class="list">' + w.map((it) => `
       <button class="card" data-id="${esc(it.id)}">
-        <div class="row"><span class="who2"><span class="chip">${esc(clientLabel(it))}</span>${it.client === 'New client' ? '<span class="newtag">New client</span>' : ''}</span><span class="time">${esc(when(it.receivedAt))}</span></div>
+        <div class="row"><span class="who2"><span class="chip">${esc(clientLabel(it))}</span>${it.client === 'New client' ? '<span class="newtag">New client</span>' : ''}</span><span class="time">${ageTag(it) || esc(when(it.receivedAt))}</span></div>
         <div class="subj">${esc(it.subject)}</div>
         <div class="prev">${esc(it.draft.replace(/\s+/g, ' ').trim())}</div>
       </button>`).join('') + '</div>';
@@ -545,6 +564,7 @@ function viewList() {
     ${state.demo ? '<div class="notice"><b>Preview:</b> these are sample emails, not your real inbox.</div>' : ''}
     <div class="hero"><div class="brk">[ ${esc(biz.firm.replace(' for Better Business', ''))} ]</div><h1>${greeting()}, Brad</h1>
       <div class="lead" style="margin-top:8px">${w.length ? `<mark class="${state.swept ? '' : 'sweep'}">${w.length} ${w.length === 1 ? 'reply' : 'replies'}</mark> drafted and ready to approve` : 'Nothing waiting on you. Nice.'}</div></div>
+    <div class="heroacts"><button class="brief" id="brief"><span>✦</span>Brief me</button>${w.length ? `<button class="brief" id="startrun" style="background:var(--ink);color:#fff">Start replying ${I.send}</button>` : ''}</div>
     <div class="stats">
       <button class="stat ${w.length ? 'hot' : ''}" data-hist="Waiting"><span class="v">${w.length}</span><span class="k">to approve</span></button>
       <button class="stat" data-hist="Sent"><span class="v">${sent}</span><span class="k">sent today</span></button>
@@ -553,7 +573,44 @@ function viewList() {
     </div>
     ${body}
     ${focusRows()}
+    ${weekCard()}
     ${w.length > 1 ? '<div class="hint">Tip: swipe a card left to file it as FYI. After you send, the next reply opens on its own.</div>' : ''}`;
+}
+
+// Age of a waiting email, so nothing sits too long.
+function ageTag(it) {
+  const h = (Date.now() - new Date(it.receivedAt)) / 36e5;
+  if (!(h >= 4)) return '';
+  const txt = h < 24 ? `${Math.floor(h)}h` : `${Math.floor(h / 24)} day${h >= 48 ? 's' : ''}`;
+  return `<span class="age ${h >= 24 ? 'old' : ''}">Waiting ${txt}</span>`;
+}
+// Your week: replies handled per day, streak and how fast clients hear back.
+function weekCard() {
+  const done = state.items.filter((i) => (i.status === 'Sent' || i.status === 'FYI') && i.actionedAt);
+  const days = Array.from({ length: 7 }, (_, k) => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (6 - k)); return d; });
+  const counts = days.map((d) => done.filter((i) => new Date(i.actionedAt).toDateString() === d.toDateString()).length);
+  const total = counts.reduce((a, b) => a + b, 0);
+  let streak = 0; for (let k = 6; k >= 0; k--) { if (counts[k]) streak++; else if (k === 6) continue; else break; }
+  const times = done.filter((i) => i.status === 'Sent' && Date.now() - new Date(i.actionedAt) < 7 * 864e5).map((i) => (new Date(i.actionedAt) - new Date(i.receivedAt)) / 6e4).filter((m) => m >= 0).sort((a, b) => a - b);
+  const med = times.length ? times[Math.floor(times.length / 2)] : null;
+  const fmt = (m) => m < 60 ? `${Math.round(m)} min` : m < 1440 ? `${(m / 60).toFixed(m < 600 ? 1 : 0)} h` : `${(m / 1440).toFixed(1)} days`;
+  const max = Math.max(1, ...counts);
+  const bars = days.map((d, k) => `<div><i class="${counts[k] ? '' : 'z'}" style="height:${Math.max(3, Math.round(counts[k] / max * 48))}px;animation-delay:${k * 50}ms" title="${counts[k]}"></i>${'SMTWTFS'[d.getDay()]}</div>`).join('');
+  return `<div class="week"><div class="wt">${streak > 1 ? `<span class="streak"><span>●</span> ${streak}-day streak</span>` : ''}<span class="big">${total}</span><small>emails handled this week${med !== null ? `<br>Clients hear back in about <b>${fmt(med)}</b>` : ''}</small></div><div class="wbars" aria-label="Emails handled each day this week">${bars}</div></div>`;
+}
+function briefSheet() {
+  const s = document.createElement('div'); s.className = 'sheet';
+  s.innerHTML = `<div class="box"><h2>Your plan for today</h2><div class="bout" id="bout"><div class="cb typing" style="border:none;padding:0"><span></span><span></span><span></span></div></div><div class="actions"><button class="btn" data-x>Close</button><button class="btn ok" data-chat>Ask a follow-up</button></div></div>`;
+  s.addEventListener('click', (e) => {
+    if (e.target === s || e.target.closest('[data-x]')) s.remove();
+    if (e.target.closest('[data-chat]')) { s.remove(); state.open = null; state.view = 'chat'; render(); }
+  });
+  document.body.appendChild(s);
+  const show = (t) => { const b = s.querySelector('#bout'); if (b) b.innerHTML = mdChat(t); };
+  if (state.brief && Date.now() - state.brief.at < 20 * 6e4) return show(state.brief.text);
+  api({ action: 'ask', context: chatContext(), messages: [{ role: 'user', content: 'Plan the rest of my day. Give at most 5 short bullet points, most urgent first. Use client names and amounts, and cover replies waiting for approval (both businesses), missed calls, unread emails worth acting on, overdue Xero clients and leads to follow up. Bold the action at the start of each bullet. No intro, no sign-off, under 90 words.' }] })
+    .then((r) => { const t = String(r.answer || '').trim() || 'Nothing urgent right now.'; state.brief = { at: Date.now(), text: t }; show(t); })
+    .catch(() => show('Couldn\'t reach Claude just now. Try again in a minute.'));
 }
 
 // "Also needs you": everything else waiting across the app, in one place.
@@ -763,8 +820,9 @@ const TWEAKS = [
   ['Ask for documents', 'also politely ask the client for any documents or details we would need to finish this'],
 ];
 function viewReview(it) {
+  const wl = waiting(it.business), pos = wl.findIndex((x) => x.id === it.id) + 1;
   const ph = (it.draft.match(/\[[^\]]+\]/g) || []).length;
-  return `${msgHead(it, 'Reply to client')}
+  return `${msgHead(it, wl.length > 1 && pos ? `Reply ${pos} of ${wl.length}` : 'Reply to client')}
     <details><summary>Client's email</summary><div class="orig">${esc(it.clientEmail || '(empty)')}</div></details>
     <div class="lbl"><div>Claude's draft <span>tap to edit</span></div>${ph ? `<span class="ph">${ph} to fill in</span>` : ''}</div>
     <textarea id="draft" aria-label="Reply draft">${esc(it.draft)}</textarea>
@@ -1005,6 +1063,8 @@ function bindList() {
   document.querySelectorAll('.card').forEach((c) => c.onclick = () => { if (c.dataset.swiped) return; state.open = c.dataset.id; render(); scrollTo(0, 0); });
   document.querySelectorAll('.list>.card:not(.fyi)').forEach(swipeable);
   document.querySelectorAll('[data-go]').forEach((b) => b.onclick = () => { state.view = b.dataset.go; render(); scrollTo(0, 0); });
+  $('#brief').onclick = briefSheet;
+  const sr = $('#startrun'); if (sr) sr.onclick = () => { const w = waiting(state.biz); state.open = w[0].id; render(); scrollTo(0, 0); };
   $('#refresh').onclick = () => load();
   $('#files').onclick = () => { state.files = true; render(); scrollTo(0, 0); };
   document.querySelectorAll('[data-hist]').forEach((b) => b.onclick = () => { state.hist = b.dataset.hist; render(); scrollTo(0, 0); });
@@ -1110,7 +1170,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '16';
+const APP_VERSION = '17';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });

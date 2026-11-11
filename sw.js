@@ -1,5 +1,5 @@
 // Approvals service worker: caches the app shell so it opens instantly and installs as an app.
-const CACHE = 'approvals-v16';
+const CACHE = 'approvals-v17';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
