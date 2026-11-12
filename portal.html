@@ -222,7 +222,7 @@ function shape(j) {
 const demoState = { files: [], signed: false };
 async function demo(action, body) {
   await new Promise((r) => setTimeout(r, 450));
-  if (action === 'start') return { ok: true, phone: '•••• ••• 222' };
+  if (action === 'start') return { ok: true, to: 'mi•••@chencafe.com.au' };
   if (action === 'verify') return body.code === '123456' ? { ok: true, token: 'demo-token', minutes: 30 } : { ok: false };
   if (action === 'status') return shape({ first: 'Mia', business: 'Sydney Bookkeeping', services: (q.get('s') || '2,3').split(',').map(Number), signed: demoState.signed, files: demoState.files.slice(), requests: q.get('r') ?? 'Car logbook;ATO notice of assessment 2025' });
   if (action === 'upload') { demoState.files.push(`${body.item} - 0 - ${body.fileName}`); return { ok: true }; }
@@ -238,18 +238,18 @@ function showStart() {
   if (!leadId) { app.innerHTML = `<div class="hello"><h1>Use the link in your email</h1><p class="lead">This portal only opens from the personal link we sent you.</p></div>`; return; }
   if (!DEMO && !PORTAL_URL) return showOff();
   app.innerHTML = `<div class="hello"><h1>Welcome</h1>
-    <p class="lead">Your portal is where you sign with us and send your documents. To keep your information safe, we'll text a 6-digit code to your mobile.</p></div>
-    <div class="card"><button class="btn dark" id="send">Text me a code</button><div class="err" id="err" role="alert"></div>
-    <p class="muted" style="margin:6px 0 0">Wrong number or no mobile? Call us on ${PHONE}.</p></div>`;
+    <p class="lead">Your portal is where you sign with us and send your documents. To keep your information safe, we'll email you a 6-digit code.</p></div>
+    <div class="card"><button class="btn dark" id="send">Email me a code</button><div class="err" id="err" role="alert"></div>
+    <p class="muted" style="margin:6px 0 0">Can't find the email? Check your junk folder, or call us on ${PHONE}.</p></div>`;
   $('#send').onclick = async (e) => {
     e.target.disabled = true; e.target.textContent = 'Sending…';
-    try { const r = await call('start'); if (!r.ok) throw 0; showCode(r.phone); }
-    catch { e.target.disabled = false; e.target.textContent = 'Text me a code'; $('#err').textContent = 'We couldn’t send a code. Try again in a minute, or call us.'; }
+    try { const r = await call('start'); if (!r.ok) throw 0; showCode(r.to || r.phone); }
+    catch { e.target.disabled = false; e.target.textContent = 'Email me a code'; $('#err').textContent = 'We couldn’t send a code. Try again in a minute, or call us.'; }
   };
 }
 function showCode(phone) {
   app.innerHTML = `<div class="hello"><h1>Enter your code</h1>
-    <p class="lead">We texted a code to ${esc(phone || 'your mobile')}. It expires in 10 minutes.</p></div>
+    <p class="lead">We emailed a code to ${esc(phone || 'you')}. It expires in 10 minutes. Check your junk folder if it's not there in a minute.</p></div>
     <div class="card"><div class="otp">${[0, 1, 2, 3, 4, 5].map((i) => `<input inputmode="numeric" autocomplete="${i ? 'off' : 'one-time-code'}" maxlength="${i ? 1 : 6}" aria-label="Digit ${i + 1}">`).join('')}</div>
     <button class="btn" id="verify">Continue</button><div class="err" id="err" role="alert"></div>
     <button class="ghost" id="again">Send a new code</button></div>`;
@@ -271,7 +271,7 @@ function showCode(phone) {
     e.target.disabled = true;
     try {
       const r = await call('verify', { code });
-      if (!r.ok) { tries++; e.target.disabled = tries >= 5; boxes.forEach((x) => x.value = ''); boxes[0].focus(); $('#err').textContent = tries >= 5 ? 'Too many attempts. Send a new code.' : 'That code doesn’t match. Check the text and try again.'; return; }
+      if (!r.ok) { tries++; e.target.disabled = tries >= 5; boxes.forEach((x) => x.value = ''); boxes[0].focus(); $('#err').textContent = tries >= 5 ? 'Too many attempts. Send a new code.' : 'That code doesn’t match. Check the email and try again.'; return; }
       session = { token: r.token, expires: Date.now() + (r.minutes || 30) * 60e3 }; sessionStorage.setItem('portal:' + leadId, JSON.stringify(session));
       load();
     } catch { e.target.disabled = false; $('#err').textContent = 'Something went wrong. Try again.'; }

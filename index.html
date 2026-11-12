@@ -768,6 +768,8 @@ const listOf = (arr) => arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(',
 const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigits: 2 });
 // Client portal: switch on once the Client portal flow is live. Emails then carry the portal link.
 const PORTAL_ON = false;
+// Texts need a Crazytel mobile number on the account; until then everything goes by email.
+const SMS_ON = false;
 const portalLink = (l) => `https://obradmilovic1.github.io/approvals/portal.html?l=${encodeURIComponent(l.LeadId)}`;
 const isMobile = (p) => /^04\d{8}$/.test(ausNum(p));
 // New-client workflow: moving a lead to these stages emails the client automatically.
@@ -781,13 +783,13 @@ const FLOW = {
     const sv = leadSvcs(l), q = leadQuote(l);
     const fee = `${aud(q.fee)} + GST${q.billing === 'One-off' ? '' : ' ' + q.billing.toLowerCase()}`;
     return { files: ['engagement-letter.pdf'], subject: `Your quote${q.ref ? ' ' + q.ref : ''} – Sydney Bookkeeping & Advisory`,
-      body: `Hi${n},\n\nThanks for your time. Here's our quote${q.ref ? ' (' + q.ref + ')' : ''}:\n\n${sv.map((x) => '- ' + x.n).join('\n') || '- As discussed'}\n\nFee: ${fee}\n\n${PORTAL_ON ? `To go ahead, open your secure client portal, review and sign the engagement letter, and upload your documents. We'll text a code to your mobile to let you in.\n\n${portalLink(l)}\n\nThe engagement letter is also attached for your records.` : 'To go ahead, please fill in the attached engagement letter, tick the services above, sign it and send it back. You can do it all on your phone.'}\n\nThe quote is valid for 30 days. Any questions, just reply to this email.\n\nKind regards,\n${me}` };
+      body: `Hi${n},\n\nThanks for your time. Here's our quote${q.ref ? ' (' + q.ref + ')' : ''}:\n\n${sv.map((x) => '- ' + x.n).join('\n') || '- As discussed'}\n\nFee: ${fee}\n\n${PORTAL_ON ? `To go ahead, open your secure client portal, review and sign the engagement letter, and upload your documents. We'll email you a code to let you in.\n\n${portalLink(l)}\n\nThe engagement letter is also attached for your records.` : 'To go ahead, please fill in the attached engagement letter, tick the services above, sign it and send it back. You can do it all on your phone.'}\n\nThe quote is valid for 30 days. Any questions, just reply to this email.\n\nKind regards,\n${me}` };
   } },
   'Won': { key: 'Welcome', build: (l, n, me) => {
     const sv = leadSvcs(l), files = [...new Set(sv.map((x) => x.f))];
     const steps = [...new Map(sv.map((x) => [x.next, x])).values()].map((x, i) => `${i + 1}. ${x.next}`);
     if (sv.some((x) => x.id)) steps.push(`${steps.length + 1}. Identity check: send a certified copy of a driver licence or passport for each person involved. The law requires this before we set up a company or SMSF.`);
-    steps.push(PORTAL_ON ? `${steps.length + 1}. Upload everything through your secure client portal (we'll text a code to your mobile): ${portalLink(l)}` : `${steps.length + 1}. If you haven't already, send back your signed engagement letter.`);
+    steps.push(PORTAL_ON ? `${steps.length + 1}. Upload everything through your secure client portal (we'll email you a login code): ${portalLink(l)}` : `${steps.length + 1}. If you haven't already, send back your signed engagement letter.`);
     return { files, subject: 'Welcome to Sydney Bookkeeping & Advisory – next steps',
       body: `Hi${n},\n\nWelcome aboard, we're glad to have you. ${files.length ? `I've attached ${files.length > 1 ? 'checklists' : 'a checklist'} of what we need. ` : ''}Here's what happens next:\n\n${steps.join('\n')}\n\nWe'll keep you posted as we go.\n\nKind regards,\n${me}` };
   } },
@@ -797,7 +799,7 @@ function autoSend(l) {
   const step = FLOW[l.Stage];
   if (!step || (l.Notes || '').includes(sentTag(step.key))) return;
   if (!l.Email) { toast(`Add ${l.Name || 'the lead'}'s email to send the ${step.key.toLowerCase()}`); return; }
-  if (PORTAL_ON && !isMobile(l.Phone)) toast(`${l.Name || 'This lead'} needs an 04 mobile number to log in to the portal`);
+  if (PORTAL_ON && !l.Email) toast(`${l.Name || 'This lead'} needs an email address to log in to the portal`);
   if (step.needsQuote && !leadQuote(l)) { toast('Add the quoted fee to send the quote'); leadSheet(l, false); return; }
   const first = (l.Name || '').trim().split(/\s+/)[0];
   const me = l.Business === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
@@ -884,7 +886,7 @@ function requestSheet(l) {
   };
   s.innerHTML = `<div class="box" style="max-height:88vh;overflow:auto">
     <h2>Request documents</h2>
-    <div class="hint" style="margin:0 0 4px">${esc(l.Name || 'The client')} ${PORTAL_ON ? `gets an email${isMobile(l.Phone) ? ' and a text' : ''} with their portal link. Each item shows up in their portal to upload.` : 'gets an email listing what you need. (Once the portal is on, these appear in their portal too.)'}</div>
+    <div class="hint" style="margin:0 0 4px">${esc(l.Name || 'The client')} ${PORTAL_ON ? `gets an email${SMS_ON && isMobile(l.Phone) ? ' and a text' : ''} with their portal link. Each item shows up in their portal to upload.` : 'gets an email listing what you need. (Once the portal is on, these appear in their portal too.)'}</div>
     <div class="fld">Tap to add<div class="stgpick" id="rqList"></div></div>
     <label class="fld">Something else<div style="display:flex;gap:8px"><input id="rqNew" placeholder="e.g. 2024 land tax assessment" style="flex:1;min-width:0"><button type="button" class="btn ok" id="rqAdd" style="flex:none;width:auto;padding:0 18px">Add</button></div></label>
     <label class="fld">Note to ${esc(first || 'them')}<textarea id="rqMsg" placeholder="Optional"></textarea></label>
@@ -904,10 +906,10 @@ function requestSheet(l) {
     let notes = setTag(l.Notes, 'Req', items.join(';'));
     if (fresh.length) notes = setTag(setTag(notes, 'Chased', ''), 'Asked', isoToday());
     const list = (fresh.length ? fresh : items).map((t) => '- ' + t).join('\n');
-    const body = `Hi${first ? ' ' + first : ''},\n\nTo keep things moving, could you please send us:\n\n${list}\n\n${msg ? msg + '\n\n' : ''}${PORTAL_ON ? `You can upload them in your secure client portal. We'll text a code to your mobile to let you in:\n${portalLink(l)}` : 'You can reply to this email with them attached, or send photos.'}\n\nThank you.\n\nKind regards,\n${me}`;
+    const body = `Hi${first ? ' ' + first : ''},\n\nTo keep things moving, could you please send us:\n\n${list}\n\n${msg ? msg + '\n\n' : ''}${PORTAL_ON ? `You can upload them in your secure client portal. We'll email you a code to let you in:\n${portalLink(l)}` : 'You can reply to this email with them attached, or send photos.'}\n\nThank you.\n\nKind regards,\n${me}`;
     try {
       await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: `Documents we need${l.Business === 'Sydney Bookkeeping' ? ' – Sydney Bookkeeping & Advisory' : ''}`, body, files: [] });
-      if (PORTAL_ON && isMobile(l.Phone)) { try { await api({ action: 'sms', to: ausNum(l.Phone), text: `Hi ${first || 'there'}, ${me} here. We've asked for ${fresh.length || items.length} document${(fresh.length || items.length) > 1 ? 's' : ''} in your client portal: ${portalLink(l)}` }); } catch { toast('Email sent, but the text didn\'t go'); } }
+      if (PORTAL_ON && SMS_ON && isMobile(l.Phone)) { try { await api({ action: 'sms', to: ausNum(l.Phone), text: `Hi ${first || 'there'}, ${me} here. We've asked for ${fresh.length || items.length} document${(fresh.length || items.length) > 1 ? 's' : ''} in your client portal: ${portalLink(l)}` }); } catch { toast('Email sent, but the text didn\'t go'); } }
       l.Notes = notes;
       await api({ action: 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
       s.remove(); render(); toast(`Requested ${items.length} item${items.length > 1 ? 's' : ''} from ${first || l.Email}`); buzz();
@@ -1532,7 +1534,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '29';
+const APP_VERSION = '30';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
