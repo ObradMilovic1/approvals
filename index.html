@@ -759,19 +759,37 @@ const formUrl = (f) => new URL('forms/' + f, location.href).href;
 function formsSection() {
   return `<div class="sec">Forms <span>PDF, fill in on your phone</span></div><div class="forms">${FORMS.map((x, i) => `<div class="frm">
       <span class="fic">${I.doc}</span><div class="ft">${esc(x.t)}<small>${esc(x.s)}</small></div>
-      <a class="fb" href="${esc('forms/' + x.f)}" target="_blank" rel="noopener">Open</a>${x.send ? `<button class="fb pri" data-form="${i}">Send</button>` : ''}</div>`).join('')}</div>`;
+      <a class="fb" href="${esc('forms/' + x.f)}" target="_blank" rel="noopener">Open</a><button class="fb pri" data-form="${i}">Send</button></div>`).join('')}</div>`;
 }
-// Share the PDF itself where the phone allows it (Mail, WhatsApp, Messages), otherwise an email with links.
-async function sendForms(files, lead) {
-  const name = (lead && lead.Name) ? lead.Name.split(' ')[0] : '';
-  const sender = state.biz === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
-  const text = `Hi${name ? ' ' + name : ''},\n\nThanks for talking with us. Attached are our engagement letter and fee schedule. Please fill in the highlighted fields, sign, and send the letter back when you're ready.\n\nKind regards,\n${sender}\nSydney Bookkeeping & Advisory`;
-  try {
-    const blobs = await Promise.all(files.map(async (x) => new File([await (await fetch('forms/' + x.f)).blob()], x.f, { type: 'application/pdf' })));
-    if (navigator.canShare && navigator.canShare({ files: blobs })) { await navigator.share({ files: blobs, title: files.map((x) => x.t).join(' and '), text }); return; }
-  } catch (e) { if (e && e.name === 'AbortError') return; }
-  const body = text.replace("Attached are our", 'Here are our') + '\n\n' + files.map((x) => x.t + ': ' + formUrl(x.f)).join('\n');
-  location.href = `mailto:${encodeURIComponent((lead && lead.Email) || '')}?subject=${encodeURIComponent('Your engagement letter – Sydney Bookkeeping & Advisory')}&body=${encodeURIComponent(body)}`;
+// Send forms as real PDF attachments from your own mailbox (through the approvals service).
+function sendFormsSheet(files, lead) {
+  const l = lead || {};
+  const s = document.createElement('div'); s.className = 'sheet';
+  const biz = l.Business || state.biz;
+  s.innerHTML = `<div class="box" style="max-height:88vh;overflow:auto">
+    <h2>Send ${esc(files.map((x) => x.t.toLowerCase()).join(' and '))}</h2>
+    <label class="fld">Client email<input id="fTo" type="email" value="${esc(l.Email || '')}" placeholder="name@business.com.au"></label>
+    <label class="fld">First name<input id="fName" value="${esc((l.Name || '').split(/\s+/)[0] || '')}" placeholder="Optional"></label>
+    <div class="fld">Send from<div class="stgpick">${CONFIG.BUSINESSES.map((b) => `<button type="button" data-from="${esc(b.id)}" aria-pressed="${b.id === biz}">${esc(b.label)}</button>`).join('')}</div></div>
+    <div class="hint" style="margin:0">The PDF${files.length > 1 ? 's go' : ' goes'} as ${files.length > 1 ? 'attachments' : 'an attachment'}, with your signature.</div>
+    <div class="actions" style="position:static"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-send>Send</button></div></div>`;
+  let from = biz;
+  s.querySelectorAll('[data-from]').forEach((b) => b.onclick = () => { from = b.dataset.from; s.querySelectorAll('[data-from]').forEach((x) => x.setAttribute('aria-pressed', x === b)); });
+  s.addEventListener('click', (e) => { if (e.target === s || e.target.closest('[data-x]')) s.remove(); });
+  s.querySelector('[data-send]').onclick = async (e) => {
+    const to = s.querySelector('#fTo').value.trim(), nm = s.querySelector('#fName').value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) { toast('Enter the client\'s email'); return; }
+    e.target.disabled = true; e.target.textContent = 'Sending…';
+    const me = from === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
+    const isLetter = files.some((x) => x.f === 'engagement-letter.pdf');
+    const step = isLetter ? FLOW['Quote sent'] : FLOW['Meeting booked'];
+    const body = files.length === 1 && !files[0].send ? `Hi${nm ? ' ' + nm : ''},\n\nPlease find the ${files[0].t.toLowerCase()} attached.\n\nKind regards,\n${me}` : step.body(nm ? ' ' + nm : '', me);
+    try {
+      await api({ action: 'sendforms', to, business: from, subject: isLetter ? step.subject : (files.length === 1 && !files[0].send ? files[0].t + ' – Sydney Bookkeeping & Advisory' : step.subject), body, files: files.map((x) => x.f) });
+      s.remove(); toast(`Sent to ${to}`); buzz();
+    } catch { e.target.disabled = false; e.target.textContent = 'Send'; toast('Couldn\'t send, try again'); }
+  };
+  document.body.appendChild(s); setTimeout(() => s.querySelector('#fTo').focus(), 50);
 }
 
 function leadSheet(lead, isNew) {
@@ -806,8 +824,8 @@ function bindPipeline() {
   $('#refresh').onclick = () => load();
   document.querySelectorAll('[data-stage]').forEach((b) => b.onclick = () => { state.stage = b.dataset.stage; render(); });
   document.querySelectorAll('[data-move]').forEach((b) => b.onclick = () => leadSheet(state.leads.find((l) => l.LeadId === b.dataset.move), false));
-  document.querySelectorAll('[data-form]').forEach((b) => b.onclick = () => sendForms([FORMS[+b.dataset.form]]));
-  document.querySelectorAll('[data-letter]').forEach((b) => b.onclick = () => sendForms([FORMS[0], FORMS[1]], state.leads.find((l) => l.LeadId === b.dataset.letter)));
+  document.querySelectorAll('[data-form]').forEach((b) => b.onclick = () => sendFormsSheet([FORMS[+b.dataset.form]]));
+  document.querySelectorAll('[data-letter]').forEach((b) => b.onclick = () => sendFormsSheet([FORMS[0], FORMS[1]], state.leads.find((l) => l.LeadId === b.dataset.letter)));
   const sug = suggestions();
   document.querySelectorAll('[data-sug]').forEach((b) => b.onclick = () => leadSheet(sug[+b.dataset.sug].lead, true));
   document.querySelectorAll('[data-nosug]').forEach((b) => b.onclick = () => { lsAdd('nolead', b.dataset.nosug); render(); });
@@ -1373,7 +1391,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '22';
+const APP_VERSION = '23';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
