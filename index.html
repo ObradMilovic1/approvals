@@ -246,6 +246,13 @@
   .hiss li{position:relative;font-size:14px}.hiss li b{display:block;font-weight:600}.hiss li span{color:var(--muted);font-size:13px}
   .hiss li:before{content:'';position:absolute;left:-16px;top:6px;width:8px;height:8px;border-radius:50%;background:#E0A100}
   .hiss li.red:before{background:var(--red)}
+  .forms{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:84px}
+  .frm{display:flex;align-items:center;gap:12px;padding:12px 14px}.frm+.frm{border-top:1px solid var(--line)}
+  .frm .fic{width:36px;height:36px;border-radius:10px;background:var(--acc-t);color:var(--acc-d);display:flex;align-items:center;justify-content:center;flex:none}
+  .frm .ft{flex:1;min-width:0;font-weight:600;font-size:15px}.frm .ft small{display:block;font-weight:500;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .frm .fb{flex:none;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font:inherit;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;display:flex;align-items:center;cursor:pointer}
+  .frm .fb.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .go.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
   /* website-style extras */
   .focus{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
   .focus button{display:flex;align-items:center;gap:12px;border:none;background:none;padding:13px 16px;text-align:left;font-size:15px;font-weight:500;cursor:pointer;color:var(--ink)}
@@ -372,6 +379,7 @@ const I = {
   phone: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
   cloud: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.4-8.8A6 6 0 0 0 4.3 12.5 3.3 3.3 0 0 0 6 19z"/></svg>',
   folder: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  doc: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>',
   arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
   xero: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 17V10M10 17V6M14 17v-5M18 17V8"/></svg>',
   more: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
@@ -692,7 +700,7 @@ function viewPipeline() {
       <div class="sub">${[l.Phone ? prettyNum(l.Phone) : '', l.Email].filter(Boolean).map(esc).join(', ')}</div>
       <div class="sub">${esc(l.Stage)}${l.Updated ? ', updated ' + esc(daysAgo(l.Updated)) + (daysAgo(l.Updated) === 'today' ? '' : ' ago') : ''}</div>
       ${l.Notes ? `<div class="note">${esc(l.Notes)}</div>` : ''}
-      <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update</button></div>
+      <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}${['Proposal sent', 'Won'].includes(l.Stage) || l.Email ? `<button class="go ghost" data-letter="${esc(l.LeadId)}">Send letter</button>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update</button></div>
     </div>`;
   const sug = suggestions();
   return `${header(refreshBtn())}
@@ -700,7 +708,35 @@ function viewPipeline() {
     ${sug.length ? `<div class="sec">Possible new clients <span>from calls and emails</span></div><div class="list">${sug.map((g, i) => `<div class="sug"><div class="who">${esc(g.title)}<small>${esc(g.kind)}: ${esc(g.sub)}</small></div><button data-sug="${i}">Add lead</button><button class="x" data-nosug="${esc(g.key)}" aria-label="Dismiss">✕</button></div>`).join('')}</div>` : ''}
     <div class="stages">${tabs}</div>
     ${list.length ? `<div class="list">${list.map(card).join('')}</div>` : `<div class="empty"><b>No leads in this stage</b>Tap + to add a lead.</div>`}
+    ${formsSection()}
     <button class="fab" id="addlead" aria-label="Add lead">+</button>`;
+}
+
+/* ---------- Forms: branded PDFs to open, fill and send ---------- */
+const FORMS = [
+  { f: 'engagement-letter.pdf', t: 'Engagement letter', s: 'For new clients to fill in and sign', send: true },
+  { f: 'fee-schedule.pdf', t: 'Fee schedule', s: 'Essentials, Standard and Complete packages', send: true },
+  { f: 'payday-super-check.pdf', t: 'Payday Super check', s: 'Payroll review, one per client' },
+  { f: 'aml-ctf-assessment.pdf', t: 'AML/CTF assessment', s: 'Internal record, review every July' },
+  { f: 'security-checklist.pdf', t: 'Security checklist', s: 'MFA and safe habits, one each' },
+];
+const formUrl = (f) => new URL('forms/' + f, location.href).href;
+function formsSection() {
+  return `<div class="sec">Forms <span>PDF, fill in on your phone</span></div><div class="forms">${FORMS.map((x, i) => `<div class="frm">
+      <span class="fic">${I.doc}</span><div class="ft">${esc(x.t)}<small>${esc(x.s)}</small></div>
+      <a class="fb" href="${esc('forms/' + x.f)}" target="_blank" rel="noopener">Open</a>${x.send ? `<button class="fb pri" data-form="${i}">Send</button>` : ''}</div>`).join('')}</div>`;
+}
+// Share the PDF itself where the phone allows it (Mail, WhatsApp, Messages), otherwise an email with links.
+async function sendForms(files, lead) {
+  const name = (lead && lead.Name) ? lead.Name.split(' ')[0] : '';
+  const sender = state.biz === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
+  const text = `Hi${name ? ' ' + name : ''},\n\nThanks for talking with us. Attached are our engagement letter and fee schedule. Please fill in the highlighted fields, sign, and send the letter back when you're ready.\n\nKind regards,\n${sender}\nSydney Bookkeeping & Advisory`;
+  try {
+    const blobs = await Promise.all(files.map(async (x) => new File([await (await fetch('forms/' + x.f)).blob()], x.f, { type: 'application/pdf' })));
+    if (navigator.canShare && navigator.canShare({ files: blobs })) { await navigator.share({ files: blobs, title: files.map((x) => x.t).join(' and '), text }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  const body = text.replace("Attached are our", 'Here are our') + '\n\n' + files.map((x) => x.t + ': ' + formUrl(x.f)).join('\n');
+  location.href = `mailto:${encodeURIComponent((lead && lead.Email) || '')}?subject=${encodeURIComponent('Your engagement letter – Sydney Bookkeeping & Advisory')}&body=${encodeURIComponent(body)}`;
 }
 
 function leadSheet(lead, isNew) {
@@ -734,6 +770,8 @@ function bindPipeline() {
   $('#refresh').onclick = () => load();
   document.querySelectorAll('[data-stage]').forEach((b) => b.onclick = () => { state.stage = b.dataset.stage; render(); });
   document.querySelectorAll('[data-move]').forEach((b) => b.onclick = () => leadSheet(state.leads.find((l) => l.LeadId === b.dataset.move), false));
+  document.querySelectorAll('[data-form]').forEach((b) => b.onclick = () => sendForms([FORMS[+b.dataset.form]]));
+  document.querySelectorAll('[data-letter]').forEach((b) => b.onclick = () => sendForms([FORMS[0], FORMS[1]], state.leads.find((l) => l.LeadId === b.dataset.letter)));
   const sug = suggestions();
   document.querySelectorAll('[data-sug]').forEach((b) => b.onclick = () => leadSheet(sug[+b.dataset.sug].lead, true));
   document.querySelectorAll('[data-nosug]').forEach((b) => b.onclick = () => { lsAdd('nolead', b.dataset.nosug); render(); });
@@ -1299,7 +1337,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '19';
+const APP_VERSION = '20';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
