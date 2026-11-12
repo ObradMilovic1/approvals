@@ -259,6 +259,9 @@
   .svchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .svchips span{font-size:12px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--ink)}
   .svchips span.q{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .pchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .pchips span{font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;background:var(--soft,#F1F4F2);color:var(--ink)}
+  .pchips span.warn{background:#FEF3C7;color:#92400E}.pchips span.ok{background:#DDFBEE;color:#08804F}
   .qrow{display:grid;grid-template-columns:1.2fr 1fr .9fr;gap:8px;margin-top:6px}
   .qrow input,.qrow select{font:inherit;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-width:0}
   .sentchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -711,9 +714,10 @@ function viewPipeline() {
       <div class="sub">${[l.Phone ? prettyNum(l.Phone) : '', l.Email].filter(Boolean).map(esc).join(', ')}</div>
       <div class="sub">${esc(l.Stage)}${l.Updated ? ', updated ' + esc(daysAgo(l.Updated)) + (daysAgo(l.Updated) === 'today' ? '' : ' ago') : ''}</div>
       ${leadSvcs(l).length || leadQuote(l) ? `<div class="svchips">${leadSvcs(l).map((x) => `<span>${esc(x.s)}</span>`).join('')}${leadQuote(l) ? `<span class="q">${esc(aud(leadQuote(l).fee))}${leadQuote(l).billing === 'One-off' ? '' : ' ' + esc(leadQuote(l).billing.toLowerCase())}</span>` : ''}</div>` : ''}
+      ${portalChips(l)}
       ${plainNotes(l.Notes) ? `<div class="note">${esc(plainNotes(l.Notes))}</div>` : ''}
       ${[...(l.Notes || '').matchAll(/\[Sent: ([^\]]+)\]\s*(\d{1,2} \w{3})?/g)].length ? `<div class="sentchips">${[...(l.Notes || '').matchAll(/\[Sent: ([^\]]+)\]\s*(\d{1,2} \w{3})?/g)].map((m) => `<span>${I.check} ${esc(m[1])}${m[2] ? ' · ' + esc(m[2]) : ''}</span>`).join('')}</div>` : ''}
-      <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}${['Proposal sent', 'Won'].includes(l.Stage) || l.Email ? `<button class="go ghost" data-letter="${esc(l.LeadId)}">Send letter</button>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update</button></div>
+      <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}${['Proposal sent', 'Won'].includes(l.Stage) || l.Email ? `<button class="go ghost" data-letter="${esc(l.LeadId)}">Send letter</button>` : ''}${['Quote sent', 'Won'].includes(l.Stage) ? `<button class="go ghost" data-req="${esc(l.LeadId)}">Request docs</button>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update</button></div>
     </div>`;
   const sug = suggestions();
   return `${header(refreshBtn())}
@@ -758,7 +762,7 @@ const setTag = (notes, k, v) => { const base = String(notes || '').replace(new R
 const leadSvcIdx = (l) => getTag(l.Notes, 'Services').split(',').filter((x) => x !== '').map(Number).filter((i) => SV[i]);
 const leadSvcs = (l) => leadSvcIdx(l).map((i) => SV[i]);
 const leadQuote = (l) => { const [fee, billing, ref] = getTag(l.Notes, 'Quote').split('|'); return fee ? { fee: +fee, billing: billing || 'One-off', ref: ref || '' } : null; };
-const plainNotes = (n) => String(n || '').replace(/\s*\[(Services|Quote|OTP|Session): [^\]]*\]/g, '').replace(/\s*\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g, '').trim();
+const plainNotes = (n) => String(n || '').replace(/\s*\[(Services|Quote|OTP|Session|Req|Asked|Chased|Todo): [^\]]*\]/g, '').replace(/\s*\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g, '').trim();
 const listOf = (arr) => arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr.at(-1);
 const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigits: 2 });
 // Client portal: switch on once the Client portal flow is live. Emails then carry the portal link.
@@ -802,6 +806,7 @@ function autoSend(l) {
       await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: m.subject, body: m.body, files: m.files });
       const stamp = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
       l.Notes = ((l.Notes || '').trim() + ` ${sentTag(step.key)} ${stamp}`).trim();
+      if (PORTAL_ON && step.key !== 'Services overview') l.Notes = setTag(setTag(l.Notes, 'Chased', ''), 'Asked', isoToday());
       await api({ action: 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
       const i = state.leads.findIndex((x) => x.LeadId === l.LeadId); if (i >= 0) state.leads[i] = { ...state.leads[i], Notes: l.Notes };
       render(); toast(`${step.key} sent to ${l.Email}`);
@@ -843,6 +848,73 @@ function sendFormsSheet(files, lead) {
   document.body.appendChild(s); setTimeout(() => s.querySelector('#fTo').focus(), 50);
 }
 
+const isoToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Australia/Sydney' });
+// Extra documents we commonly ask for, by service (same order as SV), plus a few for anyone.
+const RQ = [
+  ['Bank statements for missing months', 'Loan statements at 30 June', 'Invoices for assets over $1,000', 'Lease or hire purchase agreement'],
+  ['TFN declaration for a new employee', 'Super choice form', 'Timesheets for the pay period', 'Termination details'],
+  ['ATO notice of assessment', 'Car logbook', 'Work from home hours record', 'Share or crypto sale records', 'Donation receipts'],
+  ['Agent statement for missing months', 'Loan interest statement', 'Settlement statement', 'Depreciation schedule', 'Repair invoices'],
+  ['Director ID evidence', 'Signed consent to act as director', 'Shareholder details'],
+  ['Year-end bank statements', 'Director loan agreement', 'Stocktake at 30 June', 'Debtors and creditors at 30 June'],
+  ['Signed trust deed', 'Rollover statements', 'Member consent forms'],
+  ['Fund bank statements', 'Share holding statements', 'Contribution notices', 'Pension paperwork', 'Property valuation', 'Answers to auditor queries'],
+];
+const RQ_ANY = ['ATO letter or notice', 'Photo ID'];
+const leadReqs = (l) => getTag(l.Notes, 'Req').split(';').map((x) => x.trim()).filter(Boolean);
+const cleanReq = (t) => String(t).replace(/[;\[\]|]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+// Portal state for a lead card: requests open, reminders sent, items left.
+function portalChips(l) {
+  const out = [], todo = getTag(l.Notes, 'Todo'), ch = getTag(l.Notes, 'Chased').split('|')[0];
+  if (ch === '2') out.push('<span class="warn">Reminded twice: call them</span>'); else if (ch === '1') out.push('<span>Reminder sent</span>');
+  if (todo === '0') out.push('<span class="ok">Portal complete</span>'); else if (todo) out.push(`<span>${esc(todo)} portal item${todo === '1' ? '' : 's'} open</span>`);
+  const r = leadReqs(l).length; if (r) out.push(`<span>${r} requested</span>`);
+  return out.length ? `<div class="pchips">${out.join('')}</div>` : '';
+}
+function requestSheet(l) {
+  const picked = new Set(leadReqs(l)), first = (l.Name || '').trim().split(/\s+/)[0];
+  const sugg = [...new Set([...leadSvcIdx(l).flatMap((i) => RQ[i] || []), ...RQ_ANY])];
+  const s = document.createElement('div'); s.className = 'sheet';
+  const draw = () => {
+    const all = [...new Set([...picked, ...sugg])];
+    s.querySelector('#rqList').innerHTML = all.map((t) => `<button type="button" data-rq="${esc(t)}" aria-pressed="${picked.has(t)}">${esc(t)}</button>`).join('');
+    s.querySelectorAll('[data-rq]').forEach((b) => b.onclick = () => { const t = b.dataset.rq; picked.has(t) ? picked.delete(t) : picked.add(t); draw(); });
+    s.querySelector('[data-send]').textContent = picked.size ? `Request ${picked.size} item${picked.size > 1 ? 's' : ''}` : 'Pick at least one';
+  };
+  s.innerHTML = `<div class="box" style="max-height:88vh;overflow:auto">
+    <h2>Request documents</h2>
+    <div class="hint" style="margin:0 0 4px">${esc(l.Name || 'The client')} ${PORTAL_ON ? `gets an email${isMobile(l.Phone) ? ' and a text' : ''} with their portal link. Each item shows up in their portal to upload.` : 'gets an email listing what you need. (Once the portal is on, these appear in their portal too.)'}</div>
+    <div class="fld">Tap to add<div class="stgpick" id="rqList"></div></div>
+    <label class="fld">Something else<div style="display:flex;gap:8px"><input id="rqNew" placeholder="e.g. 2024 land tax assessment" style="flex:1;min-width:0"><button type="button" class="btn ok" id="rqAdd" style="flex:none;width:auto;padding:0 18px">Add</button></div></label>
+    <label class="fld">Note to ${esc(first || 'them')}<textarea id="rqMsg" placeholder="Optional"></textarea></label>
+    <div class="actions" style="position:static"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-send>Request</button></div></div>`;
+  draw();
+  const addNew = () => { const t = cleanReq(s.querySelector('#rqNew').value); if (t) { picked.add(t); s.querySelector('#rqNew').value = ''; draw(); } };
+  s.querySelector('#rqAdd').onclick = addNew;
+  s.querySelector('#rqNew').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addNew(); } });
+  s.addEventListener('click', (e) => { if (e.target === s || e.target.closest('[data-x]')) s.remove(); });
+  s.querySelector('[data-send]').onclick = async (e) => {
+    if (!picked.size) return;
+    if (!l.Email) { toast(`Add ${l.Name || 'the lead'}'s email first`); return; }
+    const items = [...picked].map(cleanReq).filter(Boolean), isNewItem = (t) => !leadReqs(l).includes(t);
+    const fresh = items.filter(isNewItem), msg = s.querySelector('#rqMsg').value.trim();
+    const me = l.Business === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
+    e.target.disabled = true; e.target.textContent = 'Sending…';
+    let notes = setTag(l.Notes, 'Req', items.join(';'));
+    if (fresh.length) notes = setTag(setTag(notes, 'Chased', ''), 'Asked', isoToday());
+    const list = (fresh.length ? fresh : items).map((t) => '- ' + t).join('\n');
+    const body = `Hi${first ? ' ' + first : ''},\n\nTo keep things moving, could you please send us:\n\n${list}\n\n${msg ? msg + '\n\n' : ''}${PORTAL_ON ? `You can upload them in your secure client portal. We'll text a code to your mobile to let you in:\n${portalLink(l)}` : 'You can reply to this email with them attached, or send photos.'}\n\nThank you.\n\nKind regards,\n${me}`;
+    try {
+      await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: `Documents we need${l.Business === 'Sydney Bookkeeping' ? ' – Sydney Bookkeeping & Advisory' : ''}`, body, files: [] });
+      if (PORTAL_ON && isMobile(l.Phone)) { try { await api({ action: 'sms', to: l.Phone, text: `Hi ${first || 'there'}, ${me} here. We've asked for ${fresh.length || items.length} document${(fresh.length || items.length) > 1 ? 's' : ''} in your client portal: ${portalLink(l)}` }); } catch { toast('Email sent, but the text didn\'t go'); } }
+      l.Notes = notes;
+      await api({ action: 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
+      s.remove(); render(); toast(`Requested ${items.length} item${items.length > 1 ? 's' : ''} from ${first || l.Email}`); buzz();
+    } catch { e.target.disabled = false; draw(); toast('Couldn\'t send, try again'); }
+  };
+  document.body.appendChild(s);
+}
+
 function leadSheet(lead, isNew) {
   const l = { LeadId: lead.LeadId || ('L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), Name: '', Phone: '', Email: '', Source: 'Manual', Stage: 'New lead', Notes: '', Business: state.biz, ...lead };
   const svcs = new Set(leadSvcIdx(l)), q = leadQuote(l), tagsBefore = l.Notes || '';
@@ -870,6 +942,8 @@ function leadSheet(lead, isNew) {
     l.Name = s.querySelector('#lName').value.trim(); l.Phone = s.querySelector('#lPhone').value.trim(); l.Email = s.querySelector('#lEmail').value.trim();
     const sentTags = (tagsBefore.match(/\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g) || []).join(' ');
     let notes = (s.querySelector('#lNotes').value.trim() + ' ' + sentTags).trim();
+    // keep the portal's own tags (login, requests, reminders, progress)
+    ['Req', 'Asked', 'Chased', 'Todo', 'Session', 'OTP'].forEach((k) => { const v = getTag(tagsBefore, k); if (v) notes = setTag(notes, k, v); });
     notes = setTag(notes, 'Services', [...svcs].sort((a, b) => a - b).join(','));
     notes = setTag(notes, 'Quote', fee > 0 ? [fee, s.querySelector('#qBill').value, s.querySelector('#qRef').value.trim()].join('|') : '');
     l.Notes = notes;
@@ -890,6 +964,7 @@ function bindPipeline() {
   document.querySelectorAll('[data-stage]').forEach((b) => b.onclick = () => { state.stage = b.dataset.stage; render(); });
   document.querySelectorAll('[data-move]').forEach((b) => b.onclick = () => leadSheet(state.leads.find((l) => l.LeadId === b.dataset.move), false));
   document.querySelectorAll('[data-form]').forEach((b) => b.onclick = () => sendFormsSheet([FORMS[+b.dataset.form]]));
+  document.querySelectorAll('[data-req]').forEach((b) => b.onclick = () => requestSheet(state.leads.find((l) => l.LeadId === b.dataset.req)));
   document.querySelectorAll('[data-letter]').forEach((b) => b.onclick = () => sendFormsSheet([FORMS[1]], state.leads.find((l) => l.LeadId === b.dataset.letter)));
   const sug = suggestions();
   document.querySelectorAll('[data-sug]').forEach((b) => b.onclick = () => leadSheet(sug[+b.dataset.sug].lead, true));
@@ -1456,7 +1531,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '26';
+const APP_VERSION = '27';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });

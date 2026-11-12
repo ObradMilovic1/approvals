@@ -6,55 +6,98 @@
 <title>Client portal – Sydney Bookkeeping & Advisory</title>
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B0F0D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#0B0F0D;--body:#2A302D;--muted:#4F5753;--line:#E3E8E5;--soft:#F1F4F2;--acc:#00E187;--acc-d:#08804F;--acc-t:#DDFBEE;--red:#C2410C;--amber:#B45309}
+:root{--ink:#0B0F0D;--body:#2A302D;--muted:#4F5753;--faint:#7A837E;--line:#E3E8E5;--soft:#F1F4F2;--acc:#00E187;--acc-d:#08804F;--acc-t:#DDFBEE;--red:#C2410C;--amber:#92400E;--amber-t:#FEF3C7}
 *{box-sizing:border-box}html,body{margin:0}
-body{font-family:Geist,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);font-size:16px;line-height:1.5;background:#fff linear-gradient(var(--soft) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,var(--soft) 1px,transparent 1px) 0 0/48px 48px;min-height:100vh}
-.wrap{max-width:620px;margin:0 auto;padding:16px 16px 60px}
-header{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+body{font-family:Geist,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);font-size:16px;line-height:1.5;background:#fff linear-gradient(var(--soft) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,var(--soft) 1px,transparent 1px) 0 0/48px 48px;min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 80px}
+header{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;position:sticky;top:10px;z-index:5}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;line-height:1.1;letter-spacing:-.2px}.brand span{color:#00C877}
 .lock{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--acc-d);background:var(--acc-t);border-radius:999px;padding:5px 10px}
-.eyebrow{margin:28px 0 6px;color:var(--muted);font-size:14px}
-h1{margin:0;font-size:34px;line-height:1.05;letter-spacing:-1px;font-weight:800}
-.lead{margin:10px 0 0;color:var(--body)}
-.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
-.btn{height:52px;border:none;border-radius:999px;padding:0 24px;font:inherit;font-weight:700;font-size:16px;background:var(--acc);color:var(--ink);cursor:pointer;width:100%}
-.btn.dark{background:var(--ink);color:#fff}.btn:disabled{opacity:.5}
+.hello{margin:30px 0 4px}
+h1{margin:0;font-size:36px;line-height:1.05;letter-spacing:-1.2px;font-weight:800}
+.lead{margin:10px 0 0;color:var(--body);max-width:52ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{font-size:13px;font-weight:600;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px}
+.btn{height:52px;border:none;border-radius:999px;padding:0 24px;font:inherit;font-weight:700;font-size:16px;background:var(--acc);color:var(--ink);cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.dark{background:var(--ink);color:#fff}.btn:disabled{opacity:.5;cursor:default}
+.btn.sm{height:40px;font-size:14px;width:auto;padding:0 18px}
+.btn.line{background:#fff;border:1px solid var(--line);color:var(--ink)}
 .ghost{background:none;border:none;color:var(--acc-d);font:inherit;font-weight:600;cursor:pointer;padding:8px 0}
+button:focus-visible,a:focus-visible,label.up:focus-within,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .otp{display:flex;gap:8px;justify-content:space-between;margin:16px 0}
 .otp input{width:100%;max-width:52px;height:60px;text-align:center;font:inherit;font-size:26px;font-weight:700;border:1px solid var(--line);border-bottom:2px solid var(--acc);border-radius:12px;background:var(--soft)}
-.otp input:focus{outline:2px solid var(--acc);background:#fff}
+.otp input:focus{background:#fff}
 .err{color:var(--red);font-size:14px;min-height:20px;margin-top:6px}
 .muted{color:var(--muted);font-size:14px}
+/* progress */
 .prog{display:flex;align-items:center;gap:16px}
-.ring{--p:0;width:64px;height:64px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--soft) 0)}
-.ring b{width:52px;height:52px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:15px}
-.step{display:flex;gap:14px;align-items:flex-start}
-.step .n{width:28px;height:28px;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none;margin-top:2px}
-.step.done .n{background:var(--acc);color:var(--ink)}
-.step>div{min-width:0}.step h2{margin:0;font-size:18px}.step p{margin:4px 0 12px;color:var(--muted);font-size:14px}
-.docs{display:flex;flex-direction:column;margin-top:4px}
-.doc{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.doc:first-child{border-top:none}
-.doc .ic{width:36px;height:36px;border-radius:10px;background:var(--soft);display:grid;place-items:center;flex:none}
-.doc.ok .ic{background:var(--acc-t)}
-.doc .t{flex:1;min-width:0;font-weight:600;font-size:15px}.doc .t small{display:block;font-weight:500;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.doc label.up{flex:none;height:36px;padding:0 14px;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;cursor:pointer}
-.doc.ok label.up{background:#fff;color:var(--ink);border:1px solid var(--line)}
-.doc input[type=file]{display:none}
-.tag{display:inline-block;font-size:11px;font-weight:700;color:var(--amber);background:#FEF3C7;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle}
-.fine{color:var(--muted);font-size:12px;margin-top:20px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:9}
+.ring{--p:0;width:68px;height:68px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--soft) 0)}
+.ring b{width:56px;height:56px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:16px}
+.track{display:flex;gap:6px;margin-top:14px}
+.track a{flex:1;text-decoration:none;color:var(--ink);font-size:12px;font-weight:600}
+.track a i{display:block;height:6px;border-radius:9px;background:var(--soft);margin-bottom:6px;overflow:hidden}
+.track a i s{display:block;height:100%;background:var(--acc);text-decoration:none}
+/* sections */
+.sec h2{margin:0;font-size:19px;letter-spacing:-.3px}
+.sec .sub{margin:3px 0 0;color:var(--muted);font-size:14px}
+.sechead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.count{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--soft);color:var(--muted)}
+.count.ok{background:var(--acc-t);color:var(--acc-d)}
+.req{border-color:#F6D58A;box-shadow:inset 4px 0 0 #F5B93B}
+.signcard{display:flex;gap:14px;align-items:center}
+.signcard .ic{width:44px;height:44px;border-radius:12px;background:var(--soft);display:grid;place-items:center;flex:none}
+.signcard.ok .ic{background:var(--acc-t)}
+.signcard{flex-wrap:wrap}.signcard>div{flex:1;min-width:0}.signcard .btn.sm{flex:1 1 100%}@media (min-width:520px){.signcard{flex-wrap:nowrap}.signcard .btn.sm{flex:none}}
+.signcard h2{margin:0;font-size:17px}.signcard p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.rows{margin-top:10px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.row .ic{width:36px;height:36px;border-radius:10px;background:var(--soft);display:grid;place-items:center;flex:none}
+.row.ok .ic{background:var(--acc-t)}.row.na{opacity:.6}
+.row .t{flex:1;min-width:0;font-weight:600;font-size:15px;line-height:1.3}
+.row .t small{display:block;font-weight:500;color:var(--muted);font-size:13px;margin-top:2px}
+.row .t small.files{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acts{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+label.up{height:36px;padding:0 14px;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;cursor:pointer;white-space:nowrap}
+.row.ok label.up{background:#fff;color:var(--ink);border:1px solid var(--line)}
+label.up input{position:absolute;width:1px;height:1px;opacity:0}
+.na-btn{background:none;border:none;font:inherit;font-size:12px;color:var(--faint);cursor:pointer;padding:2px 0;text-decoration:underline;text-underline-offset:2px}
+.pill{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+.pill.must{color:var(--amber);background:var(--amber-t)}
+/* details form */
+.det{margin-top:12px;background:var(--soft);border-radius:14px;padding:14px}
+.det.ok{background:var(--acc-t)}
+.dethead{display:flex;align-items:center;gap:12px}
+.dethead>div{flex:1;min-width:0}.dethead b{font-size:15px}.dethead small{display:block;color:var(--muted);font-size:13px}
+form.f{margin-top:14px;display:grid;gap:12px}
+.fld label,.fld .lbl{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.fld .lbl em,.fld label em{font-style:normal;color:var(--faint);font-weight:500}
+.fld input,.fld select,.fld textarea{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.fld textarea{min-height:80px;resize:vertical}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:500;margin:0;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+.opts input{width:auto;margin:0;accent-color:var(--acc-d)}
+.opts label:has(input:checked){border-color:var(--acc-d);background:var(--acc-t)}
+.person{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px}
+.person .ph{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.two{grid-template-columns:1fr}}
+.finish{text-align:center}
+.finish p{margin:6px 0 14px;color:var(--muted);font-size:14px}
+.fine{color:var(--muted);font-size:12px;margin-top:22px;text-align:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:9;max-width:90vw;text-align:center}
 .center{text-align:center}
-@media (prefers-reduced-motion:no-preference){.card{animation:in .35s ease both}@keyframes in{from{opacity:0;transform:translateY(8px)}}}
+@media (prefers-reduced-motion:no-preference){main>.card,main>.hello{animation:in .35s ease both}@keyframes in{from{opacity:0;transform:translateY(8px)}}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="brand"><svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"><rect x="0" y="11" width="5" height="9" rx="1.5" fill="#0B0F0D"/><rect x="8" y="6" width="5" height="14" rx="1.5" fill="#0B0F0D"/><rect x="16" y="0" width="5" height="20" rx="1.5" fill="#00E187"/></svg><div>Sydney Bookkeeping<br>&amp; Advisory<span>.</span></div></div>
+    <div class="brand"><svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"><rect x="0" y="11" width="5" height="9" rx="1.5" fill="#0B0F0D"/><rect x="8" y="6" width="5" height="14" rx="1.5" fill="#0B0F0D"/><rect x="16" y="0" width="5" height="20" rx="1.5" fill="#00E187"/></svg><div id="firm">Sydney Bookkeeping<br>&amp; Advisory<span>.</span></div></div>
     <span class="lock"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Secure portal</span>
   </header>
   <main id="app"></main>
@@ -63,63 +106,141 @@ h1{margin:0;font-size:34px;line-height:1.05;letter-spacing:-1px;font-weight:800}
 <script>
 // The Client portal flow's address. Empty = the portal shows a "not switched on yet" notice.
 const PORTAL_URL = '';
+const PHONE = '02 3814 5525';
 const q = new URLSearchParams(location.search);
 const DEMO = q.has('demo');
 const leadId = q.get('l') || (DEMO ? 'demo' : '');
-const $ = (s) => document.querySelector(s);
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const app = $('#app');
 let session = { token: '', expires: 0 }, data = null;
 try { const s = JSON.parse(sessionStorage.getItem('portal:' + leadId) || 'null'); if (s && s.expires > Date.now()) session = s; } catch {}
-const toast = (m) => { document.querySelectorAll('.toast').forEach((t) => t.remove()); const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); };
+const toast = (m) => { $$('.toast').forEach((t) => t.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3400); };
 
-// Documents we ask for, by service (same order as the app's services).
-const ID_DOC = { k: 'id', t: 'Photo ID', s: 'Driver licence (front and back) or passport' };
-const REQ = [
-  [{ k: 'bas', t: 'Last BAS lodged', s: 'PDF or a photo' }, { k: 'bank', t: 'Bank statements', s: 'Last 3 months, for accounts without a bank feed' }],
-  [{ k: 'payroll', t: 'Employee list', s: 'Names, pay rates and super funds' }],
-  [{ k: 'income', t: 'Other income statements', s: 'Interest, dividends, share or crypto sales' }, { k: 'deductions', t: 'Deduction receipts', s: 'Work expenses, donations, last year’s accounting fee' }, { k: 'health', t: 'Private health insurance statement', s: 'If you have hospital cover' }],
-  [{ k: 'rent', t: 'Property manager’s annual statement', s: 'One per property' }, { k: 'loan', t: 'Loan interest statement', s: 'Full financial year' }, { k: 'deprec', t: 'Depreciation schedule', s: 'If you have one' }],
-  [{ k: 'did', t: 'Director ID for each director', s: 'Screenshot or letter showing the 15-digit ID' }, { k: 'id2', t: 'Photo ID for each director and shareholder', s: 'Licence or passport' }],
-  [{ k: 'fin', t: 'Last year’s financial statements and tax return', s: 'PDF' }, { k: 'loans', t: 'Loan and lease statements', s: 'As at 30 June' }],
-  [{ k: 'super', t: 'Statements from your current super funds', s: 'For the rollover into the new SMSF' }, { k: 'id3', t: 'Photo ID for each member', s: 'Licence or passport' }],
-  [{ k: 'sbank', t: 'Fund bank statements', s: 'Full financial year' }, { k: 'sinv', t: 'Investment statements', s: 'Shares, ETFs, managed funds' }, { k: 'sval', t: 'Property valuation at 30 June', s: 'If the fund owns property' }],
+/* ---------- What each service needs ----------
+   Same order as the services in the app. Each service has documents (d) and a short details form (f).
+   o: true = "only if it applies" (the client can mark it as not applicable). */
+const yn = ['Yes', 'No', 'Not sure'];
+const isOpt = (f) => f.o === true || !!f.opt; // radio and tick-box fields keep their choices in f.o
+const PERSON = (extra = []) => [
+  { k: 'name', l: 'Full legal name' }, { k: 'dob', l: 'Date of birth', t: 'date' },
+  { k: 'pob', l: 'Place of birth (town and country)' }, { k: 'addr', l: 'Residential address' },
+  { k: 'did', l: 'Director ID', o: true, ph: '15 digits' }, ...extra,
 ];
-const requested = (svcs) => { const out = [ID_DOC]; const seen = new Set(['id']); svcs.forEach((i) => (REQ[i] || []).forEach((d) => { if (!seen.has(d.k)) { seen.add(d.k); out.push(d); } })); return out; };
+const SERVICES = [
+  { n: 'Bookkeeping and BAS', why: 'So we can take over your books and BAS.',
+    d: [{ k: 'bas', t: 'Your last BAS', s: 'The lodged copy, PDF or photo', o: true },
+        { k: 'bank', t: 'Bank and card statements', s: 'Last 3 months, only for accounts without a bank feed', o: true },
+        { k: 'fin', t: 'Loan, lease and hire purchase agreements', s: 'Vehicles, equipment, business loans', o: true }],
+    f: [{ k: 'soft', l: 'What do you use now?', t: 'radio', o: ['Xero', 'MYOB', 'QuickBooks', 'Spreadsheets', 'Nothing yet'] },
+        { k: 'gst', l: 'Registered for GST?', t: 'radio', o: yn },
+        { k: 'freq', l: 'How often do you lodge BAS?', t: 'radio', o: ['Quarterly', 'Monthly', 'Annually', 'Not sure'] },
+        { k: 'accts', l: 'Bank and card accounts the business uses', t: 'area', ph: 'e.g. CBA business account, Amex card' }] },
+  { n: 'Payroll', why: 'So staff are paid correctly and super goes out on time.',
+    d: [{ k: 'staff', t: 'Employee list', s: 'Names, start dates, pay rates and super funds' },
+        { k: 'tfnd', t: 'TFN declarations and super choice forms', s: 'One for each employee', o: true },
+        { k: 'slip', t: 'A recent payslip for each employee', s: 'Helps us carry over leave balances', o: true }],
+    f: [{ k: 'n', l: 'Number of employees', t: 'number' },
+        { k: 'freq', l: 'Pay frequency', t: 'radio', o: ['Weekly', 'Fortnightly', 'Monthly'] },
+        { k: 'award', l: 'Award or agreement used', o: true, ph: 'e.g. Clerks Award, or not sure' }] },
+  { n: 'Individual tax return', why: 'We download most of your income from the ATO. These cover the rest.',
+    d: [{ k: 'other', t: 'Other income', s: 'Interest, dividends, share or crypto sales, foreign income', o: true },
+        { k: 'ded', t: 'Deduction receipts', s: 'Work expenses, donations, last year’s tax agent fee', o: true },
+        { k: 'wfh', t: 'Work from home hours', s: 'A diary, timesheet or roster for the year', o: true },
+        { k: 'car', t: 'Car logbook or work trips', s: 'If you claim car expenses', o: true },
+        { k: 'phi', t: 'Private health insurance statement', s: 'If you have hospital cover', o: true }],
+    f: [{ k: 'job', l: 'Your occupation' },
+        { k: 'chg', l: 'Anything new this year?', t: 'checks', opt: true, o: ['New job', 'Moved house', 'Married or separated', 'New baby', 'Sold shares or crypto', 'Sold a property', 'Started a side business', 'Government payments'] },
+        { k: 'spouse', l: 'Spouse’s name and taxable income', o: true, ph: 'Needed for Medicare levy and offsets' },
+        { k: 'kids', l: 'Number of dependent children', t: 'number', o: true }] },
+  { n: 'Rental property', why: 'One set for each property you own.',
+    d: [{ k: 'pm', t: 'Property manager’s annual statement', s: 'One for each property' },
+        { k: 'int', t: 'Loan interest statement', s: '1 July to 30 June' },
+        { k: 'rates', t: 'Council rates, water and strata', s: 'Notices or receipts', o: true },
+        { k: 'ins', t: 'Landlord insurance', s: 'Policy schedule or receipt', o: true },
+        { k: 'rep', t: 'Repairs and maintenance', s: 'Invoices not on the agent’s statement', o: true },
+        { k: 'dep', t: 'Depreciation schedule', s: 'From a quantity surveyor', o: true },
+        { k: 'settle', t: 'Purchase settlement statement', s: 'Only in the year you bought', o: true }],
+    group: { k: 'props', l: 'Property', add: 'Add another property',
+      f: [{ k: 'addr', l: 'Property address' }, { k: 'own', l: 'Your ownership share', ph: 'e.g. 50%' },
+          { k: 'from', l: 'First rented out', t: 'date', o: true }, { k: 'wks', l: 'Weeks rented this year', t: 'number', o: true }] } },
+  { n: 'Company set-up', why: 'ASIC needs these details for every director and shareholder.',
+    d: [{ k: 'cid', t: 'Photo ID for each director and shareholder', s: 'Driver licence (front and back) or passport' },
+        { k: 'cdid', t: 'Director ID for each director', s: 'The letter or screenshot showing the 15-digit ID' }],
+    f: [{ k: 'names', l: 'Company name, first to third choice', t: 'area', ph: '1.\n2.\n3.' },
+        { k: 'what', l: 'What will the company do?' },
+        { k: 'reg', l: 'Registered office address' },
+        { k: 'ppb', l: 'Principal place of business', o: true, ph: 'If different' },
+        { k: 'regs', l: 'Also register for', t: 'checks', opt: true, o: ['ABN', 'GST', 'PAYG withholding', 'Business name'] }],
+    group: { k: 'ppl', l: 'Director or shareholder', add: 'Add another person', min: 1,
+      f: PERSON([{ k: 'role', l: 'Role', t: 'checks', o: ['Director', 'Shareholder', 'Secretary'] }, { k: 'shares', l: 'Number of shares', t: 'number', o: true }]) } },
+  { n: 'Company tax return', why: 'For the year-end accounts and the company return.',
+    d: [{ k: 'prior', t: 'Last year’s financial statements and tax return', s: 'If we didn’t prepare them', o: true },
+        { k: 'loans', t: 'Loan and lease statements at 30 June', s: 'Balances and interest', o: true },
+        { k: 'assets', t: 'Invoices for assets over $1,000', s: 'Bought this year', o: true },
+        { k: 'div7a', t: 'Director loan agreements', s: 'Division 7A loans, if any', o: true }],
+    f: [{ k: 'xero', l: 'Have you invited us to your accounting file?', t: 'radio', o: ['Yes', 'Not yet', 'No file'] },
+        { k: 'dir', l: 'Changes to directors or shareholders this year?', t: 'radio', o: yn },
+        { k: 'div', l: 'Dividends paid this year?', t: 'radio', o: yn },
+        { k: 'dl', l: 'Did directors borrow money from the company?', t: 'radio', o: yn }] },
+  { n: 'SMSF set-up', why: 'The ATO and the trust deed need these for every member.',
+    d: [{ k: 'sold', t: 'Statements from your current super funds', s: 'For the rollover into the new fund' },
+        { k: 'sid', t: 'Photo ID for each member', s: 'Driver licence (front and back) or passport' }],
+    f: [{ k: 'fund', l: 'Name for the fund', ph: 'e.g. Smith Family Super Fund' },
+        { k: 'trustee', l: 'Trustee structure', t: 'radio', o: ['Company as trustee (we recommend this)', 'Individual trustees', 'Not sure'] },
+        { k: 'plan', l: 'What will the fund invest in?', t: 'area', o: true, ph: 'Shares, property, term deposits…' }],
+    group: { k: 'mem', l: 'Member', add: 'Add another member', min: 1,
+      f: PERSON([{ k: 'from', l: 'Current super fund and member number', o: true }, { k: 'bal', l: 'Approximate balance', o: true }]) } },
+  { n: 'SMSF annual compliance', why: 'For the fund’s accounts, return and independent audit.',
+    d: [{ k: 'sbank', t: 'Fund bank statements', s: '1 July to 30 June, every account' },
+        { k: 'sinv', t: 'Investment statements', s: 'Shares, ETFs, managed funds, crypto', o: true },
+        { k: 'scon', t: 'Contribution and rollover records', s: 'Including employer super', o: true },
+        { k: 'spen', t: 'Pension payment records', s: 'If a member is drawing a pension', o: true },
+        { k: 'sval', t: 'Property valuation at 30 June', s: 'If the fund owns property', o: true }],
+    f: [{ k: 'chg', l: 'Changes to members or trustees this year?', t: 'radio', o: yn },
+        { k: 'pen', l: 'Did a member start a pension?', t: 'radio', o: yn },
+        { k: 'note', l: 'Anything else we should know?', t: 'area', o: true }] },
+];
+const ID_DOC = { k: 'id', t: 'Your photo ID', s: 'Driver licence (front and back) or passport. The law requires us to confirm who you are.' };
 
+/* ---------- Talking to us ---------- */
 async function call(action, body) {
   if (DEMO) return demo(action, body);
   if (!PORTAL_URL) throw new Error('off');
   const r = await fetch(PORTAL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, leadId, token: session.token, ...body }) });
   if (r.status === 401) { logout(); throw new Error('expired'); }
   if (!r.ok) throw new Error('http ' + r.status);
-  const j = await r.json();
-  // the flow lists uploaded files as "<item> - <time> - <name>"; group them by item
+  return shape(await r.json());
+}
+// The flow lists uploaded files as "<item> - <time> - <name>"; group them by item.
+function shape(j) {
   if (Array.isArray(j.files)) { j.uploads = {}; j.files.forEach((n) => { const [k, , ...rest] = String(n).split(' - '); (j.uploads[k] = j.uploads[k] || []).push(rest.join(' - ') || n); }); }
+  j.requests = String(j.requests || '').split(';').map((x) => x.trim()).filter(Boolean);
   return j;
 }
-// Demo mode so the portal can be tried without touching real data.
-const demoState = { uploads: {}, signed: false };
+const demoState = { files: [], signed: false };
 async function demo(action, body) {
-  await new Promise((r) => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 450));
   if (action === 'start') return { ok: true, phone: '•••• ••• 222' };
   if (action === 'verify') return body.code === '123456' ? { ok: true, token: 'demo-token', minutes: 30 } : { ok: false };
-  if (action === 'status') return { first: 'Mia', business: 'Easy Books', services: [2, 3], signed: demoState.signed, uploads: demoState.uploads };
-  if (action === 'upload') { demoState.uploads[body.item] = (demoState.uploads[body.item] || []).concat(body.fileName); return { ok: true }; }
+  if (action === 'status') return shape({ first: 'Mia', business: 'Sydney Bookkeeping', services: (q.get('s') || '2,3').split(',').map(Number), signed: demoState.signed, files: demoState.files.slice(), requests: q.get('r') ?? 'Car logbook;ATO notice of assessment 2025' });
+  if (action === 'upload') { demoState.files.push(`${body.item} - 0 - ${body.fileName}`); return { ok: true }; }
   return { ok: true };
 }
 function logout() { session = { token: '', expires: 0 }; sessionStorage.removeItem('portal:' + leadId); data = null; showStart(); }
 
+/* ---------- Log in ---------- */
 function showOff() {
-  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Almost ready</h1><p class="lead">Our secure portal isn't switched on yet. Please reply to our email or call us on 02 3814 5525 and we'll help you directly.</p>`;
+  app.innerHTML = `<div class="hello"><h1>Almost ready</h1><p class="lead">Our secure portal isn't switched on yet. Reply to our email or call us on ${PHONE} and we'll help you directly.</p></div>`;
 }
 function showStart() {
-  if (!leadId) { app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Use the link in your email</h1><p class="lead">This portal only opens from the personal link we emailed you.</p>`; return; }
+  if (!leadId) { app.innerHTML = `<div class="hello"><h1>Use the link in your email</h1><p class="lead">This portal only opens from the personal link we sent you.</p></div>`; return; }
   if (!DEMO && !PORTAL_URL) return showOff();
-  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Welcome</h1>
-    <p class="lead">To keep your information safe, we'll text a 6-digit code to the mobile number we have for you.</p>
-    <div class="card"><button class="btn dark" id="send">Text me a code</button><div class="err" id="err"></div>
-    <p class="muted" style="margin:6px 0 0">Wrong number or no mobile? Call us on 02 3814 5525.</p></div>`;
+  app.innerHTML = `<div class="hello"><h1>Welcome</h1>
+    <p class="lead">Your portal is where you sign with us and send your documents. To keep your information safe, we'll text a 6-digit code to your mobile.</p></div>
+    <div class="card"><button class="btn dark" id="send">Text me a code</button><div class="err" id="err" role="alert"></div>
+    <p class="muted" style="margin:6px 0 0">Wrong number or no mobile? Call us on ${PHONE}.</p></div>`;
   $('#send').onclick = async (e) => {
     e.target.disabled = true; e.target.textContent = 'Sending…';
     try { const r = await call('start'); if (!r.ok) throw 0; showCode(r.phone); }
@@ -127,12 +248,12 @@ function showStart() {
   };
 }
 function showCode(phone) {
-  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Enter your code</h1>
-    <p class="lead">We texted a code to ${esc(phone || 'your mobile')}. It expires in 10 minutes.</p>
-    <div class="card"><div class="otp">${[0, 1, 2, 3, 4, 5].map((i) => `<input inputmode="numeric" autocomplete="${i ? 'off' : 'one-time-code'}" maxlength="${i ? 1 : 6}" aria-label="Digit ${i + 1}" data-i="${i}">`).join('')}</div>
-    <button class="btn" id="verify">Continue</button><div class="err" id="err"></div>
+  app.innerHTML = `<div class="hello"><h1>Enter your code</h1>
+    <p class="lead">We texted a code to ${esc(phone || 'your mobile')}. It expires in 10 minutes.</p></div>
+    <div class="card"><div class="otp">${[0, 1, 2, 3, 4, 5].map((i) => `<input inputmode="numeric" autocomplete="${i ? 'off' : 'one-time-code'}" maxlength="${i ? 1 : 6}" aria-label="Digit ${i + 1}">`).join('')}</div>
+    <button class="btn" id="verify">Continue</button><div class="err" id="err" role="alert"></div>
     <button class="ghost" id="again">Send a new code</button></div>`;
-  const boxes = [...document.querySelectorAll('.otp input')];
+  const boxes = $$('.otp input');
   boxes.forEach((b, i) => {
     b.addEventListener('input', () => {
       const v = b.value.replace(/\D/g, '');
@@ -150,7 +271,7 @@ function showCode(phone) {
     e.target.disabled = true;
     try {
       const r = await call('verify', { code });
-      if (!r.ok) { tries++; e.target.disabled = false; boxes.forEach((x) => x.value = ''); boxes[0].focus(); $('#err').textContent = tries >= 5 ? 'Too many attempts. Send a new code.' : 'That code doesn’t match. Check the text and try again.'; if (tries >= 5) e.target.disabled = true; return; }
+      if (!r.ok) { tries++; e.target.disabled = tries >= 5; boxes.forEach((x) => x.value = ''); boxes[0].focus(); $('#err').textContent = tries >= 5 ? 'Too many attempts. Send a new code.' : 'That code doesn’t match. Check the text and try again.'; return; }
       session = { token: r.token, expires: Date.now() + (r.minutes || 30) * 60e3 }; sessionStorage.setItem('portal:' + leadId, JSON.stringify(session));
       load();
     } catch { e.target.disabled = false; $('#err').textContent = 'Something went wrong. Try again.'; }
@@ -158,52 +279,181 @@ function showCode(phone) {
   $('#again').onclick = () => showStart();
 }
 
+/* ---------- Checklist model ---------- */
+const slug = (t) => 'r-' + String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 32);
+const NA = 'Not applicable.txt';
+function model() {
+  const up = data.uploads || {}, svcs = (data.services || []).filter((i) => SERVICES[i]);
+  const st = (k) => { const f = up[k] || []; return f.some((x) => x !== NA) ? 'ok' : f.includes(NA) ? 'na' : ''; };
+  const secs = [];
+  if (data.requests.length) secs.push({ key: 'req', n: 'We’ve asked for', why: 'A few extra things we need from you.', cls: 'req',
+    d: data.requests.map((t) => ({ k: slug(t), t, s: 'Requested by us' })) });
+  const special = svcs.some((i) => i === 4 || i === 6);
+  secs.push({ key: 'you', n: 'About you', why: special ? 'Upload yours here. ID for other directors or members goes in their section.' : 'We need this once, for every new client.', d: [ID_DOC] });
+  svcs.forEach((i) => secs.push({ key: 's' + i, idx: i, ...SERVICES[i] }));
+  const items = [];
+  secs.forEach((sc) => {
+    sc.items = sc.d.map((d) => ({ ...d, sec: sc.key, state: st(d.k) }));
+    if (sc.f || sc.group) sc.items.push({ k: 'details-' + sc.idx, t: 'Your details', det: true, sec: sc.key, state: st('details-' + sc.idx) });
+    items.push(...sc.items);
+  });
+  const signItem = { k: 'sign', state: data.signed ? 'ok' : '' };
+  const all = [signItem, ...items];
+  const done = all.filter((x) => x.state).length;
+  const must = all.filter((x) => !x.o && !x.state).length;
+  return { secs, all, done, total: all.length, remaining: all.length - done, must };
+}
+
+/* ---------- Dashboard ---------- */
 async function load() {
   app.innerHTML = `<div class="card center muted">Loading your portal…</div>`;
   try { data = await call('status'); render(); } catch (e) { if (String(e.message) !== 'expired') app.innerHTML = `<div class="card">We couldn’t load your portal. <button class="ghost" onclick="load()">Try again</button></div>`; }
 }
+const ICON = {
+  ok: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#08804F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  doc: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>',
+  na: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A837E" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg>',
+  pen: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+};
 function render() {
-  const docs = requested(data.services || []);
-  const up = data.uploads || {};
-  const done = docs.filter((d) => (up[d.k] || []).length).length + (data.signed ? 1 : 0), total = docs.length + 1;
-  const pct = Math.round(done / total * 100);
-  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Hi ${esc(data.first || 'there')}</h1>
-    <p class="lead">Two things to get started: sign your engagement letter, and upload the documents below.</p>
-    <div class="card prog"><span class="ring" style="--p:${pct}"><b>${pct}%</b></span><div><b>${done} of ${total} done</b><div class="muted">${pct === 100 ? 'All done, thank you. We’ll be in touch.' : 'Your progress saves as you go.'}</div></div></div>
-    <div class="card step ${data.signed ? 'done' : ''}"><span class="n">${data.signed ? '&#10003;' : '1'}</span><div style="flex:1"><h2>Sign your engagement letter</h2>
-      <p>${data.signed ? 'Signed. A copy is in your email.' : 'Review the services and fee, and sign on screen.'}</p>
-      ${data.signed ? '' : `<a class="btn" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="sign.html?l=${encodeURIComponent(leadId)}&p=1">Review and sign</a>`}</div></div>
-    <div class="card step ${docs.every((d) => (up[d.k] || []).length) ? 'done' : ''}"><span class="n">2</span><div style="flex:1"><h2>Upload your documents</h2>
-      <p>Take a photo or choose a file. Each upload goes straight to your private folder with us.</p>
-      <div class="docs">${docs.map((d) => { const has = (up[d.k] || []).length; return `<div class="doc ${has ? 'ok' : ''}"><span class="ic">${has ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#08804F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>'}</span>
-        <div class="t">${esc(d.t)}${d.k === 'id' ? '<span class="tag">Required</span>' : ''}<small>${has ? esc(up[d.k].join(', ')) : esc(d.s)}</small></div>
-        <label class="up">${has ? 'Add more' : 'Upload'}<input type="file" accept="image/*,application/pdf" multiple data-k="${d.k}"></label></div>`; }).join('')}</div></div></div>
-    <button class="ghost" id="out">Log out</button>
-    <p class="fine">Your documents are sent over an encrypted connection and stored in our Microsoft 365 account, not on this website. This portal logs you out after 30 minutes.</p>`;
-  document.querySelectorAll('input[type=file]').forEach((inp) => inp.onchange = () => uploadFiles(inp.dataset.k, [...inp.files], inp.closest('.doc')));
+  if (data.business && data.business !== 'Sydney Bookkeeping') { $('#firm').innerHTML = `${esc(data.business)}<span>.</span>`; document.title = `Client portal – ${data.business}`; }
+  const m = model(), pct = Math.round(m.done / m.total * 100);
+  const svcNames = (data.services || []).filter((i) => SERVICES[i]).map((i) => SERVICES[i].n);
+  const secDone = (sc) => sc.items.filter((x) => x.state).length;
+  app.innerHTML = `<div class="hello"><h1>Hi ${esc(data.first || 'there')}</h1>
+      <p class="lead">${m.remaining ? 'Everything we need from you is on this page. Your progress saves as you go, so you can come back any time with the same link.' : 'You’re all done. Thank you, we’ll take it from here.'}</p>
+      ${svcNames.length ? `<div class="chips">${svcNames.map((n) => `<span class="chip">${esc(n)}</span>`).join('')}</div>` : ''}</div>
+    <div class="card"><div class="prog"><span class="ring" style="--p:${pct}" aria-hidden="true"><b>${pct}%</b></span><div><b>${m.done} of ${m.total} done</b><div class="muted">${m.must ? `${m.must} required item${m.must > 1 ? 's' : ''} left` : m.remaining ? 'Only optional items left. Mark any that don’t apply.' : 'Nothing left to do.'}</div></div></div>
+      <nav class="track" aria-label="Sections">${[{ key: 'sign', n: 'Sign', items: [{ state: data.signed }] }, ...m.secs].map((sc) => { const d = sc.items.filter((x) => x.state).length; return `<a href="#${sc.key}"><i><s style="width:${Math.round(d / sc.items.length * 100)}%"></s></i>${esc(sc.key === 'sign' ? 'Sign' : sc.key === 'you' ? 'You' : sc.key === 'req' ? 'Extra' : (SERVICES[sc.idx].n.split(' ')[0] === 'SMSF' ? 'SMSF' : SERVICES[sc.idx].n.split(' ')[0]))}</a>`; }).join('')}</nav></div>
+    <div class="card signcard ${data.signed ? 'ok' : ''}" id="sign"><span class="ic">${data.signed ? ICON.ok : ICON.pen}</span><div><h2>Engagement letter</h2><p>${data.signed ? 'Signed. Your copy is in your email.' : 'Check the services and fee, then sign on screen.'}</p></div>
+      ${data.signed ? '' : `<a class="btn sm" href="sign.html?l=${encodeURIComponent(leadId)}&p=1">Review and sign</a>`}</div>
+    ${m.secs.map((sc) => section(sc, secDone(sc))).join('')}
+    <div class="card finish">${m.remaining ? `<b>Finished for now?</b><p>Let us know and we’ll check what you’ve sent. You can add more later.</p><button class="btn dark" id="done">I’ve finished uploading</button>` : `<b>All done</b><p>We’ll be in touch if we need anything else.</p>`}</div>
+    <div class="center"><button class="ghost" id="out">Log out</button></div>
+    <p class="fine">Files are sent over an encrypted connection and stored in our Microsoft 365 account, not on this website. You’re logged out after 30 minutes. Questions? Call ${PHONE}.</p>`;
+  $$('label.up input').forEach((inp) => inp.onchange = () => uploadFiles(inp.dataset.k, [...inp.files], inp.closest('.row')));
+  $$('.na-btn').forEach((b) => b.onclick = () => markNA(b.dataset.k, b));
+  $$('[data-open]').forEach((b) => b.onclick = () => openForm(b.dataset.open));
   $('#out').onclick = logout;
+  const dn = $('#done'); if (dn) dn.onclick = () => notify(dn);
 }
-// Shrink phone photos before sending so uploads are quick on mobile data.
+function section(sc, d) {
+  const n = sc.items.length;
+  return `<section class="card sec ${sc.cls || ''}" id="${sc.key}"><div class="sechead"><div><h2>${esc(sc.n)}</h2><p class="sub">${esc(sc.why || '')}</p></div><span class="count ${d === n ? 'ok' : ''}">${d === n ? 'Done' : `${d} of ${n}`}</span></div>
+    <div class="rows">${sc.items.filter((x) => !x.det).map(rowHtml).join('')}</div>
+    ${sc.items.filter((x) => x.det).map((x) => detHtml(sc, x)).join('')}</section>`;
+}
+function rowHtml(x) {
+  const files = (data.uploads[x.k] || []).filter((f) => f !== NA);
+  const must = !x.o && x.sec !== 'req';
+  return `<div class="row ${x.state}"><span class="ic">${x.state === 'ok' ? ICON.ok : x.state === 'na' ? ICON.na : ICON.doc}</span>
+    <div class="t">${esc(x.t)}${must && !x.state ? '<span class="pill must">Required</span>' : ''}<small class="${files.length ? 'files' : ''}">${x.state === 'na' ? 'Marked as not applicable' : files.length ? esc(files.join(', ')) : esc(x.s)}</small></div>
+    <div class="acts"><label class="up">${x.state === 'ok' ? 'Add more' : 'Upload'}<input type="file" accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.csv" multiple data-k="${x.k}" aria-label="Upload ${esc(x.t)}"></label>
+    ${x.o && !x.state ? `<button class="na-btn" data-k="${x.k}">Doesn’t apply</button>` : ''}</div></div>`;
+}
+function detHtml(sc, x) {
+  return `<div class="det ${x.state}" id="det-${sc.idx}"><div class="dethead"><span class="ic" style="width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;flex:none">${x.state ? ICON.ok : ICON.pen}</span>
+    <div><b>${x.state ? 'Details sent' : 'A few details'}</b><small>${x.state ? 'Thanks. Update them any time.' : sc.group ? `About you and each ${sc.group.l.toLowerCase()}` : 'Takes about a minute'}</small></div>
+    <button class="btn sm ${x.state ? 'line' : 'dark'}" data-open="${sc.idx}">${x.state ? 'Update' : 'Fill in'}</button></div><div class="fbox"></div></div>`;
+}
+
+/* ---------- Details forms ---------- */
+const draftKey = (i) => `portal:${leadId}:det${i}`;
+function fieldHtml(f, name, val) {
+  const id = 'f-' + name.replace(/\W/g, '_');
+  const lab = `${esc(f.l)}${isOpt(f) ? ' <em>(optional)</em>' : ''}`;
+  if (f.t === 'radio' || f.t === 'checks') {
+    const vals = [].concat(val || []);
+    return `<div class="fld" role="group" aria-label="${esc(f.l)}"><span class="lbl">${lab}</span><div class="opts">${f.o.map((o) => `<label><input type="${f.t === 'radio' ? 'radio' : 'checkbox'}" name="${name}" value="${esc(o)}" ${vals.includes(o) ? 'checked' : ''}>${esc(o)}</label>`).join('')}</div></div>`;
+  }
+  if (f.t === 'area') return `<div class="fld"><label for="${id}">${lab}</label><textarea id="${id}" name="${name}" placeholder="${esc(f.ph || '')}">${esc(val || '')}</textarea></div>`;
+  return `<div class="fld"><label for="${id}">${lab}</label><input id="${id}" name="${name}" type="${f.t || 'text'}" ${f.t === 'number' ? 'inputmode="numeric" min="0"' : ''} placeholder="${esc(f.ph || '')}" value="${esc(val || '')}"></div>`;
+}
+function openForm(i) {
+  i = +i; const sv = SERVICES[i], box = $(`#det-${i} .fbox`);
+  if (box.innerHTML) { box.innerHTML = ''; return; }
+  let draft = {}; try { draft = JSON.parse(sessionStorage.getItem(draftKey(i)) || '{}'); } catch {}
+  const g = sv.group, people = Math.max(g ? (g.min || 1) : 0, (draft.__n || 0));
+  const personHtml = (p) => `<div class="person" data-p="${p}"><div class="ph">${esc(g.l)} ${p + 1}${p >= (g.min || 1) ? `<button type="button" class="na-btn" data-rm="${p}">Remove</button>` : ''}</div>
+    ${g.f.map((f) => fieldHtml(f, `${g.k}.${p}.${f.k}`, draft[`${g.k}.${p}.${f.k}`])).join('')}</div>`;
+  box.innerHTML = `<form class="f" novalidate>${(sv.f || []).map((f) => fieldHtml(f, f.k, draft[f.k])).join('')}
+    ${g ? `<div class="people">${Array.from({ length: Math.max(people, 1) }, (_, p) => personHtml(p)).join('')}</div><button type="button" class="btn sm line" data-add>${esc(g.add)}</button>` : ''}
+    <div class="err" role="alert"></div><button class="btn" type="submit">Send details</button></form>`;
+  const form = $('form', box);
+  // Read the form; people are renumbered in the order shown, so removing one never leaves gaps.
+  const read = () => {
+    const o = {}, put = (k, el) => { if (el.type === 'checkbox') { if (el.checked) o[k] = [].concat(o[k] || [], el.value); } else if (el.type === 'radio') { if (el.checked) o[k] = el.value; } else o[k] = el.value; };
+    $$('input,textarea,select', form).forEach((el) => { if (el.name && !el.closest('.person')) put(el.name, el); });
+    $$('.person', form).forEach((pe, n) => $$('input,textarea,select', pe).forEach((el) => { const [, , fk] = el.name.split('.'); put(`${g.k}.${n}.${fk}`, el); }));
+    o.__n = $$('.person', form).length; return o;
+  };
+  let nextP = Math.max(people, 1);
+  const save = () => { try { sessionStorage.setItem(draftKey(i), JSON.stringify(read())); } catch {} };
+  form.addEventListener('input', save);
+  if (g) {
+    const wire = () => $$('[data-rm]', form).forEach((b) => b.onclick = () => { b.closest('.person').remove(); save(); });
+    $('[data-add]', form).onclick = () => { const n = nextP++; $('.people', form).insertAdjacentHTML('beforeend', personHtml(n)); wire(); $(`.person[data-p="${n}"] input`, form).focus(); save(); };
+    wire();
+  }
+  form.onsubmit = async (e) => {
+    e.preventDefault(); const v = read(), err = $('.err', form);
+    const miss = (sv.f || []).filter((f) => !isOpt(f) && !String(v[f.k] || '').trim());
+    if (g) for (let p = 0; p < v.__n; p++) g.f.forEach((f) => { if (!isOpt(f) && !String(v[`${g.k}.${p}.${f.k}`] || '').trim()) miss.push({ l: `${g.l} ${p + 1}: ${f.l}` }); });
+    if (miss.length) { err.textContent = `Please fill in: ${miss.slice(0, 3).map((f) => f.l.toLowerCase()).join(', ')}${miss.length > 3 ? '…' : ''}`; return; }
+    const lines = [`${sv.n} – details from ${data.first || 'client'}`, `Sent ${new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney' })}`, ''];
+    (sv.f || []).forEach((f) => lines.push(`${f.l}: ${[].concat(v[f.k] || '–').join(', ')}`));
+    if (g) for (let p = 0; p < v.__n; p++) { lines.push('', `${g.l} ${p + 1}`); g.f.forEach((f) => lines.push(`  ${f.l}: ${[].concat(v[`${g.k}.${p}.${f.k}`] || '–').join(', ')}`)); }
+    const btn = $('button[type=submit]', form); btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const blob = new Blob([lines.join('\r\n')], { type: 'text/plain' });
+      const r = await call('upload', { item: 'details-' + i, fileName: `${sv.n} details.txt`, contentType: 'text/plain', content: await b64(blob), remaining: remainingAfter('details-' + i) });
+      if (!r.ok) throw 0;
+      await refresh('Details sent, thank you');
+    } catch (e2) { btn.disabled = false; btn.textContent = 'Send details'; if (String(e2 && e2.message) !== 'expired') err.textContent = 'That didn’t go through. Please try again.'; }
+  };
+  const first = $('input:not([type=radio]):not([type=checkbox]),textarea', form); if (first) first.focus();
+}
+
+/* ---------- Uploads ---------- */
 function shrink(file) {
+  // Shrink phone photos before sending so uploads are quick on mobile data.
   return new Promise((res) => {
-    if (!/^image\//.test(file.type) || file.size < 1.2e6) return res(file);
+    if (!/^image\/(jpeg|png|webp|heic|heif)/.test(file.type) || file.size < 1.2e6) return res(file);
     const img = new Image(), url = URL.createObjectURL(file);
-    img.onload = () => { const max = 2200, sc = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = img.width * sc; c.height = img.height * sc; c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); c.toBlob((b) => { URL.revokeObjectURL(url); res(new File([b], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' })); }, 'image/jpeg', 0.85); };
+    img.onload = () => { const max = 2200, sc = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = img.width * sc; c.height = img.height * sc; c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); c.toBlob((b) => { URL.revokeObjectURL(url); res(b ? new File([b], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' }) : file); }, 'image/jpeg', 0.85); };
     img.onerror = () => res(file); img.src = url;
   });
 }
 const b64 = (blob) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob); });
+// Items still open after this upload, not counting the signature (signing is tracked separately).
+const remainingAfter = (k) => { const m = model(); const it = m.all.find((x) => x.k === k); return Math.max(0, m.remaining - (data.signed ? 0 : 1) - (it && !it.state ? 1 : 0)); };
+async function refresh(msg) {
+  const before = model().remaining;
+  data = await call('status'); render(); toast(msg);
+  if (before > 0 && model().remaining === 0) notify(null, true);
+}
 async function uploadFiles(k, files, row) {
-  const lbl = row.querySelector('label.up'); const old = lbl.firstChild.textContent; lbl.firstChild.textContent = 'Uploading…';
+  const lbl = $('label.up', row); const txt = lbl.firstChild; const old = txt.textContent; txt.textContent = 'Uploading…';
   try {
+    let n = 0;
     for (const f0 of files) {
-      if (f0.size > 15e6) { toast(`${f0.name} is over 15 MB. Try a photo instead.`); continue; }
+      if (f0.size > 15e6) { toast(`${f0.name} is over 15 MB. Try a photo of it instead.`); continue; }
       const f = await shrink(f0);
-      const r = await call('upload', { item: k, fileName: f.name.replace(/[\\/:*?"<>|]/g, '_'), contentType: f.type, content: await b64(f) });
-      if (!r.ok) throw 0;
+      const r = await call('upload', { item: k, fileName: f.name.replace(/[\\/:*?"<>|]/g, '_').replace(/ - /g, ' – '), contentType: f.type, content: await b64(f), remaining: remainingAfter(k) });
+      if (!r.ok) throw 0; n++;
     }
-    data = await call('status'); toast('Uploaded, thank you'); render();
-  } catch (e) { lbl.firstChild.textContent = old; if (String(e && e.message) !== 'expired') toast('Upload didn’t go through. Please try again.'); }
+    if (n) await refresh(n > 1 ? `${n} files uploaded, thank you` : 'Uploaded, thank you'); else txt.textContent = old;
+  } catch (e) { txt.textContent = old; if (String(e && e.message) !== 'expired') toast('Upload didn’t go through. Please try again.'); }
+}
+async function markNA(k, btn) {
+  btn.disabled = true;
+  try { const r = await call('upload', { item: k, fileName: NA, contentType: 'text/plain', content: btoa('Client marked this as not applicable.'), remaining: remainingAfter(k) }); if (!r.ok) throw 0; await refresh('Marked as not applicable'); }
+  catch (e) { btn.disabled = false; if (String(e && e.message) !== 'expired') toast('That didn’t save. Please try again.'); }
+}
+async function notify(btn, auto) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Letting us know…'; }
+  try { await call('notify', { remaining: model().remaining, auto: !!auto }); if (btn) { btn.textContent = 'Thanks, we’ve been notified'; toast('Thanks, we’ll take a look'); } }
+  catch (e) { if (btn) { btn.disabled = false; btn.textContent = 'I’ve finished uploading'; } }
 }
 // Expire the session after 30 minutes even if the page stays open.
 setInterval(() => { if (session.token && session.expires < Date.now()) { logout(); toast('Logged out for your security'); } }, 30e3);
