@@ -122,7 +122,7 @@ details p{margin:8px 0 0;color:var(--body);font-size:15px}
 <script src="vendor/pdf-lib.min.js"></script>
 <script>
 // Signing goes through the client portal flow, behind the SMS code. Set to the Client portal flow's URL.
-const PORTAL_URL = '';
+const PORTAL_URL = 'https://default0ebfdcda88c74890b0ba737d16ed62.aa.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/15/workflows/8f60aae25d834ab198ec070bf54eeaf0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TpAoEQkKFi-dwokrJoJFT2RAcwmS3OVd4p0LhZH4wUc';
 const SIGN_URL = PORTAL_URL;
 const q = new URLSearchParams(location.search);
 const $ = (s) => document.querySelector(s);
