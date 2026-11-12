@@ -761,6 +761,10 @@ const leadQuote = (l) => { const [fee, billing, ref] = getTag(l.Notes, 'Quote').
 const plainNotes = (n) => String(n || '').replace(/\s*\[(Services|Quote|OTP|Session): [^\]]*\]/g, '').replace(/\s*\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g, '').trim();
 const listOf = (arr) => arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr.at(-1);
 const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigits: 2 });
+// Client portal: switch on once the Client portal flow is live. Emails then carry the portal link.
+const PORTAL_ON = false;
+const portalLink = (l) => `https://obradmilovic1.github.io/approvals/portal.html?l=${encodeURIComponent(l.LeadId)}`;
+const isMobile = (p) => /^04\d{8}$/.test(String(p || '').replace(/[\s-]/g, '').replace(/^\+61/, '0'));
 // New-client workflow: moving a lead to these stages emails the client automatically.
 const FLOW = {
   'Meeting booked': { key: 'Services overview', build: (l, n, me) => {
@@ -772,13 +776,13 @@ const FLOW = {
     const sv = leadSvcs(l), q = leadQuote(l);
     const fee = `${aud(q.fee)} + GST${q.billing === 'One-off' ? '' : ' ' + q.billing.toLowerCase()}`;
     return { files: ['engagement-letter.pdf'], subject: `Your quote${q.ref ? ' ' + q.ref : ''} – Sydney Bookkeeping & Advisory`,
-      body: `Hi${n},\n\nThanks for your time. Here's our quote${q.ref ? ' (' + q.ref + ')' : ''}:\n\n${sv.map((x) => '- ' + x.n).join('\n') || '- As discussed'}\n\nFee: ${fee}\n\nTo go ahead, please fill in the attached engagement letter, tick the services above, sign it and send it back. You can do it all on your phone.\n\nThe quote is valid for 30 days. Any questions, just reply to this email.\n\nKind regards,\n${me}` };
+      body: `Hi${n},\n\nThanks for your time. Here's our quote${q.ref ? ' (' + q.ref + ')' : ''}:\n\n${sv.map((x) => '- ' + x.n).join('\n') || '- As discussed'}\n\nFee: ${fee}\n\n${PORTAL_ON ? `To go ahead, open your secure client portal, review and sign the engagement letter, and upload your documents. We'll text a code to your mobile to let you in.\n\n${portalLink(l)}\n\nThe engagement letter is also attached for your records.` : 'To go ahead, please fill in the attached engagement letter, tick the services above, sign it and send it back. You can do it all on your phone.'}\n\nThe quote is valid for 30 days. Any questions, just reply to this email.\n\nKind regards,\n${me}` };
   } },
   'Won': { key: 'Welcome', build: (l, n, me) => {
     const sv = leadSvcs(l), files = [...new Set(sv.map((x) => x.f))];
     const steps = [...new Map(sv.map((x) => [x.next, x])).values()].map((x, i) => `${i + 1}. ${x.next}`);
     if (sv.some((x) => x.id)) steps.push(`${steps.length + 1}. Identity check: send a certified copy of a driver licence or passport for each person involved. The law requires this before we set up a company or SMSF.`);
-    steps.push(`${steps.length + 1}. If you haven't already, send back your signed engagement letter.`);
+    steps.push(PORTAL_ON ? `${steps.length + 1}. Upload everything through your secure client portal (we'll text a code to your mobile): ${portalLink(l)}` : `${steps.length + 1}. If you haven't already, send back your signed engagement letter.`);
     return { files, subject: 'Welcome to Sydney Bookkeeping & Advisory – next steps',
       body: `Hi${n},\n\nWelcome aboard, we're glad to have you. ${files.length ? `I've attached ${files.length > 1 ? 'checklists' : 'a checklist'} of what we need. ` : ''}Here's what happens next:\n\n${steps.join('\n')}\n\nWe'll keep you posted as we go.\n\nKind regards,\n${me}` };
   } },
@@ -788,6 +792,7 @@ function autoSend(l) {
   const step = FLOW[l.Stage];
   if (!step || (l.Notes || '').includes(sentTag(step.key))) return;
   if (!l.Email) { toast(`Add ${l.Name || 'the lead'}'s email to send the ${step.key.toLowerCase()}`); return; }
+  if (PORTAL_ON && !isMobile(l.Phone)) toast(`${l.Name || 'This lead'} needs an 04 mobile number to log in to the portal`);
   if (step.needsQuote && !leadQuote(l)) { toast('Add the quoted fee to send the quote'); leadSheet(l, false); return; }
   const first = (l.Name || '').trim().split(/\s+/)[0];
   const me = l.Business === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
@@ -1451,7 +1456,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '25';
+const APP_VERSION = '26';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });

@@ -121,14 +121,20 @@ details p{margin:8px 0 0;color:var(--body);font-size:15px}
 
 <script src="vendor/pdf-lib.min.js"></script>
 <script>
-// Where signed letters are sent. Set to the Client e-sign flow's URL.
-const SIGN_URL = '';
+// Signing goes through the client portal flow, behind the SMS code. Set to the Client portal flow's URL.
+const PORTAL_URL = '';
+const SIGN_URL = PORTAL_URL;
 const q = new URLSearchParams(location.search);
 const $ = (s) => document.querySelector(s);
 const lead = { id: q.get('l') || '', name: q.get('n') || '', email: q.get('e') || '', biz: q.get('b') || 'Sydney Bookkeeping' };
 if (lead.name) { $('#contact').value = lead.name; $('#hello').textContent = `Hi ${lead.name.split(/\s+/)[0]}, it takes about two minutes. Check your details and services, read the terms and sign below.`; }
 if (lead.email) $('#email').value = lead.email;
 if (q.get('c')) $('#client_name').value = q.get('c');
+// From the portal: use its session, and fill the details from the lead.
+const viaPortal = q.get('p') === '1';
+let session = null;
+try { const ss = JSON.parse(sessionStorage.getItem('portal:' + lead.id) || 'null'); if (ss && ss.expires > Date.now()) session = ss; } catch {}
+if (viaPortal && PORTAL_URL && !session) location.replace('portal.html?l=' + encodeURIComponent(lead.id));
 
 const money = (n) => '$' + Number(n).toLocaleString('en-AU');
 const SERVICES = ['Bookkeeping and BAS', 'Payroll and Single Touch Payroll', 'Individual tax return', 'Rental property schedules', 'Company set-up', 'Company tax return', 'SMSF set-up', 'SMSF annual accounts and return'];
@@ -136,6 +142,21 @@ const pick = (q.get('s') || '').split(',').filter((x) => x !== '').map(Number);
 const quote = { fee: q.get('q') || '', ref: q.get('r') || '', billing: q.get('bl') || '' };
 $('#svcs').innerHTML = SERVICES.map((sv, i) => `<label class="pkg"><input type="checkbox" name="svc" value="${i}" ${pick.includes(i) ? 'checked' : ''}><div><b>${sv}</b></div></label>`).join('');
 if (quote.fee) { const t = `${money(quote.fee)} + GST${quote.billing ? ', ' + quote.billing.toLowerCase() : ''}`; $('#tot').innerHTML = `<b>${t}</b>${quote.ref ? 'Quote ' + quote.ref : 'As quoted'}`; $('#quoteLine').textContent = `Fee ${t}${quote.ref ? ', as set out in quote ' + quote.ref : ', as quoted'}.`; }
+
+if (viaPortal && PORTAL_URL && session) (async () => {
+  try {
+    const r = await fetch(PORTAL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'status', leadId: lead.id, token: session.token }) });
+    if (r.status === 401) return location.replace('portal.html?l=' + encodeURIComponent(lead.id));
+    const st = await r.json();
+    if (st.signed) return location.replace('portal.html?l=' + encodeURIComponent(lead.id));
+    lead.biz = st.business || lead.biz;
+    if (st.name && !$('#contact').value) { $('#contact').value = st.name; $('#hello').textContent = `Hi ${st.name.split(/\s+/)[0]}, it takes about two minutes. Check your details and services, read the terms and sign below.`; }
+    if (st.email && !$('#email').value) $('#email').value = st.email;
+    (st.services || []).forEach((i) => { const b = document.querySelector(`[name=svc][value="${i}"]`); if (b) b.checked = true; });
+    const [fee, billing, ref] = String(st.quote || '').split('|');
+    if (fee) { quote.fee = fee; quote.billing = billing || ''; quote.ref = ref || ''; const t = `${money(fee)} + GST${quote.billing ? ', ' + quote.billing.toLowerCase() : ''}`; $('#tot').innerHTML = `<b>${t}</b>${quote.ref ? 'Quote ' + quote.ref : 'As quoted'}`; $('#quoteLine').textContent = `Fee ${t}${quote.ref ? ', as set out in quote ' + quote.ref : ', as quoted'}.`; }
+  } catch (e) { console.error(e); }
+})();
 
 // Signature pad
 const cv = $('#pad'), ctx = cv.getContext('2d'); let drawing = false, inked = false, last = null;
@@ -209,14 +230,15 @@ $('#sign').onclick = async () => {
     v.dateText = v.when.toLocaleDateString('en-AU', { timeZone: 'Australia/Sydney' });
     const pdf = await buildPdf(v);
     const fileName = `Engagement letter - ${v.client_name.replace(/[\\/:*?"<>|]/g, '')} - signed ${v.when.toISOString().slice(0, 10)}.pdf`;
-    if (!SIGN_URL) throw new Error('not live');
+    if (!SIGN_URL || !session) throw new Error('not live');
     {
-      const res = await fetch(SIGN_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ leadId: lead.id, business: lead.biz, signer: v.contact, email: v.email, client: v.client_name, abn: v.client_abn, services: v.svcs.map((i) => SERVICES[i]).join(', '), fee: quote.fee, quoteRef: quote.ref, autopay: v.autopay, signedAt: v.when.toISOString(), sha256: pdf.hash, fileName, pdf: pdf.b64 }) });
+      const res = await fetch(SIGN_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'sign', token: session.token, leadId: lead.id, business: lead.biz, signer: v.contact, email: v.email, client: v.client_name, abn: v.client_abn, services: v.svcs.map((i) => SERVICES[i]).join(', '), fee: quote.fee, billing: quote.billing, quoteRef: quote.ref, autopay: v.autopay, signedAt: v.when.toISOString(), sha256: pdf.hash, fileName, pdf: pdf.b64 }) });
+      if (res.status === 401) { location.replace('portal.html?l=' + encodeURIComponent(lead.id)); return; }
       if (!res.ok) throw new Error('send ' + res.status);
     }
     const url = URL.createObjectURL(new Blob([pdf.bytes], { type: 'application/pdf' }));
     $('#bar').remove();
-    $('#app').innerHTML = `<header>${document.querySelector('header').innerHTML}</header><div class="done"><div class="tick"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><h1>Signed, thank you</h1><p class="lead">We've emailed a signed copy to ${v.email.replace(/[<>&]/g, '')}. We'll be in touch shortly to get you set up.</p><a class="btn" href="${url}" download="${fileName.replace(/"/g, '')}">Download your copy</a></div>`;
+    $('#app').innerHTML = `<header>${document.querySelector('header').innerHTML}</header><div class="done"><div class="tick"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><h1>Signed, thank you</h1><p class="lead">We've emailed a signed copy to ${v.email.replace(/[<>&]/g, '')}. We'll be in touch shortly to get you set up.</p><a class="btn" href="${url}" download="${fileName.replace(/"/g, '')}">Download your copy</a>${viaPortal ? `<p style="margin-top:14px"><a href="portal.html?l=${encodeURIComponent(lead.id)}">Back to your portal to upload your documents</a></p>` : ''}</div>`;
     window.__signed = pdf.b64; scrollTo(0, 0);
   } catch (e) { btn.disabled = false; btn.textContent = 'Sign letter'; err.textContent = SIGN_URL ? 'Something went wrong sending your signature. Please try again, or call us on 02 3814 5525.' : 'Online signing isn\'t switched on yet. Please use View PDF at the top to download, sign and email the letter back.'; console.error(e); }
 };
