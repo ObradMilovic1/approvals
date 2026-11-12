@@ -152,7 +152,7 @@ if (viaPortal && PORTAL_URL && session) (async () => {
     lead.biz = st.business || lead.biz;
     if (st.name && !$('#contact').value) { $('#contact').value = st.name; $('#hello').textContent = `Hi ${st.name.split(/\s+/)[0]}, it takes about two minutes. Check your details and services, read the terms and sign below.`; }
     if (st.email && !$('#email').value) $('#email').value = st.email;
-    (st.services || []).forEach((i) => { const b = document.querySelector(`[name=svc][value="${i}"]`); if (b) b.checked = true; });
+    (typeof st.services === 'string' ? (() => { try { return JSON.parse(st.services || '[]'); } catch { return []; } })() : st.services || []).forEach((i) => { const b = document.querySelector(`[name=svc][value="${i}"]`); if (b) b.checked = true; });
     const [fee, billing, ref] = String(st.quote || '').split('|');
     if (fee) { quote.fee = fee; quote.billing = billing || ''; quote.ref = ref || ''; const t = `${money(fee)} + GST${quote.billing ? ', ' + quote.billing.toLowerCase() : ''}`; $('#tot').innerHTML = `<b>${t}</b>${quote.ref ? 'Quote ' + quote.ref : 'As quoted'}`; $('#quoteLine').textContent = `Fee ${t}${quote.ref ? ', as set out in quote ' + quote.ref : ', as quoted'}.`; }
   } catch (e) { console.error(e); }

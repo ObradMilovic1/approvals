@@ -216,6 +216,9 @@ async function call(action, body) {
 // The flow lists uploaded files as "<item> - <time> - <name>"; group them by item.
 function shape(j) {
   if (Array.isArray(j.files)) { j.uploads = {}; j.files.forEach((n) => { const [k, , ...rest] = String(n).split(' - '); (j.uploads[k] = j.uploads[k] || []).push(rest.join(' - ') || n); }); }
+  // The flow sends the service list as text, e.g. "[2,3]".
+  if (typeof j.services === 'string') { try { j.services = JSON.parse(j.services || '[]'); } catch { j.services = []; } }
+  j.services = (Array.isArray(j.services) ? j.services : []).map(Number);
   j.requests = String(j.requests || '').split(';').map((x) => x.trim()).filter(Boolean);
   return j;
 }
