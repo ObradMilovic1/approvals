@@ -766,6 +766,8 @@ const leadQuote = (l) => { const [fee, billing, ref] = getTag(l.Notes, 'Quote').
 const plainNotes = (n) => String(n || '').replace(/\s*\[(Services|Quote|OTP|Session|Req|Asked|Chased|Todo): [^\]]*\]/g, '').replace(/\s*\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g, '').trim();
 const listOf = (arr) => arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr.at(-1);
 const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigits: 2 });
+// Client-facing workflow emails all go from Zeljka's Sydney Bookkeeping mailbox (Sydney Bookkeeping is replacing Easy Books).
+const CLIENT_FROM = 'Sydney Bookkeeping';
 // Client portal: switch on once the Client portal flow is live. Emails then carry the portal link.
 const PORTAL_ON = false;
 // Texts need a Crazytel mobile number on the account; until then everything goes by email.
@@ -802,11 +804,11 @@ function autoSend(l) {
   if (PORTAL_ON && !l.Email) toast(`${l.Name || 'This lead'} needs an email address to log in to the portal`);
   if (step.needsQuote && !leadQuote(l)) { toast('Add the quoted fee to send the quote'); leadSheet(l, false); return; }
   const first = (l.Name || '').trim().split(/\s+/)[0];
-  const me = l.Business === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
+  const me = 'Zeljka';
   const m = step.build(l, first ? ' ' + first : '', me);
   undoToast(`Emailing ${step.key.toLowerCase()} to ${l.Email}`, 6000, async () => {
     try {
-      await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: m.subject, body: m.body, files: m.files });
+      await api({ action: 'sendforms', to: l.Email, business: CLIENT_FROM, subject: m.subject, body: m.body, files: m.files });
       const stamp = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
       l.Notes = ((l.Notes || '').trim() + ` ${sentTag(step.key)} ${stamp}`).trim();
       if (PORTAL_ON && step.key !== 'Services overview') l.Notes = setTag(setTag(l.Notes, 'Chased', ''), 'Asked', isoToday());
@@ -826,7 +828,7 @@ function formsSection() {
 function sendFormsSheet(files, lead) {
   const l = lead || {};
   const s = document.createElement('div'); s.className = 'sheet';
-  const biz = l.Business || state.biz;
+  const biz = CLIENT_FROM;
   s.innerHTML = `<div class="box" style="max-height:88vh;overflow:auto">
     <h2>Send ${esc(files.map((x) => x.t.toLowerCase()).join(' and '))}</h2>
     <label class="fld">Client email<input id="fTo" type="email" value="${esc(l.Email || '')}" placeholder="name@business.com.au"></label>
@@ -901,14 +903,14 @@ function requestSheet(l) {
     if (!l.Email) { toast(`Add ${l.Name || 'the lead'}'s email first`); return; }
     const items = [...picked].map(cleanReq).filter(Boolean), isNewItem = (t) => !leadReqs(l).includes(t);
     const fresh = items.filter(isNewItem), msg = s.querySelector('#rqMsg').value.trim();
-    const me = l.Business === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
+    const me = 'Zeljka';
     e.target.disabled = true; e.target.textContent = 'Sending…';
     let notes = setTag(l.Notes, 'Req', items.join(';'));
     if (fresh.length) notes = setTag(setTag(notes, 'Chased', ''), 'Asked', isoToday());
     const list = (fresh.length ? fresh : items).map((t) => '- ' + t).join('\n');
     const body = `Hi${first ? ' ' + first : ''},\n\nTo keep things moving, could you please send us:\n\n${list}\n\n${msg ? msg + '\n\n' : ''}${PORTAL_ON ? `You can upload them in your secure client portal. We'll email you a code to let you in:\n${portalLink(l)}` : 'You can reply to this email with them attached, or send photos.'}\n\nThank you.\n\nKind regards,\n${me}`;
     try {
-      await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: `Documents we need${l.Business === 'Sydney Bookkeeping' ? ' – Sydney Bookkeeping & Advisory' : ''}`, body, files: [] });
+      await api({ action: 'sendforms', to: l.Email, business: CLIENT_FROM, subject: 'Documents we need – Sydney Bookkeeping & Advisory', body, files: [] });
       if (PORTAL_ON && SMS_ON && isMobile(l.Phone)) { try { await api({ action: 'sms', to: ausNum(l.Phone), text: `Hi ${first || 'there'}, ${me} here. We've asked for ${fresh.length || items.length} document${(fresh.length || items.length) > 1 ? 's' : ''} in your client portal: ${portalLink(l)}` }); } catch { toast('Email sent, but the text didn\'t go'); } }
       l.Notes = notes;
       await api({ action: 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
@@ -1534,7 +1536,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '31';
+const APP_VERSION = '32';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
