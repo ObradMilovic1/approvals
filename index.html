@@ -253,6 +253,12 @@
   .frm .fb{flex:none;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font:inherit;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;display:flex;align-items:center;cursor:pointer}
   .frm .fb.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
   .go.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .flowstrip{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin:-4px 0 12px}
+  .flowstrip b{color:var(--ink);font-weight:600;margin-right:2px}
+  .flowstrip span{background:var(--acc-t);color:var(--acc-d);border-radius:999px;padding:3px 9px;font-weight:600}
+  .sentchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .sentchips span{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--acc-d);background:var(--acc-t);border-radius:999px;padding:3px 9px}
+  .sentchips svg{width:12px;height:12px}
   /* website-style extras */
   .focus{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
   .focus button{display:flex;align-items:center;gap:12px;border:none;background:none;padding:13px 16px;text-align:left;font-size:15px;font-weight:500;cursor:pointer;color:var(--ink)}
@@ -447,7 +453,7 @@ async function api(payload) {
       { tenantId: 't2', name: 'Avalon Village Meats', drafts: 4, oldDrafts: 1, apOver30: 0, apOver30Amt: 0, arOver60: 0, arOver60Amt: 0, suspNames: [], suspVals: [], negNames: ['Till - Income & Cash Expenses'], negVals: ['-2641.60'] },
       { tenantId: 't3', name: "Topper's Mountain Wines", drafts: 1, oldDrafts: 1, apOver30: 25, apOver30Amt: 87023.72, arOver60: 11, arOver60Amt: 161976.47, suspNames: ['Historical Adjustment', 'Suspense'], suspVals: ['27425.41', '-1276.91'], negNames: [], negVals: [] },
       { tenantId: 't4', name: 'Easy Books for Better Business', drafts: 0, oldDrafts: 0, apOver30: 0, apOver30Amt: 0, arOver60: 0, arOver60Amt: 0, suspNames: [], suspVals: [], negNames: [], negVals: [] }] };
-    if (payload.action === 'draft' || payload.action === 'later' || payload.action === 'tobills') return { ok: true };
+    if (payload.action === 'draft' || payload.action === 'later' || payload.action === 'tobills' || payload.action === 'sendforms') return { ok: true };
     if (payload.action === 'ask') { const c = payload.messages.at(-1).content; return { answer: c.includes('---\n') ? c.split('---\n')[1].trim() : '- **Approve 2 replies** first, the BAS question is a new client.\n- **Call back 0412 555 123**, missed this evening and not in your contacts.\n- **Chase Zephyr Empire**, $6,200 overdue across 3 invoices.\n- Follow up **Northside Plumbing** on the quote sent 5 days ago.' }; }
     if (payload.action === 'addlead' || payload.action === 'movelead') { const i = DEMO_LEADS.findIndex((x) => x.LeadId === payload.lead.LeadId); if (i >= 0) DEMO_LEADS[i] = { ...DEMO_LEADS[i], ...payload.lead }; else DEMO_LEADS.push({ ...payload.lead, Created: new Date().toISOString() }); return { ok: true }; }
     const it = DEMO.find((d) => d.id === payload.id);
@@ -699,7 +705,8 @@ function viewPipeline() {
       <div class="row"><div class="nm">${esc(l.Name || prettyNum(l.Phone) || l.Email || 'New lead')}</div><span class="src">${esc(l.Source || 'Manual')}</span></div>
       <div class="sub">${[l.Phone ? prettyNum(l.Phone) : '', l.Email].filter(Boolean).map(esc).join(', ')}</div>
       <div class="sub">${esc(l.Stage)}${l.Updated ? ', updated ' + esc(daysAgo(l.Updated)) + (daysAgo(l.Updated) === 'today' ? '' : ' ago') : ''}</div>
-      ${l.Notes ? `<div class="note">${esc(l.Notes)}</div>` : ''}
+      ${l.Notes && l.Notes.replace(/\[Sent: [^\]]+\]\s*\d{1,2} \w{3}/g, '').trim() ? `<div class="note">${esc(l.Notes.replace(/\[Sent: [^\]]+\]\s*\d{1,2} \w{3}/g, '').trim())}</div>` : ''}
+      ${[...(l.Notes || '').matchAll(/\[Sent: ([^\]]+)\]\s*(\d{1,2} \w{3})?/g)].length ? `<div class="sentchips">${[...(l.Notes || '').matchAll(/\[Sent: ([^\]]+)\]\s*(\d{1,2} \w{3})?/g)].map((m) => `<span>${I.check} ${esc(m[1])}${m[2] ? ' · ' + esc(m[2]) : ''}</span>`).join('')}</div>` : ''}
       <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}${['Proposal sent', 'Won'].includes(l.Stage) || l.Email ? `<button class="go ghost" data-letter="${esc(l.LeadId)}">Send letter</button>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update</button></div>
     </div>`;
   const sug = suggestions();
@@ -707,6 +714,7 @@ function viewPipeline() {
     <div class="hero"><h1>Pipeline</h1><div class="lead"><b>${count('Open')} open lead${count('Open') === 1 ? '' : 's'}</b>, ${count('Won')} won</div></div>
     ${sug.length ? `<div class="sec">Possible new clients <span>from calls and emails</span></div><div class="list">${sug.map((g, i) => `<div class="sug"><div class="who">${esc(g.title)}<small>${esc(g.kind)}: ${esc(g.sub)}</small></div><button data-sug="${i}">Add lead</button><button class="x" data-nosug="${esc(g.key)}" aria-label="Dismiss">✕</button></div>`).join('')}</div>` : ''}
     <div class="stages">${tabs}</div>
+    <div class="flowstrip"><b>Automatic emails</b><span>Meeting booked: fee schedule</span><span>Quote sent: engagement letter</span><span>Won: welcome and next steps</span></div>
     ${list.length ? `<div class="list">${list.map(card).join('')}</div>` : `<div class="empty"><b>No leads in this stage</b>Tap + to add a lead.</div>`}
     ${formsSection()}
     <button class="fab" id="addlead" aria-label="Add lead">+</button>`;
@@ -720,6 +728,33 @@ const FORMS = [
   { f: 'aml-ctf-assessment.pdf', t: 'AML/CTF assessment', s: 'Internal record, review every July' },
   { f: 'security-checklist.pdf', t: 'Security checklist', s: 'MFA and safe habits, one each' },
 ];
+// New-client workflow: moving a lead to these stages emails the client automatically.
+const FLOW = {
+  'Meeting booked': { key: 'Fee schedule', files: ['fee-schedule.pdf'], subject: 'Our fees, ahead of our meeting',
+    body: (n, me) => `Hi${n},\n\nThanks for booking a time with us. Ahead of our meeting, I've attached our fee schedule so you can see how our fixed monthly packages work.\n\nIf you can, have a think about how many bank and card accounts you have, roughly how many transactions a month, and whether you run payroll. That helps us recommend the right package.\n\nLooking forward to speaking.\n\nKind regards,\n${me}` },
+  'Quote sent': { key: 'Engagement letter', files: ['engagement-letter.pdf', 'fee-schedule.pdf'], subject: 'Your engagement letter – Sydney Bookkeeping & Advisory',
+    body: (n, me) => `Hi${n},\n\nThanks for your time. As discussed, attached is our engagement letter, along with our fee schedule.\n\nPlease fill in the highlighted fields, tick your package, sign, and send it back. You can do it all on your phone. Once we have it, we'll get you set up straight away.\n\nAny questions, just reply to this email.\n\nKind regards,\n${me}` },
+  'Won': { key: 'Welcome', files: [], subject: 'Welcome to Sydney Bookkeeping & Advisory – next steps',
+    body: (n, me) => `Hi${n},\n\nWelcome aboard, we're glad to have you. Here's what happens next:\n\n1. Invite us to your Xero file as an adviser (Settings > Users > Invite a user), using this email address.\n2. Connect bank feeds for every bank and card account, or send us the last 3 months of statements.\n3. If you run payroll, send us your pay frequency and who your super goes through.\n4. If you haven't already, send back your signed engagement letter.\n\nYour first monthly invoice arrives on the 1st, with a Pay now link so you can set up automatic payment.\n\nKind regards,\n${me}` },
+};
+const sentTag = (k) => `[Sent: ${k}]`;
+function autoSend(l) {
+  const step = FLOW[l.Stage];
+  if (!step || (l.Notes || '').includes(sentTag(step.key))) return;
+  if (!l.Email) { toast(`Add ${l.Name || 'the lead'}'s email to send the ${step.key.toLowerCase()}`); return; }
+  const first = (l.Name || '').trim().split(/\s+/)[0];
+  const me = l.Business === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
+  undoToast(`Emailing ${step.key.toLowerCase()} to ${l.Email}`, 6000, async () => {
+    try {
+      await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: step.subject, body: step.body(first ? ' ' + first : '', me), files: step.files });
+      const stamp = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+      l.Notes = ((l.Notes || '').trim() + ` ${sentTag(step.key)} ${stamp}`).trim();
+      await api({ action: 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
+      const i = state.leads.findIndex((x) => x.LeadId === l.LeadId); if (i >= 0) state.leads[i] = { ...state.leads[i], Notes: l.Notes };
+      render(); toast(`${step.key} sent to ${l.Email}`);
+    } catch { toast(`Couldn't send the ${step.key.toLowerCase()}. Try moving the lead again.`); }
+  }, () => toast('Not sent'));
+}
 const formUrl = (f) => new URL('forms/' + f, location.href).href;
 function formsSection() {
   return `<div class="sec">Forms <span>PDF, fill in on your phone</span></div><div class="forms">${FORMS.map((x, i) => `<div class="frm">
@@ -760,7 +795,8 @@ function leadSheet(lead, isNew) {
       const i = state.leads.findIndex((x) => x.LeadId === l.LeadId); const rec = { ...l, Updated: new Date().toISOString() };
       if (i >= 0) state.leads[i] = rec; else state.leads.push(rec);
       if (l.Name && l.Phone) { const nm = names(); nm[ausNum(l.Phone)] = l.Name; store.set('names', JSON.stringify(nm)); }
-      s.remove(); render(); toast(isNew ? 'Lead added' : 'Lead moved to ' + l.Stage);
+      s.remove(); render();
+      if (FLOW[l.Stage] && l.Stage !== lead.Stage) autoSend(rec); else toast(isNew ? 'Lead added' : 'Lead moved to ' + l.Stage);
     } catch { e.target.disabled = false; toast('Couldn\'t save, try again'); }
   };
   document.body.appendChild(s);
@@ -1337,7 +1373,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '21';
+const APP_VERSION = '22';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
