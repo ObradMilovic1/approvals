@@ -70,15 +70,15 @@ details p{margin:8px 0 0;color:var(--body);font-size:15px}
 
   <div class="eyebrow">[ Engagement letter ]</div>
   <h1>Sign your engagement letter</h1>
-  <p class="lead" id="hello">It takes about two minutes. Fill in your details, choose a package, read the terms and sign below.</p>
+  <p class="lead" id="hello">It takes about two minutes. Check your details and services, read the terms and sign below.</p>
 
   <form id="f" novalidate>
   <div class="card">
     <h2><b>1</b>Your business</h2>
     <label class="f">Business legal name<input id="client_name" required autocomplete="organization"></label>
     <div class="two">
-      <label class="f">ABN<input id="client_abn" inputmode="numeric" placeholder="11 digits"></label>
-      <label class="f">Start date<input id="start" type="date"></label>
+      <label class="f">ABN (if any)<input id="client_abn" inputmode="numeric" placeholder="11 digits"></label>
+      <span></span>
     </div>
     <div class="two">
       <label class="f">Your name<input id="contact" required autocomplete="name"></label>
@@ -87,32 +87,22 @@ details p{margin:8px 0 0;color:var(--body);font-size:15px}
   </div>
 
   <div class="card">
-    <h2><b>2</b>Your package</h2>
-    <p class="sub">Prices exclude GST. You can change package later.</p>
-    <div class="pkgs">
-      <label class="pkg"><input type="radio" name="pkg" value="ess" data-fee="750"><div><b>Essentials</b><small>Up to 2 accounts, monthly reconciliation, quarterly BAS</small></div><span class="pr">$750/mo</span></label>
-      <label class="pkg"><input type="radio" name="pkg" value="std" data-fee="2800"><div><b>Standard</b><small>Up to 4 accounts, weekly reconciliation, BAS, payroll for up to 5, quarterly report</small></div><span class="pr">$2,800/mo</span></label>
-      <label class="pkg"><input type="radio" name="pkg" value="cmp" data-fee="5000"><div><b>Complete</b><small>Up to 8 accounts, weekly reconciliation, monthly BAS, payroll for up to 15, monthly report</small></div><span class="pr">$5,000/mo</span></label>
-    </div>
-    <div class="two" style="grid-template-columns:1fr 1fr 1fr">
-      <label class="f">Accounts<input id="n_accounts" inputmode="numeric"></label>
-      <label class="f">BAS<select id="bas_freq"><option>Quarterly</option><option>Monthly</option></select></label>
-      <label class="f">Staff<input id="n_emp" inputmode="numeric" placeholder="0"></label>
-    </div>
+    <h2><b>2</b>Services and fee</h2>
+    <p class="sub" id="quoteLine">As set out in our quote.</p>
+    <div class="pkgs" id="svcs"></div>
   </div>
 
   <div class="card">
     <h2><b>3</b>The terms</h2>
     <p class="sub">The same terms as the PDF letter. Tap a heading to read it.</p>
-    <details><summary>What we will do</summary><p>Keep your Xero file up to date and reconcile your bank and card accounts; process supplier bills sent to your Xero bills inbox; prepare and lodge your BAS as a registered BAS agent; if included, run payroll, report through Single Touch Payroll and pay super with each pay run; if included, prepare a management report.</p></details>
-    <details><summary>What is not included</summary><p>Income tax returns, financial statements, audits, legal advice, and any work outside your package. We quote extra work as a fixed fee, or at $120 an hour plus GST, before we start.</p></details>
-    <details><summary>What we need from you</summary><p>Bank and card statements for any account without a bank feed, receipts and invoices within 7 days, prompt answers to our questions, and notice of any change in your business. You remain responsible for the accuracy of the information you give us and for your business decisions. You make all payments from your own accounts; we do not move your money.</p></details>
-    <details><summary>Fees and payment</summary><p>Your monthly fee is invoiced on the 1st of each month. We review fees each July and give you 30 days' notice of any change.</p></details>
-    <details><summary>Our professional obligations</summary><p>As a registered BAS agent we must comply with the Tax Agent Services Act 2009 and the Code of Professional Conduct. If we find that a lodged statement is wrong, we must tell you and may need to tell the ATO.</p></details>
+    <details><summary>What each service covers</summary><p><b>Bookkeeping and BAS:</b> keeping your Xero file up to date, reconciling bank and card accounts, processing supplier bills, and preparing and lodging BAS and IAS. <b>Payroll:</b> pay runs, Single Touch Payroll reporting, and paying super with each pay run. <b>Tax returns:</b> preparing and lodging income tax returns for the entities in our quote. <b>Company and SMSF set-up:</b> preparing the documents and registrations in our quote. <b>SMSF annual compliance:</b> annual accounts, member statements and the SMSF annual return, and sending the file to an independent approved SMSF auditor.</p></details>
+    <details><summary>What is not included</summary><p>Legal or financial product advice, audits (the SMSF audit is done by an independent auditor), and anything not in our quote. We quote extra work before we start.</p></details>
+    <details><summary>What we need from you</summary><p>The documents on the checklist we send for each service, prompt answers to our questions, and notice of any change in your circumstances. You are responsible for the accuracy and completeness of the information you give us, for keeping records for 5 years, and for your own decisions. You make all payments from your own accounts; we do not move your money.</p></details>
+    <details><summary>Fees</summary><p>Our fees are as set out in our quote. If the work turns out to be materially different from what was quoted, we will tell you and agree a revised fee before continuing.</p></details>
+    <details><summary>Our professional obligations</summary><p>Tax and BAS services are provided by registered tax and BAS agents under the Tax Agent Services Act 2009 and the Code of Professional Conduct. If we find that something lodged is wrong, we must tell you and may need to tell the ATO. For company and SMSF set-ups we must verify identity under the AML/CTF Act.</p></details>
     <details><summary>Software and AI</summary><p>We use Xero and other software, including AI tools, for routine work such as coding transactions and drafting emails. A qualified person reviews everything before it is lodged with the ATO or sent to you.</p></details>
-    <details><summary>Privacy and records</summary><p>We handle your information under the Privacy Act 1988, protect our systems with multi-factor authentication, and keep our working papers for 5 years.</p></details>
-    <details><summary>Ending the engagement</summary><p>Either of us can end this engagement with 30 days' written notice. We will hand over your Xero access and records once all fees are paid. This letter continues each year until it is ended.</p></details>
-    <label class="chk"><input type="checkbox" id="autopay"><span>I authorise Sydney Bookkeeping &amp; Advisory to collect each monthly invoice automatically from the card or bank account I set up through the invoice's Pay now link.</span></label>
+    <details><summary>Privacy, records and ending</summary><p>We handle your information under the Privacy Act 1988 and keep our working papers for 5 years. Either of us can end this engagement with 30 days' written notice; we will hand over your records once fees are paid. This letter continues for future years until it is ended.</p></details>
+    <label class="chk"><input type="checkbox" id="autopay"><span>I authorise Sydney Bookkeeping &amp; Advisory to collect invoices automatically from the card or bank account I set up through the invoice's Pay now link.</span></label>
   </div>
 
   <div class="card">
@@ -127,7 +117,7 @@ details p{margin:8px 0 0;color:var(--body);font-size:15px}
   <p class="fine">When you sign, we record your name, email, the time, your device and a fingerprint of the document, and email you a signed copy.</p>
 </div>
 
-<div class="bar" id="bar"><div class="in"><div class="tot" id="tot"><b>Choose a package</b>Monthly fee</div><button class="btn" id="sign">Sign letter</button></div></div>
+<div class="bar" id="bar"><div class="in"><div class="tot" id="tot"><b>As quoted</b>Fee</div><button class="btn" id="sign">Sign letter</button></div></div>
 
 <script src="vendor/pdf-lib.min.js"></script>
 <script>
@@ -136,13 +126,16 @@ const SIGN_URL = '';
 const q = new URLSearchParams(location.search);
 const $ = (s) => document.querySelector(s);
 const lead = { id: q.get('l') || '', name: q.get('n') || '', email: q.get('e') || '', biz: q.get('b') || 'Sydney Bookkeeping' };
-if (lead.name) { $('#contact').value = lead.name; $('#hello').textContent = `Hi ${lead.name.split(/\s+/)[0]}, it takes about two minutes. Fill in your details, choose a package, read the terms and sign below.`; }
+if (lead.name) { $('#contact').value = lead.name; $('#hello').textContent = `Hi ${lead.name.split(/\s+/)[0]}, it takes about two minutes. Check your details and services, read the terms and sign below.`; }
 if (lead.email) $('#email').value = lead.email;
 if (q.get('c')) $('#client_name').value = q.get('c');
-$('#start').value = new Date(Date.now() + 864e5 * 7).toISOString().slice(0, 10);
 
 const money = (n) => '$' + Number(n).toLocaleString('en-AU');
-document.querySelectorAll('[name=pkg]').forEach((r) => r.onchange = () => { $('#tot').innerHTML = `<b>${money(r.dataset.fee)} a month + GST</b>${r.closest('.pkg').querySelector('b').textContent}`; });
+const SERVICES = ['Bookkeeping and BAS', 'Payroll and Single Touch Payroll', 'Individual tax return', 'Rental property schedules', 'Company set-up', 'Company tax return', 'SMSF set-up', 'SMSF annual accounts and return'];
+const pick = (q.get('s') || '').split(',').filter((x) => x !== '').map(Number);
+const quote = { fee: q.get('q') || '', ref: q.get('r') || '', billing: q.get('bl') || '' };
+$('#svcs').innerHTML = SERVICES.map((sv, i) => `<label class="pkg"><input type="checkbox" name="svc" value="${i}" ${pick.includes(i) ? 'checked' : ''}><div><b>${sv}</b></div></label>`).join('');
+if (quote.fee) { const t = `${money(quote.fee)} + GST${quote.billing ? ', ' + quote.billing.toLowerCase() : ''}`; $('#tot').innerHTML = `<b>${t}</b>${quote.ref ? 'Quote ' + quote.ref : 'As quoted'}`; $('#quoteLine').textContent = `Fee ${t}${quote.ref ? ', as set out in quote ' + quote.ref : ', as quoted'}.`; }
 
 // Signature pad
 const cv = $('#pad'), ctx = cv.getContext('2d'); let drawing = false, inked = false, last = null;
@@ -170,18 +163,19 @@ async function buildPdf(v) {
   const doc = await PDFDocument.load(src); const form = doc.getForm();
   const set = (n, val) => { const f = form.getFields().find((x) => x.getName().replace(/_\d+$/, '') === n); if (f && val) f.setText(String(val)); };
   set('client_name', v.client_name); set('client_abn', v.client_abn); set('contact', v.contact); set('email', v.email);
-  set('start', v.startText); set('fee', money(v.fee) + ' + GST'); set('xero', v.client_name);
-  set('n_accounts', v.n_accounts); set('bas_freq', v.bas_freq); set('n_emp', v.n_emp || '0');
+  set('quote_ref', quote.ref); set('fee', quote.fee ? money(quote.fee) + ' + GST' : 'As quoted'); set('billing', quote.billing);
   const box = (n) => form.getFields().find((x) => x.getName().replace(/_\d+$/, '') === n);
-  box('pkg_' + v.pkg)?.check(); if (v.autopay) box('autopay')?.check();
+  v.svcs.forEach((i) => box('svc' + i)?.check()); if (v.autopay) box('autopay')?.check();
   // client signature block (first name/date pair)
   const names = form.getFields().filter((x) => /^sig_name_/.test(x.getName())), dates = form.getFields().filter((x) => /^sig_date_/.test(x.getName()));
   names[0]?.setText(v.contact); dates[0]?.setText(v.dateText);
+  // the client's signature line sits level with the bottom of their Name box
+  const nameRect = names[0] ? names[0].acroField.getWidgets()[0].getRectangle() : { y: 286 };
   form.flatten();
-  const pages = doc.getPages(), p2 = pages[1];
+  const pages = doc.getPages(), p2 = pages[pages.length - 1];
   const sig = trimmedSig(); const png = await doc.embedPng(sig.url);
   const maxW = 200, maxH = 22, sc = Math.min(maxW / sig.w, maxH / sig.h);
-  p2.drawImage(png, { x: 52, y: 286, width: sig.w * sc, height: sig.h * sc });
+  p2.drawImage(png, { x: 52, y: nameRect.y - 1, width: sig.w * sc, height: sig.h * sc });
   const signedBytes = await doc.save();
   const hash = hex(await crypto.subtle.digest('SHA-256', signedBytes));
   // signing certificate page
@@ -191,7 +185,7 @@ async function buildPdf(v) {
   pg.drawRectangle({ x: 0, y: 838.89, width: 595.28, height: 3, color: mint });
   pg.drawText('Signing certificate', { x: 46, y: 770, size: 24, font: fb, color: ink });
   pg.drawText('Sydney Bookkeeping & Advisory  ·  Engagement letter', { x: 46, y: 748, size: 10, font: f, color: muted });
-  const rows = [['Signed by', v.contact], ['For', v.client_name + (v.client_abn ? ' (ABN ' + v.client_abn + ')' : '')], ['Email', v.email], ['Signed at', v.when.toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'full', timeStyle: 'long' }) + ' (Sydney)'], ['Signed at (UTC)', v.when.toISOString()], ['Package', v.pkgName + ', ' + money(v.fee) + ' a month + GST'], ['Automatic payment', v.autopay ? 'Authorised' : 'Not authorised'], ['Method', 'Drawn signature on a secure web page, with consent to sign electronically'], ['Device', navigator.userAgent.slice(0, 95)], ['Reference', lead.id || 'Direct link'], ['Document SHA-256', hash.slice(0, 32)], ['', hash.slice(32)]];
+  const rows = [['Signed by', v.contact], ['For', v.client_name + (v.client_abn ? ' (ABN ' + v.client_abn + ')' : '')], ['Email', v.email], ['Signed at', v.when.toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'full', timeStyle: 'long' }) + ' (Sydney)'], ['Signed at (UTC)', v.when.toISOString()], ['Services', v.svcs.map((i) => SERVICES[i]).join(', ').slice(0, 90)], ['Fee', quote.fee ? money(quote.fee) + ' + GST' + (quote.ref ? ' (quote ' + quote.ref + ')' : '') : 'As quoted'], ['Automatic payment', v.autopay ? 'Authorised' : 'Not authorised'], ['Method', 'Drawn signature on a secure web page, with consent to sign electronically'], ['Device', navigator.userAgent.slice(0, 95)], ['Reference', lead.id || 'Direct link'], ['Document SHA-256', hash.slice(0, 32)], ['', hash.slice(32)]];
   let y = 700;
   for (const [k, val] of rows) { if (k) pg.drawText(k, { x: 46, y, size: 9.5, font: fb, color: ink }); pg.drawText(String(val || ''), { x: 170, y, size: 9.5, font: f, color: ink }); y -= k ? 22 : 14; }
   pg.drawText('The signer agreed to the terms and to sign electronically under the Electronic Transactions Act 1999 (Cth).', { x: 46, y: y - 16, size: 9, font: f, color: muted });
@@ -202,24 +196,22 @@ async function buildPdf(v) {
 
 $('#sign').onclick = async () => {
   const err = $('#err'); err.textContent = '';
-  const pkg = document.querySelector('[name=pkg]:checked');
-  const v = { client_name: $('#client_name').value.trim(), client_abn: $('#client_abn').value.replace(/\s/g, ''), contact: $('#contact').value.trim(), email: $('#email').value.trim(), n_accounts: $('#n_accounts').value.trim(), bas_freq: $('#bas_freq').value, n_emp: $('#n_emp').value.trim(), autopay: $('#autopay').checked };
+  const v = { client_name: $('#client_name').value.trim(), client_abn: $('#client_abn').value.replace(/\s/g, ''), contact: $('#contact').value.trim(), email: $('#email').value.trim(), autopay: $('#autopay').checked, svcs: [...document.querySelectorAll('[name=svc]:checked')].map((x) => +x.value) };
   if (!v.client_name || !v.contact) { err.textContent = 'Enter the business name and your name.'; $('#client_name').scrollIntoView({ block: 'center' }); return; }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email)) { err.textContent = 'Enter a valid email so we can send your signed copy.'; return; }
   if (v.client_abn && !/^\d{11}$/.test(v.client_abn)) { err.textContent = 'An ABN has 11 digits.'; return; }
-  if (!pkg) { err.textContent = 'Choose a package.'; document.querySelector('.pkgs').scrollIntoView({ block: 'center' }); return; }
+  if (!v.svcs.length) { err.textContent = 'Tick at least one service.'; $('#svcs').scrollIntoView({ block: 'center' }); return; }
   if (!inked) { $('#padErr').textContent = 'Sign in the box above.'; cv.scrollIntoView({ block: 'center' }); return; }
   if (!$('#agree').checked) { err.textContent = 'Tick the box to agree before signing.'; return; }
   const btn = $('#sign'); btn.disabled = true; btn.textContent = 'Signing…';
   try {
-    v.pkg = pkg.value; v.fee = +pkg.dataset.fee; v.pkgName = pkg.closest('.pkg').querySelector('b').textContent; v.when = new Date();
+    v.when = new Date();
     v.dateText = v.when.toLocaleDateString('en-AU', { timeZone: 'Australia/Sydney' });
-    const sd = $('#start').value; v.startText = sd ? new Date(sd + 'T00:00').toLocaleDateString('en-AU') : '';
     const pdf = await buildPdf(v);
     const fileName = `Engagement letter - ${v.client_name.replace(/[\\/:*?"<>|]/g, '')} - signed ${v.when.toISOString().slice(0, 10)}.pdf`;
     if (!SIGN_URL) throw new Error('not live');
     {
-      const res = await fetch(SIGN_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ leadId: lead.id, business: lead.biz, signer: v.contact, email: v.email, client: v.client_name, abn: v.client_abn, pkg: v.pkgName, fee: v.fee, autopay: v.autopay, signedAt: v.when.toISOString(), sha256: pdf.hash, fileName, pdf: pdf.b64 }) });
+      const res = await fetch(SIGN_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ leadId: lead.id, business: lead.biz, signer: v.contact, email: v.email, client: v.client_name, abn: v.client_abn, services: v.svcs.map((i) => SERVICES[i]).join(', '), fee: quote.fee, quoteRef: quote.ref, autopay: v.autopay, signedAt: v.when.toISOString(), sha256: pdf.hash, fileName, pdf: pdf.b64 }) });
       if (!res.ok) throw new Error('send ' + res.status);
     }
     const url = URL.createObjectURL(new Blob([pdf.bytes], { type: 'application/pdf' }));

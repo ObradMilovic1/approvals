@@ -256,6 +256,11 @@
   .flowstrip{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin:-4px 0 12px}
   .flowstrip b{color:var(--ink);font-weight:600;margin-right:2px}
   .flowstrip span{background:var(--acc-t);color:var(--acc-d);border-radius:999px;padding:3px 9px;font-weight:600}
+  .svchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .svchips span{font-size:12px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--ink)}
+  .svchips span.q{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .qrow{display:grid;grid-template-columns:1.2fr 1fr .9fr;gap:8px;margin-top:6px}
+  .qrow input,.qrow select{font:inherit;font-size:15px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-width:0}
   .sentchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .sentchips span{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--acc-d);background:var(--acc-t);border-radius:999px;padding:3px 9px}
   .sentchips svg{width:12px;height:12px}
@@ -705,7 +710,8 @@ function viewPipeline() {
       <div class="row"><div class="nm">${esc(l.Name || prettyNum(l.Phone) || l.Email || 'New lead')}</div><span class="src">${esc(l.Source || 'Manual')}</span></div>
       <div class="sub">${[l.Phone ? prettyNum(l.Phone) : '', l.Email].filter(Boolean).map(esc).join(', ')}</div>
       <div class="sub">${esc(l.Stage)}${l.Updated ? ', updated ' + esc(daysAgo(l.Updated)) + (daysAgo(l.Updated) === 'today' ? '' : ' ago') : ''}</div>
-      ${l.Notes && l.Notes.replace(/\[Sent: [^\]]+\]\s*\d{1,2} \w{3}/g, '').trim() ? `<div class="note">${esc(l.Notes.replace(/\[Sent: [^\]]+\]\s*\d{1,2} \w{3}/g, '').trim())}</div>` : ''}
+      ${leadSvcs(l).length || leadQuote(l) ? `<div class="svchips">${leadSvcs(l).map((x) => `<span>${esc(x.s)}</span>`).join('')}${leadQuote(l) ? `<span class="q">${esc(aud(leadQuote(l).fee))}${leadQuote(l).billing === 'One-off' ? '' : ' ' + esc(leadQuote(l).billing.toLowerCase())}</span>` : ''}</div>` : ''}
+      ${plainNotes(l.Notes) ? `<div class="note">${esc(plainNotes(l.Notes))}</div>` : ''}
       ${[...(l.Notes || '').matchAll(/\[Sent: ([^\]]+)\]\s*(\d{1,2} \w{3})?/g)].length ? `<div class="sentchips">${[...(l.Notes || '').matchAll(/\[Sent: ([^\]]+)\]\s*(\d{1,2} \w{3})?/g)].map((m) => `<span>${I.check} ${esc(m[1])}${m[2] ? ' · ' + esc(m[2]) : ''}</span>`).join('')}</div>` : ''}
       <div class="lacts">${l.Phone ? `<a href="tel:${esc(ausNum(l.Phone))}">${I.phone}</a>` : ''}${l.Email ? `<a href="mailto:${esc(l.Email)}">${I.mail}</a>` : ''}${['Proposal sent', 'Won'].includes(l.Stage) || l.Email ? `<button class="go ghost" data-letter="${esc(l.LeadId)}">Send letter</button>` : ''}<button class="go" data-move="${esc(l.LeadId)}">Update</button></div>
     </div>`;
@@ -714,7 +720,7 @@ function viewPipeline() {
     <div class="hero"><h1>Pipeline</h1><div class="lead"><b>${count('Open')} open lead${count('Open') === 1 ? '' : 's'}</b>, ${count('Won')} won</div></div>
     ${sug.length ? `<div class="sec">Possible new clients <span>from calls and emails</span></div><div class="list">${sug.map((g, i) => `<div class="sug"><div class="who">${esc(g.title)}<small>${esc(g.kind)}: ${esc(g.sub)}</small></div><button data-sug="${i}">Add lead</button><button class="x" data-nosug="${esc(g.key)}" aria-label="Dismiss">✕</button></div>`).join('')}</div>` : ''}
     <div class="stages">${tabs}</div>
-    <div class="flowstrip"><b>Automatic emails</b><span>Meeting booked: fee schedule</span><span>Quote sent: engagement letter</span><span>Won: welcome and next steps</span></div>
+    <div class="flowstrip"><b>Automatic emails</b><span>Meeting booked: services overview</span><span>Quote sent: quote and engagement letter</span><span>Won: welcome and checklists</span></div>
     ${list.length ? `<div class="list">${list.map(card).join('')}</div>` : `<div class="empty"><b>No leads in this stage</b>Tap + to add a lead.</div>`}
     ${formsSection()}
     <button class="fab" id="addlead" aria-label="Add lead">+</button>`;
@@ -722,31 +728,73 @@ function viewPipeline() {
 
 /* ---------- Forms: branded PDFs to open, fill and send ---------- */
 const FORMS = [
-  { f: 'engagement-letter.pdf', t: 'Engagement letter', s: 'For new clients to fill in and sign', send: true },
-  { f: 'fee-schedule.pdf', t: 'Fee schedule', s: 'Essentials, Standard and Complete packages', send: true },
-  { f: 'payday-super-check.pdf', t: 'Payday Super check', s: 'Payroll review, one per client' },
+  { f: 'services-overview.pdf', t: 'Services overview', s: 'What we do and how quotes work', send: true },
+  { f: 'engagement-letter.pdf', t: 'Engagement letter', s: 'Services ticked, fee as quoted, signed', send: true },
+  { f: 'checklist-bookkeeping.pdf', t: 'Bookkeeping and BAS checklist', s: 'Xero, ATO access, accounts, payroll', send: true },
+  { f: 'checklist-individual-tax.pdf', t: 'Individual tax checklist', s: 'Income, deductions, health cover', send: true },
+  { f: 'checklist-rental-property.pdf', t: 'Rental property checklist', s: 'One per property, per year', send: true },
+  { f: 'form-company-setup.pdf', t: 'Company set-up form', s: 'Directors, shareholders, ID check', send: true },
+  { f: 'checklist-company-tax.pdf', t: 'Company tax checklist', s: 'Year-end records, Division 7A, ASIC', send: true },
+  { f: 'form-smsf-setup.pdf', t: 'SMSF set-up form', s: 'Trustees, members, rollovers, ID check', send: true },
+  { f: 'checklist-smsf-annual.pdf', t: 'SMSF annual checklist', s: 'Statements, contributions, audit', send: true },
+  { f: 'payday-super-check.pdf', t: 'Payday Super check', s: 'Internal payroll review' },
   { f: 'aml-ctf-assessment.pdf', t: 'AML/CTF assessment', s: 'Internal record, review every July' },
   { f: 'security-checklist.pdf', t: 'Security checklist', s: 'MFA and safe habits, one each' },
 ];
+// Services we offer. Each has the checklist sent when the client is won.
+const SV = [
+  { n: 'Bookkeeping and BAS', s: 'Bookkeeping', f: 'checklist-bookkeeping.pdf', bring: 'your last BAS and a list of your bank and card accounts', next: 'Invite us to your Xero file as an adviser, and add us as your BAS agent in ATO Online services.' },
+  { n: 'Payroll', s: 'Payroll', f: 'checklist-bookkeeping.pdf', bring: 'how often you pay wages and how super is paid now', next: 'Send us your employee list, pay frequency and super fund details.' },
+  { n: 'Individual tax return', s: 'Individual tax', f: 'checklist-individual-tax.pdf', bring: 'last year\u2019s tax return and any receipts for deductions', next: 'Work through the individual tax checklist. We\u2019ll add you to our ATO client list so we can see your income statements.' },
+  { n: 'Rental property', s: 'Property', f: 'checklist-rental-property.pdf', bring: 'your property manager\u2019s annual statement and loan statements', next: 'Fill in one rental property checklist for each property.' },
+  { n: 'Company set-up', s: 'Company set-up', f: 'form-company-setup.pdf', bring: 'a director ID for every director', next: 'Complete the company set-up form. Every director needs a director ID before we register the company, and we need to verify everyone\u2019s identity.', id: true },
+  { n: 'Company tax return', s: 'Company tax', f: 'checklist-company-tax.pdf', bring: 'last year\u2019s financial statements and tax return', next: 'Work through the company tax checklist.' },
+  { n: 'SMSF set-up', s: 'SMSF set-up', f: 'form-smsf-setup.pdf', bring: 'the names and balances of your existing super funds', next: 'Complete the SMSF set-up form. We need to verify each trustee\u2019s identity, and once the trust deed is signed the fund must be registered with the ATO within 60 days.', id: true },
+  { n: 'SMSF annual compliance', s: 'SMSF annual', f: 'checklist-smsf-annual.pdf', bring: 'the fund\u2019s bank and investment statements', next: 'Work through the SMSF annual checklist. We\u2019ll organise the independent audit.' },
+];
+// Services, quote and sent-email history are kept as tags in the lead's notes.
+const getTag = (notes, k) => { const m = String(notes || '').match(new RegExp('\\[' + k + ': ([^\\]]*)\\]')); return m ? m[1] : ''; };
+const setTag = (notes, k, v) => { const base = String(notes || '').replace(new RegExp('\\s*\\[' + k + ': [^\\]]*\\]'), '').trim(); return v ? (base + ` [${k}: ${v}]`).trim() : base; };
+const leadSvcIdx = (l) => getTag(l.Notes, 'Services').split(',').filter((x) => x !== '').map(Number).filter((i) => SV[i]);
+const leadSvcs = (l) => leadSvcIdx(l).map((i) => SV[i]);
+const leadQuote = (l) => { const [fee, billing, ref] = getTag(l.Notes, 'Quote').split('|'); return fee ? { fee: +fee, billing: billing || 'One-off', ref: ref || '' } : null; };
+const plainNotes = (n) => String(n || '').replace(/\s*\[(Services|Quote): [^\]]*\]/g, '').replace(/\s*\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g, '').trim();
+const listOf = (arr) => arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr.at(-1);
+const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigits: 2 });
 // New-client workflow: moving a lead to these stages emails the client automatically.
 const FLOW = {
-  'Meeting booked': { key: 'Fee schedule', files: ['fee-schedule.pdf'], subject: 'Our fees, ahead of our meeting',
-    body: (n, me) => `Hi${n},\n\nThanks for booking a time with us. Ahead of our meeting, I've attached our fee schedule so you can see how our fixed monthly packages work.\n\nIf you can, have a think about how many bank and card accounts you have, roughly how many transactions a month, and whether you run payroll. That helps us recommend the right package.\n\nLooking forward to speaking.\n\nKind regards,\n${me}` },
-  'Quote sent': { key: 'Engagement letter', files: ['engagement-letter.pdf', 'fee-schedule.pdf'], subject: 'Your engagement letter – Sydney Bookkeeping & Advisory',
-    body: (n, me) => `Hi${n},\n\nThanks for your time. As discussed, attached is our engagement letter, along with our fee schedule.\n\nPlease fill in the highlighted fields, tick your package, sign, and send it back. You can do it all on your phone. Once we have it, we'll get you set up straight away.\n\nAny questions, just reply to this email.\n\nKind regards,\n${me}` },
-  'Won': { key: 'Welcome', files: [], subject: 'Welcome to Sydney Bookkeeping & Advisory – next steps',
-    body: (n, me) => `Hi${n},\n\nWelcome aboard, we're glad to have you. Here's what happens next:\n\n1. Invite us to your Xero file as an adviser (Settings > Users > Invite a user), using this email address.\n2. Connect bank feeds for every bank and card account, or send us the last 3 months of statements.\n3. If you run payroll, send us your pay frequency and who your super goes through.\n4. If you haven't already, send back your signed engagement letter.\n\nYour first monthly invoice arrives on the 1st, with a Pay now link so you can set up automatic payment.\n\nKind regards,\n${me}` },
+  'Meeting booked': { key: 'Services overview', build: (l, n, me) => {
+    const sv = leadSvcs(l);
+    return { files: ['services-overview.pdf'], subject: 'Ahead of our meeting – Sydney Bookkeeping & Advisory',
+      body: `Hi${n},\n\nThanks for booking a time with us. I've attached an overview of our services and how our quotes work.\n\n${sv.length ? `So we can give you an accurate quote${sv.length > 1 ? ' for ' + listOf(sv.map((x) => x.n.toLowerCase())) : ''}, it helps if you can bring:\n${sv.map((x) => '- ' + x.bring).join('\n')}\n\n` : ''}Looking forward to speaking.\n\nKind regards,\n${me}` };
+  } },
+  'Quote sent': { key: 'Quote', needsQuote: true, build: (l, n, me) => {
+    const sv = leadSvcs(l), q = leadQuote(l);
+    const fee = `${aud(q.fee)} + GST${q.billing === 'One-off' ? '' : ' ' + q.billing.toLowerCase()}`;
+    return { files: ['engagement-letter.pdf'], subject: `Your quote${q.ref ? ' ' + q.ref : ''} – Sydney Bookkeeping & Advisory`,
+      body: `Hi${n},\n\nThanks for your time. Here's our quote${q.ref ? ' (' + q.ref + ')' : ''}:\n\n${sv.map((x) => '- ' + x.n).join('\n') || '- As discussed'}\n\nFee: ${fee}\n\nTo go ahead, please fill in the attached engagement letter, tick the services above, sign it and send it back. You can do it all on your phone.\n\nThe quote is valid for 30 days. Any questions, just reply to this email.\n\nKind regards,\n${me}` };
+  } },
+  'Won': { key: 'Welcome', build: (l, n, me) => {
+    const sv = leadSvcs(l), files = [...new Set(sv.map((x) => x.f))];
+    const steps = [...new Map(sv.map((x) => [x.next, x])).values()].map((x, i) => `${i + 1}. ${x.next}`);
+    if (sv.some((x) => x.id)) steps.push(`${steps.length + 1}. Identity check: send a certified copy of a driver licence or passport for each person involved. The law requires this before we set up a company or SMSF.`);
+    steps.push(`${steps.length + 1}. If you haven't already, send back your signed engagement letter.`);
+    return { files, subject: 'Welcome to Sydney Bookkeeping & Advisory – next steps',
+      body: `Hi${n},\n\nWelcome aboard, we're glad to have you. ${files.length ? `I've attached ${files.length > 1 ? 'checklists' : 'a checklist'} of what we need. ` : ''}Here's what happens next:\n\n${steps.join('\n')}\n\nWe'll keep you posted as we go.\n\nKind regards,\n${me}` };
+  } },
 };
 const sentTag = (k) => `[Sent: ${k}]`;
 function autoSend(l) {
   const step = FLOW[l.Stage];
   if (!step || (l.Notes || '').includes(sentTag(step.key))) return;
   if (!l.Email) { toast(`Add ${l.Name || 'the lead'}'s email to send the ${step.key.toLowerCase()}`); return; }
+  if (step.needsQuote && !leadQuote(l)) { toast('Add the quoted fee to send the quote'); leadSheet(l, false); return; }
   const first = (l.Name || '').trim().split(/\s+/)[0];
   const me = l.Business === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
+  const m = step.build(l, first ? ' ' + first : '', me);
   undoToast(`Emailing ${step.key.toLowerCase()} to ${l.Email}`, 6000, async () => {
     try {
-      await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: step.subject, body: step.body(first ? ' ' + first : '', me), files: step.files });
+      await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: m.subject, body: m.body, files: m.files });
       const stamp = new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
       l.Notes = ((l.Notes || '').trim() + ` ${sentTag(step.key)} ${stamp}`).trim();
       await api({ action: 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
@@ -781,11 +829,9 @@ function sendFormsSheet(files, lead) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) { toast('Enter the client\'s email'); return; }
     e.target.disabled = true; e.target.textContent = 'Sending…';
     const me = from === 'Sydney Bookkeeping' ? 'Zeljka' : 'Brad';
-    const isLetter = files.some((x) => x.f === 'engagement-letter.pdf');
-    const step = isLetter ? FLOW['Quote sent'] : FLOW['Meeting booked'];
-    const body = files.length === 1 && !files[0].send ? `Hi${nm ? ' ' + nm : ''},\n\nPlease find the ${files[0].t.toLowerCase()} attached.\n\nKind regards,\n${me}` : step.body(nm ? ' ' + nm : '', me);
+    const body = `Hi${nm ? ' ' + nm : ''},\n\nPlease find ${files.length > 1 ? 'our ' + listOf(files.map((x) => x.t.toLowerCase())) : 'the ' + files[0].t.toLowerCase()} attached.\n\nAny questions, just reply to this email.\n\nKind regards,\n${me}`;
     try {
-      await api({ action: 'sendforms', to, business: from, subject: isLetter ? step.subject : (files.length === 1 && !files[0].send ? files[0].t + ' – Sydney Bookkeeping & Advisory' : step.subject), body, files: files.map((x) => x.f) });
+      await api({ action: 'sendforms', to, business: from, subject: (files.length === 1 ? files[0].t : 'Documents') + ' – Sydney Bookkeeping & Advisory', body, files: files.map((x) => x.f) });
       s.remove(); toast(`Sent to ${to}`); buzz();
     } catch { e.target.disabled = false; e.target.textContent = 'Send'; toast('Couldn\'t send, try again'); }
   };
@@ -794,20 +840,34 @@ function sendFormsSheet(files, lead) {
 
 function leadSheet(lead, isNew) {
   const l = { LeadId: lead.LeadId || ('L' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), Name: '', Phone: '', Email: '', Source: 'Manual', Stage: 'New lead', Notes: '', Business: state.biz, ...lead };
+  const svcs = new Set(leadSvcIdx(l)), q = leadQuote(l), tagsBefore = l.Notes || '';
   const s = document.createElement('div'); s.className = 'sheet';
   s.innerHTML = `<div class="box" style="max-height:88vh;overflow:auto">
     <h2>${isNew ? 'New lead' : esc(l.Name || prettyNum(l.Phone) || l.Email || 'Lead')}</h2>
     <label class="fld">Name<input id="lName" value="${esc(l.Name)}" placeholder="Person or business"></label>
     <label class="fld">Phone<input id="lPhone" type="tel" value="${esc(l.Phone)}"></label>
     <label class="fld">Email<input id="lEmail" type="email" value="${esc(l.Email)}"></label>
+    <div class="fld">Services<div class="stgpick">${SV.map((x, i) => `<button type="button" data-svc="${i}" aria-pressed="${svcs.has(i)}">${esc(x.s)}</button>`).join('')}</div></div>
     <div class="fld">Stage<div class="stgpick">${STAGES.map((x) => `<button type="button" data-pick="${esc(x)}" aria-pressed="${x === l.Stage}">${esc(x)}</button>`).join('')}</div></div>
-    <label class="fld">Notes<textarea id="lNotes" placeholder="What they need, next step…">${esc(l.Notes)}</textarea></label>
+    <div class="fld qfld" ${['Quote sent', 'Won'].includes(l.Stage) || q ? '' : 'hidden'}>Quote<div class="qrow"><input id="qFee" inputmode="decimal" placeholder="Fee ex GST" value="${q ? esc(q.fee) : ''}"><select id="qBill">${['One-off', 'Monthly', 'Quarterly', 'Annually'].map((b) => `<option ${q && q.billing === b ? 'selected' : ''}>${b}</option>`).join('')}</select><input id="qRef" placeholder="Ref" value="${esc(q ? q.ref : 'Q-' + l.LeadId.slice(-4).toUpperCase())}"></div></div>
+    <label class="fld">Notes<textarea id="lNotes" placeholder="What they need, next step…">${esc(plainNotes(l.Notes))}</textarea></label>
+    <div class="hint" id="flowHint" style="margin:0"></div>
     <div class="actions" style="position:static"><button class="btn rej" data-x>Cancel</button><button class="btn ok" data-save>Save</button></div></div>`;
-  s.querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => { l.Stage = b.dataset.pick; s.querySelectorAll('[data-pick]').forEach((x) => x.setAttribute('aria-pressed', x === b)); });
+  const hint = () => { const st = FLOW[l.Stage]; s.querySelector('#flowHint').textContent = st && l.Stage !== lead.Stage ? `Saving emails the ${st.key.toLowerCase()} to the client${l.Stage === 'Won' && svcs.size ? ', with ' + (svcs.size > 1 ? 'their checklists' : 'the checklist') : ''}.` : ''; s.querySelector('.qfld').hidden = !(['Quote sent', 'Won'].includes(l.Stage) || q); };
+  s.querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => { l.Stage = b.dataset.pick; s.querySelectorAll('[data-pick]').forEach((x) => x.setAttribute('aria-pressed', x === b)); hint(); });
+  s.querySelectorAll('[data-svc]').forEach((b) => b.onclick = () => { const i = +b.dataset.svc; svcs.has(i) ? svcs.delete(i) : svcs.add(i); b.setAttribute('aria-pressed', svcs.has(i)); hint(); });
+  hint();
   s.addEventListener('click', (e) => { if (e.target === s || e.target.closest('[data-x]')) s.remove(); });
   s.querySelector('[data-save]').onclick = async (e) => {
+    const fee = parseFloat(String(s.querySelector('#qFee').value).replace(/[$,\s]/g, ''));
+    if (l.Stage === 'Quote sent' && !(fee > 0)) { toast('Enter the quoted fee'); s.querySelector('#qFee').focus(); return; }
     e.target.disabled = true;
-    l.Name = s.querySelector('#lName').value.trim(); l.Phone = s.querySelector('#lPhone').value.trim(); l.Email = s.querySelector('#lEmail').value.trim(); l.Notes = s.querySelector('#lNotes').value.trim();
+    l.Name = s.querySelector('#lName').value.trim(); l.Phone = s.querySelector('#lPhone').value.trim(); l.Email = s.querySelector('#lEmail').value.trim();
+    const sentTags = (tagsBefore.match(/\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g) || []).join(' ');
+    let notes = (s.querySelector('#lNotes').value.trim() + ' ' + sentTags).trim();
+    notes = setTag(notes, 'Services', [...svcs].sort((a, b) => a - b).join(','));
+    notes = setTag(notes, 'Quote', fee > 0 ? [fee, s.querySelector('#qBill').value, s.querySelector('#qRef').value.trim()].join('|') : '');
+    l.Notes = notes;
     try {
       await api({ action: isNew ? 'addlead' : 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
       const i = state.leads.findIndex((x) => x.LeadId === l.LeadId); const rec = { ...l, Updated: new Date().toISOString() };
@@ -825,7 +885,7 @@ function bindPipeline() {
   document.querySelectorAll('[data-stage]').forEach((b) => b.onclick = () => { state.stage = b.dataset.stage; render(); });
   document.querySelectorAll('[data-move]').forEach((b) => b.onclick = () => leadSheet(state.leads.find((l) => l.LeadId === b.dataset.move), false));
   document.querySelectorAll('[data-form]').forEach((b) => b.onclick = () => sendFormsSheet([FORMS[+b.dataset.form]]));
-  document.querySelectorAll('[data-letter]').forEach((b) => b.onclick = () => sendFormsSheet([FORMS[0], FORMS[1]], state.leads.find((l) => l.LeadId === b.dataset.letter)));
+  document.querySelectorAll('[data-letter]').forEach((b) => b.onclick = () => sendFormsSheet([FORMS[1]], state.leads.find((l) => l.LeadId === b.dataset.letter)));
   const sug = suggestions();
   document.querySelectorAll('[data-sug]').forEach((b) => b.onclick = () => leadSheet(sug[+b.dataset.sug].lead, true));
   document.querySelectorAll('[data-nosug]').forEach((b) => b.onclick = () => { lsAdd('nolead', b.dataset.nosug); render(); });
@@ -1391,7 +1451,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '23';
+const APP_VERSION = '24';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
