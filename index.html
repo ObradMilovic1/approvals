@@ -769,7 +769,7 @@ const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigi
 // Client-facing workflow emails all go from Zeljka's Sydney Bookkeeping mailbox (Sydney Bookkeeping is replacing Easy Books).
 const CLIENT_FROM = 'Sydney Bookkeeping';
 // Client portal: switch on once the Client portal flow is live. Emails then carry the portal link.
-const PORTAL_ON = false;
+const PORTAL_ON = true;
 // Texts need a Crazytel mobile number on the account; until then everything goes by email.
 const SMS_ON = false;
 const portalLink = (l) => `https://obradmilovic1.github.io/approvals/portal.html?l=${encodeURIComponent(l.LeadId)}`;
@@ -1536,7 +1536,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '32';
+const APP_VERSION = '33';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
