@@ -758,7 +758,7 @@ const setTag = (notes, k, v) => { const base = String(notes || '').replace(new R
 const leadSvcIdx = (l) => getTag(l.Notes, 'Services').split(',').filter((x) => x !== '').map(Number).filter((i) => SV[i]);
 const leadSvcs = (l) => leadSvcIdx(l).map((i) => SV[i]);
 const leadQuote = (l) => { const [fee, billing, ref] = getTag(l.Notes, 'Quote').split('|'); return fee ? { fee: +fee, billing: billing || 'One-off', ref: ref || '' } : null; };
-const plainNotes = (n) => String(n || '').replace(/\s*\[(Services|Quote): [^\]]*\]/g, '').replace(/\s*\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g, '').trim();
+const plainNotes = (n) => String(n || '').replace(/\s*\[(Services|Quote|OTP|Session): [^\]]*\]/g, '').replace(/\s*\[Sent: [^\]]+\]\s*(\d{1,2} \w{3})?/g, '').trim();
 const listOf = (arr) => arr.length < 2 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr.at(-1);
 const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigits: 2 });
 // New-client workflow: moving a lead to these stages emails the client automatically.
@@ -1451,7 +1451,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '24';
+const APP_VERSION = '25';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
