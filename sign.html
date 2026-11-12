@@ -59,13 +59,18 @@ details p{margin:8px 0 0;color:var(--body);font-size:15px}
 .done a.btn{display:inline-flex;align-items:center;text-decoration:none;margin-top:18px}
 .fine{color:var(--muted);font-size:12px;margin-top:18px}
 @media (max-width:420px){.two{grid-template-columns:1fr}}
+.viewbtn{background:none;border:1px solid var(--line,#E3E8E5);border-radius:999px;padding:7px 14px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;color:inherit}
+.viewer{position:fixed;inset:0;background:rgba(11,15,13,.72);z-index:50;overflow:auto;padding:16px}
+.viewer .vbar{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;gap:10px;max-width:760px;margin:0 auto 12px;background:#fff;border-radius:14px;padding:10px 14px}
+.viewer .vbar a{font-weight:600;font-size:14px}
+.viewer img{display:block;width:100%;max-width:760px;margin:0 auto 12px;border-radius:6px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
 <div class="wrap" id="app">
   <header>
     <div class="brand"><svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"><rect x="0" y="11" width="5" height="9" rx="1.5" fill="#0B0F0D"/><rect x="8" y="6" width="5" height="14" rx="1.5" fill="#0B0F0D"/><rect x="16" y="0" width="5" height="20" rx="1.5" fill="#00E187"/></svg><div>Sydney Bookkeeping<br>&amp; Advisory<span>.</span></div></div>
-    <a href="forms/engagement-letter.pdf" target="_blank" rel="noopener">View PDF</a>
+    <button type="button" id="viewLetter" class="viewbtn">View letter</button>
   </header>
 
   <div class="eyebrow">[ Engagement letter ]</div>
@@ -178,6 +183,15 @@ function trimmedSig() {
   c.getContext('2d').drawImage(cv, x0 - 4, y0 - 4, w, h, 0, 0, w, h); return { url: c.toDataURL('image/png'), w, h };
 }
 
+// Show the letter as page images, so it opens on every phone and browser (some can't display PDFs).
+$('#viewLetter').onclick = () => {
+  const v = document.createElement('div'); v.className = 'viewer'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-label', 'Engagement letter');
+  v.innerHTML = `<div class="vbar"><b>Engagement letter</b><span><a href="forms/engagement-letter.pdf" download>Download PDF</a> &nbsp; <button type="button" class="viewbtn" data-x>Close</button></span></div><img src="forms/engagement-letter-1.jpg" alt="Engagement letter, page 1"><img src="forms/engagement-letter-2.jpg" alt="Engagement letter, page 2">`;
+  v.addEventListener('click', (e) => { if (e.target === v || e.target.closest('[data-x]')) v.remove(); });
+  document.addEventListener('keydown', function k(e) { if (e.key === 'Escape') { v.remove(); document.removeEventListener('keydown', k); } });
+  document.body.appendChild(v);
+};
+
 async function buildPdf(v) {
   const { PDFDocument, StandardFonts, rgb } = PDFLib;
   const src = await (await fetch('forms/engagement-letter.pdf', { cache: 'no-store' })).arrayBuffer();
@@ -238,9 +252,9 @@ $('#sign').onclick = async () => {
     }
     const url = URL.createObjectURL(new Blob([pdf.bytes], { type: 'application/pdf' }));
     $('#bar').remove();
-    $('#app').innerHTML = `<header>${document.querySelector('header').innerHTML}</header><div class="done"><div class="tick"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><h1>Signed, thank you</h1><p class="lead">We've emailed a signed copy to ${v.email.replace(/[<>&]/g, '')}. We'll be in touch shortly to get you set up.</p><a class="btn" href="${url}" download="${fileName.replace(/"/g, '')}">Download your copy</a>${viaPortal ? `<p style="margin-top:14px"><a href="portal.html?l=${encodeURIComponent(lead.id)}">Back to your portal to upload your documents</a></p>` : ''}</div>`;
+    $('#app').innerHTML = `<header>${document.querySelector('header .brand').outerHTML}</header><div class="done"><div class="tick"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><h1>Signed, thank you</h1><p class="lead">We've emailed a signed copy to ${v.email.replace(/[<>&]/g, '')}. We'll be in touch shortly to get you set up.</p><a class="btn" href="${url}" download="${fileName.replace(/"/g, '')}">Download your copy</a>${viaPortal ? `<p style="margin-top:14px"><a href="portal.html?l=${encodeURIComponent(lead.id)}">Back to your portal to upload your documents</a></p>` : ''}</div>`;
     window.__signed = pdf.b64; scrollTo(0, 0);
-  } catch (e) { btn.disabled = false; btn.textContent = 'Sign letter'; err.textContent = SIGN_URL ? 'Something went wrong sending your signature. Please try again, or call us on 02 3814 5525.' : 'Online signing isn\'t switched on yet. Please use View PDF at the top to download, sign and email the letter back.'; console.error(e); }
+  } catch (e) { btn.disabled = false; btn.textContent = 'Sign letter'; err.textContent = SIGN_URL ? 'Something went wrong sending your signature. Please try again, or call us on 02 3814 5525.' : 'Online signing isn\'t switched on yet. Please use View letter at the top to download it, then sign and email it back.'; console.error(e); }
 };
 </script>
 </body>
