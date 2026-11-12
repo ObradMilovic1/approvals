@@ -535,7 +535,8 @@ function markRead(m, read, quiet) {
   if (quiet) return commit();
   undoToast(read ? 'Done, marked as read' : 'Back on your to-do list', 4000, commit, () => { state.pending.delete('r:' + m.id); m.read = !read; render(); });
 }
-const ausNum = (n) => { n = String(n || '').replace(/[^0-9+]/g, ''); if (/^\+?61\d{9}$/.test(n)) n = '0' + n.replace(/^\+?61/, ''); return n; };
+// Excel stores phone numbers as numbers and drops the leading 0, so 9-digit numbers get it back.
+const ausNum = (n) => { n = String(n || '').replace(/[^0-9+]/g, ''); if (/^\+?61\d{9}$/.test(n)) n = '0' + n.replace(/^\+?61/, ''); if (/^[2-478]\d{8}$/.test(n)) n = '0' + n; return n; };
 const prettyNum = (n) => { n = ausNum(n); return /^04\d{8}$/.test(n) ? n.replace(/^(\d{4})(\d{3})(\d{3})$/, '$1 $2 $3') : /^0\d{9}$/.test(n) ? n.replace(/^(\d{2})(\d{4})(\d{4})$/, '$1 $2 $3') : n; };
 const names = () => { try { return JSON.parse(store.get('names') || '{}'); } catch { return {}; } };
 const otherParty = (c) => ausNum(c.dir === 'outbound' ? c.to : c.from);
@@ -768,7 +769,7 @@ const aud = (n) => '$' + Number(n).toLocaleString('en-AU', { maximumFractionDigi
 // Client portal: switch on once the Client portal flow is live. Emails then carry the portal link.
 const PORTAL_ON = false;
 const portalLink = (l) => `https://obradmilovic1.github.io/approvals/portal.html?l=${encodeURIComponent(l.LeadId)}`;
-const isMobile = (p) => /^04\d{8}$/.test(String(p || '').replace(/[\s-]/g, '').replace(/^\+61/, '0'));
+const isMobile = (p) => /^04\d{8}$/.test(ausNum(p));
 // New-client workflow: moving a lead to these stages emails the client automatically.
 const FLOW = {
   'Meeting booked': { key: 'Services overview', build: (l, n, me) => {
@@ -906,7 +907,7 @@ function requestSheet(l) {
     const body = `Hi${first ? ' ' + first : ''},\n\nTo keep things moving, could you please send us:\n\n${list}\n\n${msg ? msg + '\n\n' : ''}${PORTAL_ON ? `You can upload them in your secure client portal. We'll text a code to your mobile to let you in:\n${portalLink(l)}` : 'You can reply to this email with them attached, or send photos.'}\n\nThank you.\n\nKind regards,\n${me}`;
     try {
       await api({ action: 'sendforms', to: l.Email, business: l.Business || state.biz, subject: `Documents we need${l.Business === 'Sydney Bookkeeping' ? ' – Sydney Bookkeeping & Advisory' : ''}`, body, files: [] });
-      if (PORTAL_ON && isMobile(l.Phone)) { try { await api({ action: 'sms', to: l.Phone, text: `Hi ${first || 'there'}, ${me} here. We've asked for ${fresh.length || items.length} document${(fresh.length || items.length) > 1 ? 's' : ''} in your client portal: ${portalLink(l)}` }); } catch { toast('Email sent, but the text didn\'t go'); } }
+      if (PORTAL_ON && isMobile(l.Phone)) { try { await api({ action: 'sms', to: ausNum(l.Phone), text: `Hi ${first || 'there'}, ${me} here. We've asked for ${fresh.length || items.length} document${(fresh.length || items.length) > 1 ? 's' : ''} in your client portal: ${portalLink(l)}` }); } catch { toast('Email sent, but the text didn\'t go'); } }
       l.Notes = notes;
       await api({ action: 'movelead', lead: { LeadId: l.LeadId, Name: l.Name, Phone: l.Phone, Email: l.Email, Source: l.Source, Stage: l.Stage, Notes: l.Notes, Business: l.Business } });
       s.remove(); render(); toast(`Requested ${items.length} item${items.length > 1 ? 's' : ''} from ${first || l.Email}`); buzz();
@@ -1531,7 +1532,7 @@ function fyiWithUndo(it, advance) {
 
 /* ---------- start ---------- */
 // Auto-update: when a new version of the app is published, reload into it (no reinstall needed).
-const APP_VERSION = '28';
+const APP_VERSION = '29';
 async function checkUpdate() {
   try {
     const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
