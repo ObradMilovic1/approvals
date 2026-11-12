@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Client portal – Sydney Bookkeeping & Advisory</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0B0F0D;--body:#2A302D;--muted:#4F5753;--line:#E3E8E5;--soft:#F1F4F2;--acc:#00E187;--acc-d:#08804F;--acc-t:#DDFBEE;--red:#C2410C;--amber:#B45309}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:Geist,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);font-size:16px;line-height:1.5;background:#fff linear-gradient(var(--soft) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,var(--soft) 1px,transparent 1px) 0 0/48px 48px;min-height:100vh}
+.wrap{max-width:620px;margin:0 auto;padding:16px 16px 60px}
+header{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;line-height:1.1;letter-spacing:-.2px}.brand span{color:#00C877}
+.lock{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--acc-d);background:var(--acc-t);border-radius:999px;padding:5px 10px}
+.eyebrow{margin:28px 0 6px;color:var(--muted);font-size:14px}
+h1{margin:0;font-size:34px;line-height:1.05;letter-spacing:-1px;font-weight:800}
+.lead{margin:10px 0 0;color:var(--body)}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:16px}
+.btn{height:52px;border:none;border-radius:999px;padding:0 24px;font:inherit;font-weight:700;font-size:16px;background:var(--acc);color:var(--ink);cursor:pointer;width:100%}
+.btn.dark{background:var(--ink);color:#fff}.btn:disabled{opacity:.5}
+.ghost{background:none;border:none;color:var(--acc-d);font:inherit;font-weight:600;cursor:pointer;padding:8px 0}
+.otp{display:flex;gap:8px;justify-content:space-between;margin:16px 0}
+.otp input{width:100%;max-width:52px;height:60px;text-align:center;font:inherit;font-size:26px;font-weight:700;border:1px solid var(--line);border-bottom:2px solid var(--acc);border-radius:12px;background:var(--soft)}
+.otp input:focus{outline:2px solid var(--acc);background:#fff}
+.err{color:var(--red);font-size:14px;min-height:20px;margin-top:6px}
+.muted{color:var(--muted);font-size:14px}
+.prog{display:flex;align-items:center;gap:16px}
+.ring{--p:0;width:64px;height:64px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--acc) calc(var(--p)*1%),var(--soft) 0)}
+.ring b{width:52px;height:52px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:15px}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step .n{width:28px;height:28px;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none;margin-top:2px}
+.step.done .n{background:var(--acc);color:var(--ink)}
+.step>div{min-width:0}.step h2{margin:0;font-size:18px}.step p{margin:4px 0 12px;color:var(--muted);font-size:14px}
+.docs{display:flex;flex-direction:column;margin-top:4px}
+.doc{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.doc:first-child{border-top:none}
+.doc .ic{width:36px;height:36px;border-radius:10px;background:var(--soft);display:grid;place-items:center;flex:none}
+.doc.ok .ic{background:var(--acc-t)}
+.doc .t{flex:1;min-width:0;font-weight:600;font-size:15px}.doc .t small{display:block;font-weight:500;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc label.up{flex:none;height:36px;padding:0 14px;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;cursor:pointer}
+.doc.ok label.up{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.doc input[type=file]{display:none}
+.tag{display:inline-block;font-size:11px;font-weight:700;color:var(--amber);background:#FEF3C7;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+.fine{color:var(--muted);font-size:12px;margin-top:20px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:999px;font-weight:600;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:9}
+.center{text-align:center}
+@media (prefers-reduced-motion:no-preference){.card{animation:in .35s ease both}@keyframes in{from{opacity:0;transform:translateY(8px)}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><svg width="22" height="20" viewBox="0 0 22 20" aria-hidden="true"><rect x="0" y="11" width="5" height="9" rx="1.5" fill="#0B0F0D"/><rect x="8" y="6" width="5" height="14" rx="1.5" fill="#0B0F0D"/><rect x="16" y="0" width="5" height="20" rx="1.5" fill="#00E187"/></svg><div>Sydney Bookkeeping<br>&amp; Advisory<span>.</span></div></div>
+    <span class="lock"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Secure portal</span>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+// The Client portal flow's address. Empty = the portal shows a "not switched on yet" notice.
+const PORTAL_URL = '';
+const q = new URLSearchParams(location.search);
+const DEMO = q.has('demo');
+const leadId = q.get('l') || (DEMO ? 'demo' : '');
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const app = $('#app');
+let session = { token: '', expires: 0 }, data = null;
+try { const s = JSON.parse(sessionStorage.getItem('portal:' + leadId) || 'null'); if (s && s.expires > Date.now()) session = s; } catch {}
+const toast = (m) => { document.querySelectorAll('.toast').forEach((t) => t.remove()); const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3200); };
+
+// Documents we ask for, by service (same order as the app's services).
+const ID_DOC = { k: 'id', t: 'Photo ID', s: 'Driver licence (front and back) or passport' };
+const REQ = [
+  [{ k: 'bas', t: 'Last BAS lodged', s: 'PDF or a photo' }, { k: 'bank', t: 'Bank statements', s: 'Last 3 months, for accounts without a bank feed' }],
+  [{ k: 'payroll', t: 'Employee list', s: 'Names, pay rates and super funds' }],
+  [{ k: 'income', t: 'Other income statements', s: 'Interest, dividends, share or crypto sales' }, { k: 'deductions', t: 'Deduction receipts', s: 'Work expenses, donations, last year’s accounting fee' }, { k: 'health', t: 'Private health insurance statement', s: 'If you have hospital cover' }],
+  [{ k: 'rent', t: 'Property manager’s annual statement', s: 'One per property' }, { k: 'loan', t: 'Loan interest statement', s: 'Full financial year' }, { k: 'deprec', t: 'Depreciation schedule', s: 'If you have one' }],
+  [{ k: 'did', t: 'Director ID for each director', s: 'Screenshot or letter showing the 15-digit ID' }, { k: 'id2', t: 'Photo ID for each director and shareholder', s: 'Licence or passport' }],
+  [{ k: 'fin', t: 'Last year’s financial statements and tax return', s: 'PDF' }, { k: 'loans', t: 'Loan and lease statements', s: 'As at 30 June' }],
+  [{ k: 'super', t: 'Statements from your current super funds', s: 'For the rollover into the new SMSF' }, { k: 'id3', t: 'Photo ID for each member', s: 'Licence or passport' }],
+  [{ k: 'sbank', t: 'Fund bank statements', s: 'Full financial year' }, { k: 'sinv', t: 'Investment statements', s: 'Shares, ETFs, managed funds' }, { k: 'sval', t: 'Property valuation at 30 June', s: 'If the fund owns property' }],
+];
+const requested = (svcs) => { const out = [ID_DOC]; const seen = new Set(['id']); svcs.forEach((i) => (REQ[i] || []).forEach((d) => { if (!seen.has(d.k)) { seen.add(d.k); out.push(d); } })); return out; };
+
+async function call(action, body) {
+  if (DEMO) return demo(action, body);
+  if (!PORTAL_URL) throw new Error('off');
+  const r = await fetch(PORTAL_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, leadId, token: session.token, ...body }) });
+  if (r.status === 401) { logout(); throw new Error('expired'); }
+  if (!r.ok) throw new Error('http ' + r.status);
+  const j = await r.json();
+  // the flow lists uploaded files as "<item> - <time> - <name>"; group them by item
+  if (Array.isArray(j.files)) { j.uploads = {}; j.files.forEach((n) => { const [k, , ...rest] = String(n).split(' - '); (j.uploads[k] = j.uploads[k] || []).push(rest.join(' - ') || n); }); }
+  return j;
+}
+// Demo mode so the portal can be tried without touching real data.
+const demoState = { uploads: {}, signed: false };
+async function demo(action, body) {
+  await new Promise((r) => setTimeout(r, 500));
+  if (action === 'start') return { ok: true, phone: '•••• ••• 222' };
+  if (action === 'verify') return body.code === '123456' ? { ok: true, token: 'demo-token', minutes: 30 } : { ok: false };
+  if (action === 'status') return { first: 'Mia', business: 'Easy Books', services: [2, 3], signed: demoState.signed, uploads: demoState.uploads };
+  if (action === 'upload') { demoState.uploads[body.item] = (demoState.uploads[body.item] || []).concat(body.fileName); return { ok: true }; }
+  return { ok: true };
+}
+function logout() { session = { token: '', expires: 0 }; sessionStorage.removeItem('portal:' + leadId); data = null; showStart(); }
+
+function showOff() {
+  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Almost ready</h1><p class="lead">Our secure portal isn't switched on yet. Please reply to our email or call us on 02 3814 5525 and we'll help you directly.</p>`;
+}
+function showStart() {
+  if (!leadId) { app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Use the link in your email</h1><p class="lead">This portal only opens from the personal link we emailed you.</p>`; return; }
+  if (!DEMO && !PORTAL_URL) return showOff();
+  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Welcome</h1>
+    <p class="lead">To keep your information safe, we'll text a 6-digit code to the mobile number we have for you.</p>
+    <div class="card"><button class="btn dark" id="send">Text me a code</button><div class="err" id="err"></div>
+    <p class="muted" style="margin:6px 0 0">Wrong number or no mobile? Call us on 02 3814 5525.</p></div>`;
+  $('#send').onclick = async (e) => {
+    e.target.disabled = true; e.target.textContent = 'Sending…';
+    try { const r = await call('start'); if (!r.ok) throw 0; showCode(r.phone); }
+    catch { e.target.disabled = false; e.target.textContent = 'Text me a code'; $('#err').textContent = 'We couldn’t send a code. Try again in a minute, or call us.'; }
+  };
+}
+function showCode(phone) {
+  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Enter your code</h1>
+    <p class="lead">We texted a code to ${esc(phone || 'your mobile')}. It expires in 10 minutes.</p>
+    <div class="card"><div class="otp">${[0, 1, 2, 3, 4, 5].map((i) => `<input inputmode="numeric" autocomplete="${i ? 'off' : 'one-time-code'}" maxlength="${i ? 1 : 6}" aria-label="Digit ${i + 1}" data-i="${i}">`).join('')}</div>
+    <button class="btn" id="verify">Continue</button><div class="err" id="err"></div>
+    <button class="ghost" id="again">Send a new code</button></div>`;
+  const boxes = [...document.querySelectorAll('.otp input')];
+  boxes.forEach((b, i) => {
+    b.addEventListener('input', () => {
+      const v = b.value.replace(/\D/g, '');
+      if (v.length > 1) { v.slice(0, 6).split('').forEach((d, j) => { if (boxes[j]) boxes[j].value = d; }); boxes[Math.min(v.length, 6) - 1].focus(); }
+      else { b.value = v; if (v && boxes[i + 1]) boxes[i + 1].focus(); }
+      if (boxes.every((x) => x.value)) $('#verify').click();
+    });
+    b.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !b.value && boxes[i - 1]) boxes[i - 1].focus(); });
+  });
+  boxes[0].focus();
+  let tries = 0;
+  $('#verify').onclick = async (e) => {
+    const code = boxes.map((x) => x.value).join('');
+    if (code.length !== 6) { $('#err').textContent = 'Enter all 6 digits.'; return; }
+    e.target.disabled = true;
+    try {
+      const r = await call('verify', { code });
+      if (!r.ok) { tries++; e.target.disabled = false; boxes.forEach((x) => x.value = ''); boxes[0].focus(); $('#err').textContent = tries >= 5 ? 'Too many attempts. Send a new code.' : 'That code doesn’t match. Check the text and try again.'; if (tries >= 5) e.target.disabled = true; return; }
+      session = { token: r.token, expires: Date.now() + (r.minutes || 30) * 60e3 }; sessionStorage.setItem('portal:' + leadId, JSON.stringify(session));
+      load();
+    } catch { e.target.disabled = false; $('#err').textContent = 'Something went wrong. Try again.'; }
+  };
+  $('#again').onclick = () => showStart();
+}
+
+async function load() {
+  app.innerHTML = `<div class="card center muted">Loading your portal…</div>`;
+  try { data = await call('status'); render(); } catch (e) { if (String(e.message) !== 'expired') app.innerHTML = `<div class="card">We couldn’t load your portal. <button class="ghost" onclick="load()">Try again</button></div>`; }
+}
+function render() {
+  const docs = requested(data.services || []);
+  const up = data.uploads || {};
+  const done = docs.filter((d) => (up[d.k] || []).length).length + (data.signed ? 1 : 0), total = docs.length + 1;
+  const pct = Math.round(done / total * 100);
+  app.innerHTML = `<div class="eyebrow">[ Client portal ]</div><h1>Hi ${esc(data.first || 'there')}</h1>
+    <p class="lead">Two things to get started: sign your engagement letter, and upload the documents below.</p>
+    <div class="card prog"><span class="ring" style="--p:${pct}"><b>${pct}%</b></span><div><b>${done} of ${total} done</b><div class="muted">${pct === 100 ? 'All done, thank you. We’ll be in touch.' : 'Your progress saves as you go.'}</div></div></div>
+    <div class="card step ${data.signed ? 'done' : ''}"><span class="n">${data.signed ? '&#10003;' : '1'}</span><div style="flex:1"><h2>Sign your engagement letter</h2>
+      <p>${data.signed ? 'Signed. A copy is in your email.' : 'Review the services and fee, and sign on screen.'}</p>
+      ${data.signed ? '' : `<a class="btn" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="sign.html?l=${encodeURIComponent(leadId)}&p=1">Review and sign</a>`}</div></div>
+    <div class="card step ${docs.every((d) => (up[d.k] || []).length) ? 'done' : ''}"><span class="n">2</span><div style="flex:1"><h2>Upload your documents</h2>
+      <p>Take a photo or choose a file. Each upload goes straight to your private folder with us.</p>
+      <div class="docs">${docs.map((d) => { const has = (up[d.k] || []).length; return `<div class="doc ${has ? 'ok' : ''}"><span class="ic">${has ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#08804F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0F0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>'}</span>
+        <div class="t">${esc(d.t)}${d.k === 'id' ? '<span class="tag">Required</span>' : ''}<small>${has ? esc(up[d.k].join(', ')) : esc(d.s)}</small></div>
+        <label class="up">${has ? 'Add more' : 'Upload'}<input type="file" accept="image/*,application/pdf" multiple data-k="${d.k}"></label></div>`; }).join('')}</div></div></div>
+    <button class="ghost" id="out">Log out</button>
+    <p class="fine">Your documents are sent over an encrypted connection and stored in our Microsoft 365 account, not on this website. This portal logs you out after 30 minutes.</p>`;
+  document.querySelectorAll('input[type=file]').forEach((inp) => inp.onchange = () => uploadFiles(inp.dataset.k, [...inp.files], inp.closest('.doc')));
+  $('#out').onclick = logout;
+}
+// Shrink phone photos before sending so uploads are quick on mobile data.
+function shrink(file) {
+  return new Promise((res) => {
+    if (!/^image\//.test(file.type) || file.size < 1.2e6) return res(file);
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => { const max = 2200, sc = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = img.width * sc; c.height = img.height * sc; c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); c.toBlob((b) => { URL.revokeObjectURL(url); res(new File([b], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' })); }, 'image/jpeg', 0.85); };
+    img.onerror = () => res(file); img.src = url;
+  });
+}
+const b64 = (blob) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(blob); });
+async function uploadFiles(k, files, row) {
+  const lbl = row.querySelector('label.up'); const old = lbl.firstChild.textContent; lbl.firstChild.textContent = 'Uploading…';
+  try {
+    for (const f0 of files) {
+      if (f0.size > 15e6) { toast(`${f0.name} is over 15 MB. Try a photo instead.`); continue; }
+      const f = await shrink(f0);
+      const r = await call('upload', { item: k, fileName: f.name.replace(/[\\/:*?"<>|]/g, '_'), contentType: f.type, content: await b64(f) });
+      if (!r.ok) throw 0;
+    }
+    data = await call('status'); toast('Uploaded, thank you'); render();
+  } catch (e) { lbl.firstChild.textContent = old; if (String(e && e.message) !== 'expired') toast('Upload didn’t go through. Please try again.'); }
+}
+// Expire the session after 30 minutes even if the page stays open.
+setInterval(() => { if (session.token && session.expires < Date.now()) { logout(); toast('Logged out for your security'); } }, 30e3);
+if (session.token) load(); else showStart();
+</script>
+</body>
+</html>
